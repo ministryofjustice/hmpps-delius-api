@@ -1,0 +1,18 @@
+#!/bin/bash
+
+OAUTH2_CLIENT=
+OAUTH2_SECRET=
+
+cd "$(dirname "$0")/../src/integration/" || exit
+
+docker run -v "$(pwd)":/etc/newman \
+	--network="host" \
+	-t postman/newman run 'Delius API.postman_collection.json' \
+	--env-var "oauth2Client=$OAUTH2_CLIENT" \
+	--env-var "oauth2Secret=$OAUTH2_SECRET"
+
+docker run -v "$(pwd)":/etc/newman \
+	--network="host" \
+	-t postman/newman run 'Community API.postman_collection.json' \
+	--env-var "oauth2Client=$OAUTH2_CLIENT" \
+	--env-var "oauth2Secret=$OAUTH2_SECRET"

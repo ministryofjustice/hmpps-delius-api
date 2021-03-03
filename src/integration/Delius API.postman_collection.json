@@ -1,0 +1,280 @@
+{
+	"info": {
+		"_postman_id": "3db72e23-9b80-4fb1-928f-3a942bae8aa5",
+		"name": "Delius API",
+		"description": "Delius API Documentation\n\nContact Support:\n Name: HMPPS Digital Studio\n Email: dps-hmpps@digital.justice.gov.uk",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "v1",
+			"item": [
+				{
+					"name": "Health",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Deilus API Status is 'UP'\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql(\"UP\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/info",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"info"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Creates a new NSI",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"NSI has an ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.be.a('number')",
+									"});",
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"NSI-ID\", jsonData.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"eventId\": 2500011406,\n    \"expectedEndDate\": \"{{endDate}}\",\n    \"expectedStartDate\": \"{{startDate}}\",\n    \"intendedProvider\": \"CRS\",\n    \"manager\": {\n        \"provider\": \"CRS\",\n        \"staff\": \"CRSUATU\",\n        \"team\": \"CRSUAT\"\n    },\n    \"notes\": \"End-to-End Delius API test\",\n    \"offenderCrn\": \"X009923\",\n    \"referralDate\": \"{{startDate}}\",\n    \"requirementId\": 2500007925,\n    \"startDate\":  \"{{startDate}}\",\n    \"status\": \"INPROG\",\n    \"statusDate\":  \"{{startDateTime}}\",\n    \"type\": \"CRS01\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/nsi",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"nsi"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Creates a new contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Contact has an ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.be.a('number')",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"date\": \"{{startDate}}\",\n    \"offenderCrn\": \"X009923\",\n    \"provider\": \"CRS\",\n    \"staff\": \"CRSUATU\",\n    \"team\": \"CRSUAT\",\n    \"type\": \"CRS01\",\n    \"alert\": false,\n    \"description\": \"Test contact from Delius API\",\n    \"endTime\": \"{{endDateTime}}\",\n    \"eventId\": 2500011406,\n    \"notes\": \"Test contact from Delius API\",\n    \"nsiId\": {{NSI-ID}},\n    \"sensitive\": false,\n    \"startTime\": \"{{startDateTime}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/contact",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"contact"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{currentAccessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"const moment = require(\"moment\");",
+					"",
+					"const clearSession = () => {",
+					"  // Clear the session",
+					"  pm.environment.unset(\"currentAccessToken\");",
+					"  pm.environment.unset(\"startDate\");",
+					"  pm.environment.unset(\"startDateTime \");",
+					"  pm.environment.unset(\"endDate\");",
+					"  pm.environment.unset(\"endDateTime\");",
+					"};",
+					"",
+					"const obtainToken = () => {",
+					"  console.log(\"Obtaining new access token\");",
+					"  pm.sendRequest(tokenPostRequest, function (err, res) {",
+					"    console.log(err ? err : res.json());",
+					"    if (err === null) {",
+					"      console.log(\"Saving the token\");",
+					"      var responseJson = res.json();",
+					"      pm.environment.set(\"currentAccessToken\", responseJson.access_token);",
+					"    }",
+					"  });",
+					"};",
+					"",
+					"const addDateTimesToEnvironment = () => {",
+					"  // Add formatted date and datetime strings into the environment",
+					"  const dateFormat = \"YYYY-MM-DD\";",
+					"  const dateTimeFormat = \"YYYY-MM-DDTss:mm:hh\";",
+					"  const start = moment();",
+					"  const end = moment().add(7, \"days\");",
+					"  const startDate = start.format(dateFormat);",
+					"  const startDateTime = start.startOf(\"day\").format(dateTimeFormat);",
+					"  const endDate = end.format(dateFormat);",
+					"  const endDateTime = end.startOf(\"day\").format(dateTimeFormat);",
+					"",
+					"  pm.environment.set(\"startDate\", startDate);",
+					"  pm.environment.set(\"endDate\", endDate);",
+					"  pm.environment.set(\"startDateTime\", startDateTime);",
+					"  pm.environment.set(\"endDateTime\", endDateTime);",
+					"};",
+					"",
+					"const authString = `${pm.environment.get(\"oauth2Client\")}:${pm.environment.get(",
+					"  \"oauth2Secret\"",
+					")}`;",
+					"",
+					"const tokenPostRequest = {",
+					"  url:",
+					"    pm.collectionVariables.get(\"oauth2Url\") + \"?grant_type=client_credentials\",",
+					"  method: \"POST\",",
+					"  header: [",
+					"    \"Content-Type:application/json\",",
+					"    \"Authorization: Basic \" +",
+					"      CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(authString)),",
+					"  ],",
+					"};",
+					"",
+					"// run",
+					"clearSession();",
+					"obtainToken();",
+					"addDateTimesToEnvironment();",
+					"",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://delius-api.test.probation.service.justice.gov.uk:443"
+		},
+		{
+			"key": "oauth2Url",
+			"value": "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/oauth/token"
+		}
+	]
+}

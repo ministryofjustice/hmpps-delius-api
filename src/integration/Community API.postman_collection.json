@@ -1,0 +1,176 @@
+{
+	"info": {
+		"_postman_id": "7c285c7f-ab11-4063-a59a-4b6db61b112b",
+		"name": "Community API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/health",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Referral Sent",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Referral returns an NSI Id\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.nsiId).to.be.a('number');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"convictionId\": 2500011406,\n  \"date\": \"2021-03-12\",\n  \"notes\": \"Notes\",\n  \"nsiStatus\": \"INPROG\",\n  \"nsiType\": \"CRS01\",\n  \"providerCode\": \"CRS\",\n  \"requirementId\": 2500007925,\n  \"staffCode\": \"CRSUATU\",\n  \"teamCode\": \"CRSUAT\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/secure/offenders/crn/X009923/referral/sent",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"secure",
+						"offenders",
+						"crn",
+						"X009923",
+						"referral",
+						"sent"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{currentAccessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"const moment = require(\"moment\");",
+					"",
+					"const clearSession = () => {",
+					"  // Clear the session",
+					"  pm.environment.unset(\"currentAccessToken\");",
+					"  pm.environment.unset(\"startDate\");",
+					"  pm.environment.unset(\"startDateTime \");",
+					"  pm.environment.unset(\"endDate\");",
+					"  pm.environment.unset(\"endDateTime\");",
+					"};",
+					"",
+					"const obtainToken = () => {",
+					"  console.log(\"Obtaining new access token\");",
+					"  pm.sendRequest(tokenPostRequest, function (err, res) {",
+					"    console.log(err ? err : res.json());",
+					"    if (err === null) {",
+					"      console.log(\"Saving the token\");",
+					"      var responseJson = res.json();",
+					"      pm.environment.set(\"currentAccessToken\", responseJson.access_token);",
+					"    }",
+					"  });",
+					"};",
+					"",
+					"const addDateTimesToEnvironment = () => {",
+					"  // Add formatted date and datetime strings into the environment",
+					"  const dateFormat = \"YYYY-MM-DD\";",
+					"  const dateTimeFormat = \"YYYY-MM-DDTss:mm:hh\";",
+					"  const start = moment();",
+					"  const end = moment().add(7, \"days\");",
+					"  const startDate = start.format(dateFormat);",
+					"  const startDateTime = start.startOf(\"day\").format(dateTimeFormat);",
+					"  const endDate = end.format(dateFormat);",
+					"  const endDateTime = end.startOf(\"day\").format(dateTimeFormat);",
+					"",
+					"  pm.environment.set(\"startDate\", startDate);",
+					"  pm.environment.set(\"endDate\", endDate);",
+					"  pm.environment.set(\"startDateTime\", startDateTime);",
+					"  pm.environment.set(\"endDateTime\", endDateTime);",
+					"};",
+					"",
+					"const authString = `${pm.environment.get(\"oauth2Client\")}:${pm.environment.get(",
+					"  \"oauth2Secret\"",
+					")}`;",
+					"",
+					"const tokenPostRequest = {",
+					"  url:",
+					"    pm.collectionVariables.get(\"oauth2Url\") + \"?grant_type=client_credentials\",",
+					"  method: \"POST\",",
+					"  header: [",
+					"    \"Content-Type:application/json\",",
+					"    \"Authorization: Basic \" +",
+					"      CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(authString)),",
+					"  ],",
+					"};",
+					"",
+					"// run",
+					"clearSession();",
+					"obtainToken();",
+					"addDateTimesToEnvironment();",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://community-api-secure.test.delius.probation.hmpps.dsd.io"
+		},
+		{
+			"key": "oauth2Url",
+			"value": "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/oauth/token"
+		}
+	]
+}
