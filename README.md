@@ -1,4 +1,5 @@
 # HMPPS Delius API Service
+![Integration Tests](https://codebuild.eu-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiUGhnUGFMQ0FXMlJZWTlOTk5zQ28zL3FkQnRsV0x5cnBNMEV4UTZHTE12QWRBUWlqU1gwNlpPM2RxU1RneVgySEVyMTBIVmJCZW1BMXB4RUlmME96S3NBPSIsIml2UGFyYW1ldGVyU3BlYyI6IjRPVWltcmppQnJhYVVzTHoiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main)
 
 ## Overview
 
