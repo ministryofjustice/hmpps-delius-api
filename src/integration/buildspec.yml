@@ -1,0 +1,20 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - cd src/integration
+      - |
+        newman run 'Delius API.postman_collection.json' \
+        --folder Health \
+        --folder 'Creates a new NSI' \
+        --env-var baseUrl=$BASE_URL \
+        --env-var oauth2Client=$OAUTH2_CLIENT \
+        --env-var oauth2Secret=$OAUTH2_SECRET \
+        --reporters cli,junit
+
+reports:
+  TestReport:
+    base-directory: src/integration/newman
+    files:
+      - '**/*'
