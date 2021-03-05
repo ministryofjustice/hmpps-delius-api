@@ -58,7 +58,7 @@ the Community API implementation is missing Delius functionality (e.g.
 post-processing logic or validation). These can be identified and developed
 over time and in priority order.
 
-Community API gives us is a place to model and encapsulate the complexity of
+Community API gives us a place to model and encapsulate the complexity of
 the Delius API usage, enabling Studio teams to interact with Delius without
 needing deep knowledge of implementation details. This may mean encoding
 specific Delius reference data values into Community API endpoints as static
