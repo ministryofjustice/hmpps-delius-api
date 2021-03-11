@@ -93,7 +93,12 @@ class ContactValidationService(private val contactRepository: ContactRepository)
     event: Event? = null,
     nsi: Nsi? = null,
   ) {
-    if (requirement != null) {
+    if (nsi != null) {
+      // Contact is at nsi level - contact type must support nsi type
+      if (type.nsiTypes?.any { it.id == nsi.type?.id } != true) {
+        throw BadRequestException("Contact type '${type.code}' is not appropriate for an NSI with type '${nsi.type?.code}'")
+      }
+    } else if (requirement != null) {
       // Contact is at "Whole Order" level - type must be whole order level OR have matching requirement type category.
       if (!type.wholeOrderLevel && type.requirementTypeCategories?.any { it.id == requirement.typeCategory?.id } != true) {
         throw BadRequestException("Contact type '${type.code}' is not appropriate for an requirement in category '${requirement.typeCategory?.code}'")
@@ -108,11 +113,6 @@ class ContactValidationService(private val contactRepository: ContactRepository)
       val isCja = event.disposals?.any { it.type?.cja2003Order == true } ?: false
       if (isCja && !type.cjaOrderLevel) {
         throw BadRequestException("Contact type '${type.code}' is not appropriate for a CJA 2003 event")
-      }
-    } else if (nsi != null) {
-      // Contact is at nsi level - contact type must support nsi type
-      if (type.nsiTypes?.any { it.id == nsi.type?.id } != true) {
-        throw BadRequestException("Contact type '${type.code}' is not appropriate for an NSI with type '${nsi.type?.code}'")
       }
     } else {
       // Contact is at offender level

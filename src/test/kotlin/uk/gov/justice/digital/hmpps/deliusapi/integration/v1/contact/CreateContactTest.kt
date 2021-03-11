@@ -63,7 +63,7 @@ class CreateContactTest : IntegrationTestBase() {
       // Non-selectable contact types without SPG Override set are not allowed
       failureCases.add(of(valid.copy(type = "SMLI001"), "Contact type with code 'SMLI001' does not exist"))
       // NSI and event supplied, requirement left blank
-      successCases.add(of(valid.copy(nsiId = 2500018597, requirementId = null)))
+      successCases.add(of(valid.copy(type = "RRIR", officeLocation = null, outcome = null, nsiId = 2500018597, eventId = 2500295345, requirementId = null)))
 
       // Clashing appointments in the future is not ok
       failureCases.add(
