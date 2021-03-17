@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "3db72e23-9b80-4fb1-928f-3a942bae8aa5",
+		"_postman_id": "a9e56e43-86f1-42dd-95d2-51c566ebf7c4",
 		"name": "Delius API",
 		"description": "Delius API Documentation\n\nContact Support:\n Name: HMPPS Digital Studio\n Email: dps-hmpps@digital.justice.gov.uk",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -85,7 +85,7 @@
 					"response": []
 				},
 				{
-					"name": "Creates a new NSI",
+					"name": "Creates a new NSI with unallocated team and staff",
 					"event": [
 						{
 							"listen": "test",
@@ -143,7 +143,9 @@
 									"pm.test(\"Contact has an ID\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.id).to.be.a('number')",
-									"});"
+									"    pm.globals.set(\"createdNonEditableContactId\", jsonData.id);",
+									"});",
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -169,6 +171,345 @@
 							"path": [
 								"v1",
 								"contact"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Creates a new editable contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Contact has an ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.be.a('number')",
+									"    pm.globals.set(\"createdContactId\", jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"date\": \"{{startDate}}\",\n    \"offenderCrn\": \"X009923\",\n    \"provider\": \"CRS\",\n    \"staff\": \"CRSUATU\",\n    \"team\": \"CRSUAT\",\n    \"type\": \"CHVS\",\n    \"alert\": false,\n    \"description\": \"Test contact from Delius API\",\n    \"endTime\": \"{{endTime}}\",\n    \"eventId\": 2500011406,\n    \"notes\": \"Test contact from Delius API\",\n    \"sensitive\": false,\n    \"startTime\": \"{{startTime}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/contact",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"contact"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Creates a new contact linked to NSI",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Contact has an ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.be.a('number')",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"date\": \"{{startDate}}\",\n    \"offenderCrn\": \"X009923\",\n    \"provider\": \"CRS\",\n    \"staff\": \"CRSUATU\",\n    \"team\": \"CRSUAT\",\n    \"type\": \"CRS01\",\n    \"alert\": false,\n    \"description\": \"Test contact from Delius API\",\n    \"endTime\": \"{{endTime}}\",\n    \"nsiId\": {{NSI-ID}},\n    \"notes\": \"Test contact from Delius API\",\n    \"sensitive\": false,\n    \"startTime\": \"{{startTime}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/contact",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"contact"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Creates a new contact linked to requirement",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Contact has an ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.be.a('number')",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"date\": \"{{startDate}}\",\n    \"offenderCrn\": \"X012902\",\n    \"provider\": \"CRS\",\n    \"staff\": \"CRSUATU\",\n    \"team\": \"CRSUAT\",\n    \"type\": \"COTH\",\n    \"alert\": false,\n    \"description\": \"Test contact from Delius API\",\n    \"endTime\": \"{{endTime}}\",\n    \"eventId\": 2500018519,\n    \"requirementId\": 2500010983,\n    \"notes\": \"Test contact from Delius API\",\n    \"sensitive\": false,\n    \"startTime\": \"{{startTime}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/contact",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"contact"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Creates a new contact linked to event",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Contact has an ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.be.a('number')",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"date\": \"{{startDate}}\",\n    \"offenderCrn\": \"X012902\",\n    \"provider\": \"CRS\",\n    \"staff\": \"CRSUATU\",\n    \"team\": \"CRSUAT\",\n    \"type\": \"COTH\",\n    \"alert\": false,\n    \"description\": \"Test contact from Delius API\",\n    \"endTime\": \"{{endTime}}\",\n    \"eventId\": 2500018519,\n    \"notes\": \"Test contact from Delius API\",\n    \"sensitive\": false,\n    \"startTime\": \"{{startTime}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/contact",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"contact"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Creates a new contact with enforcement code",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Contact has an ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.be.a('number')",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"date\": \"{{startDate}}\",\n    \"offenderCrn\": \"X009923\",\n    \"provider\": \"CRS\",\n    \"staff\": \"CRSUATU\",\n    \"team\": \"CRSUAT\",\n    \"type\": \"CHVS\",\n    \"alert\": false,\n    \"description\": \"Test contact from Delius API\",\n    \"endTime\": \"{{endTime}}\",\n    \"eventId\": 2500011406,\n    \"notes\": \"Test contact from Delius API\",\n    \"sensitive\": false,\n    \"startTime\": \"{{startTime}}\",\n    \"outcome\": \"AFTA\",\n    \"enforcement\": \"ROM\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/contact",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"contact"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch an existing non-editable contact",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"pm.test(\"Response contains error message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.userMessage).to.contain(\"Contact type 'CRS01' is not editable\")",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json-patch+json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\"op\": \"replace\", \"path\": \"/notes\", \"value\": \"Updated note\"}\n]",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/contact/{{createdNonEditableContactId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"contact",
+								"{{createdNonEditableContactId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch an existing editable contact setting outcome",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Contact has an ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.be.a('number')",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json-patch+json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\"op\": \"replace\", \"path\": \"/outcome\", \"value\": \"ATTC\"}\n]",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/contact/{{createdContactId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"contact",
+								"{{createdContactId}}"
 							]
 						}
 					},
@@ -219,18 +560,22 @@
 					"const addDateTimesToEnvironment = () => {",
 					"  // Add formatted date and datetime strings into the environment",
 					"  const dateFormat = \"YYYY-MM-DD\";",
-					"  const dateTimeFormat = \"YYYY-MM-DDTss:mm:hh\";",
+					"  const dateTimeFormat = \"YYYY-MM-DDThh:mm:ss\";",
+					"  const timeFormat = \"hh:mm:ss\";",
 					"  const start = moment();",
-					"  const end = moment().add(7, \"days\");",
+					"  const end = moment().add(7, \"days\").add(1, \"hours\");",
 					"  const startDate = start.format(dateFormat);",
-					"  const startDateTime = start.startOf(\"day\").format(dateTimeFormat);",
+					"  const startDateTime = start.format(dateTimeFormat);",
+					"  const startTime = start.format(timeFormat);",
 					"  const endDate = end.format(dateFormat);",
-					"  const endDateTime = end.startOf(\"day\").format(dateTimeFormat);",
-					"",
+					"  const endDateTime = end.format(dateTimeFormat);",
+					"  const endTime = end.format(timeFormat);",
 					"  pm.environment.set(\"startDate\", startDate);",
 					"  pm.environment.set(\"endDate\", endDate);",
 					"  pm.environment.set(\"startDateTime\", startDateTime);",
 					"  pm.environment.set(\"endDateTime\", endDateTime);",
+					"  pm.environment.set(\"startTime\", startTime);",
+					"  pm.environment.set(\"endTime\", endTime);",
 					"};",
 					"",
 					"const authString = `${pm.environment.get(\"oauth2Client\")}:${pm.environment.get(",
