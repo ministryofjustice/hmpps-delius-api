@@ -24,9 +24,10 @@ sed -i '/volume/d' Dockerfile.xe
 
 Finally, build the Delius image:
 ```shell
-# 1. Copy the datapump file into place - TODO decide how/if we should distribute this
-cd hmpps-delius-api/oracledb
-cp /path/to/import.dmp .
+# 1. Download the export file and uplift scripts for the target NDelius release version
+#    e.g. for NDelius v4.10.3:
+aws s3 cp s3://tf-eu-west-2-hmpps-eng-dev-delius-core-dependencies-s3bucket/dbbackup/ST9_20210317.dmp import.dmp
+aws s3 cp --recursive s3://tf-eu-west-2-hmpps-eng-dev-delius-core-dependencies-s3bucket/dependencies/delius-core/NDelius-4.10.3/scripts scripts/delius && dos2unix scripts/delius/*
 
 # 2. Build
 docker build -t hmpps/delius-test-db .
