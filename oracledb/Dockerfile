@@ -19,8 +19,9 @@ RUN exec $ORACLE_BASE/$RUN_FILE & \
 
 # Create tablespaces and directories, then import the datapump file (from Unilink ST9)
 COPY scripts/setup.sql scripts/post-import.sql /scripts/
+COPY scripts/zoneinfo $ORACLE_HOME/oracore/zoneinfo
 COPY import.dmp /datapump/import.dmp
-RUN chmod +x /scripts/*.sh && chown -R oracle:oinstall /datapump && \
+RUN chmod +x /scripts/*.sh && chown -R oracle:oinstall $ORACLE_HOME/oracore /datapump && \
     su - oracle -c "/scripts/startup.sh" && \
     su - oracle -c "export ORACLE_SID=XE; ORAENV_ASK=NO . oraenv; sqlplus sys/${ORACLE_PWD}@xepdb1 as sysdba @/scripts/setup.sql" && \
     su - oracle -c "export ORACLE_SID=XE; ORAENV_ASK=NO . oraenv; impdp \'sys/${ORACLE_PWD}@xepdb1 as sysdba\' full=Y directory=IMPORT_DIR dumpfile=import.dmp logfile=import.log"; \

@@ -13,4 +13,15 @@ CREATE TABLESPACE CFO_INDEX DATAFILE '/opt/oracle/oradata/XE/XEPDB1/CFO_INDEX.db
 CREATE OR REPLACE DIRECTORY IMPORT_DIR AS '/datapump';
 CREATE OR REPLACE DIRECTORY APS_DIR AS '/tmp';
 
+-- Upgrade PDB timezone file version to 32, otherwise the datapump import will silently fail due to a version mismatch
+-- (see https://oracle-base.com/blog/2020/02/19/data-pump-between-database-versions-its-not-just-about-the-version-parameter/
+--  and https://morenotes.wordpress.com/2018/01/15/pdb-timezone-upgrade/ )
+ALTER PLUGGABLE DATABASE XEPDB1 CLOSE IMMEDIATE INSTANCES=ALL;
+ALTER PLUGGABLE DATABASE XEPDB1 OPEN UPGRADE;
+ALTER SESSION SET CONTAINER = XEPDB1;
+EXEC DBMS_DST.BEGIN_UPGRADE(32);
+ALTER PLUGGABLE DATABASE XEPDB1 CLOSE IMMEDIATE INSTANCES=ALL;
+ALTER PLUGGABLE DATABASE XEPDB1 OPEN READ WRITE;
+ALTER SESSION SET CONTAINER = XEPDB1;
+
 EXIT;
