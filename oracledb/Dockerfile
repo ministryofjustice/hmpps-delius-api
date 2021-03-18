@@ -17,7 +17,7 @@ RUN exec $ORACLE_BASE/$RUN_FILE & \
     chmod +x /scripts/*.sh && \
     su - oracle -c '/scripts/shutdown.sh;'
 
-# Create tablespaces and directories, then import the datapump file (from Unilink ST9)
+# Create tablespaces and directories, then import the datapump file
 COPY scripts/setup.sql scripts/post-import.sql /scripts/
 COPY scripts/zoneinfo $ORACLE_HOME/oracore/zoneinfo
 COPY import.dmp /datapump/import.dmp
@@ -36,8 +36,9 @@ RUN exec $ORACLE_BASE/$RUN_FILE & \
     chmod +x /scripts/*.sh && chmod +x /scripts/delius/install/*.sh && chown -R oracle:oinstall /scripts && \
     su - oracle -c "/scripts/uplift.sh && /scripts/shutdown.sh"
 
-# Create a new image with the imported/uplifted data
+# Flatten the image to reduce final size
 FROM base
+COPY --from=import $ORACLE_HOME/oracore $ORACLE_HOME/oracore
 COPY --from=import /opt/oracle/oradata /opt/oracle/oradata
 COPY --from=import /scripts /scripts
 
