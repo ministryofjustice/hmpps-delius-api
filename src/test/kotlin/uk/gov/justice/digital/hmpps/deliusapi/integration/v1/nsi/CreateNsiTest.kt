@@ -85,6 +85,7 @@ class CreateNsiTest @Autowired constructor (
       .dateTime(NewNsi::statusDate) { it.beforeDate(NewNsi::referralDate).tomorrow() }
       .string(NewNsi::outcome) { it.empty().dependent(NewNsi::endDate) }
       .string(NewNsi::intendedProvider) { it.empty() }
+      .add("Requirement not in the right category for the nsi") { it.copy(requirementId = 2500083653) }
       .cases
   }
 

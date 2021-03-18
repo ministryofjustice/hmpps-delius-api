@@ -312,30 +312,6 @@ class NsiServiceTest {
 
     val offenderId = Fake.id()
 
-    requirement = Fake.requirement().apply {
-      id = request.requirementId!!
-      this.offenderId = offenderId
-      terminationDate = request.endDate
-    }
-
-    val requirements = if (havingRequirement) listOf(requirement, Fake.requirement()) else listOf()
-
-    val disposal = Fake.disposal().apply { this.requirements = requirements }
-
-    event = Fake.event().apply {
-      id = request.eventId!!
-      referralDate = request.referralDate
-      disposals = listOf(disposal)
-    }
-    val events = if (havingEvent) listOf(event, Fake.event()) else listOf()
-
-    offender = Fake.offender()
-    offender.id = offenderId
-    offender.events = events
-
-    whenever(offenderRepository.findByCrn(request.offenderCrn))
-      .thenReturn(if (havingOffender) offender else null)
-
     subType = Fake.standardReference().apply {
       code = request.subType!!
     }
@@ -364,6 +340,31 @@ class NsiServiceTest {
 
     whenever(nsiTypeRepository.findByCode(request.type))
       .thenReturn(if (havingType) type else null)
+
+    requirement = Fake.requirement().apply {
+      id = request.requirementId!!
+      this.offenderId = offenderId
+      terminationDate = request.endDate
+      typeCategory!!.nsiTypes = listOf(type)
+    }
+
+    val requirements = if (havingRequirement) listOf(requirement, Fake.requirement().apply { }) else listOf()
+
+    val disposal = Fake.disposal().apply { this.requirements = requirements }
+
+    event = Fake.event().apply {
+      id = request.eventId!!
+      referralDate = request.referralDate
+      disposals = listOf(disposal)
+    }
+    val events = if (havingEvent) listOf(event, Fake.event()) else listOf()
+
+    offender = Fake.offender()
+    offender.id = offenderId
+    offender.events = events
+
+    whenever(offenderRepository.findByCrn(request.offenderCrn))
+      .thenReturn(if (havingOffender) offender else null)
 
     managerStaff = Fake.staff().apply { code = request.manager.staff!! }
 

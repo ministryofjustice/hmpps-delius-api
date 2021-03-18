@@ -114,6 +114,7 @@ object Fake {
   fun requirementTypeCategory() = RequirementTypeCategory(
     id = id(),
     code = faker.lorem().characters(1, 20),
+    nsiTypes = listOf(nsiType())
   )
   fun requirement() = Requirement(
     id = id(),

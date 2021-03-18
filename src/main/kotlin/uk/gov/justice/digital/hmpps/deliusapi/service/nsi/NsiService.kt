@@ -107,6 +107,10 @@ class NsiService(
       throw BadRequestException("Referral date must not be before the event referral date '${event.referralDate}'")
     }
 
+    if (requirement != null && requirement.typeCategory?.nsiTypes?.contains(type) != true) {
+      throw BadRequestException("Requirement '${requirement.id}' is not in a category that supports NSIs of type ${type.code}")
+    }
+
     if (requirement?.terminationDate != null) {
       if (active) {
         throw BadRequestException("End date is required as requirement has termination date '${requirement.terminationDate}'")
