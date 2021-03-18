@@ -1,0 +1,29 @@
+FROM oracle/database:18.4.0-xe AS base
+
+ARG ORACLE_PWD=NDAmanager1
+ARG DELIUS_PWD=NDelius1
+ARG ORACLE_CHARACTERSET=AL32UTF8
+ENV ORACLE_PWD=$ORACLE_PWD \
+    DELIUS_PWD=$DELIUS_PWD \
+    ORACLE_CHARACTERSET=$ORACLE_CHARACTERSET \
+    XE_LOG_FILE=/opt/oracle/cfgtoollogs/dbca/XE/XE.log
+
+# Take a pre-built image
+FROM 895523100917.dkr.ecr.eu-west-2.amazonaws.com/hmpps/delius-test-db:4.10.3 AS uplift
+
+# Uplift the PDM version and install the latest Delius PLSQL code
+COPY scripts /scripts/
+RUN exec $ORACLE_BASE/$RUN_FILE & \
+    until lsnrctl status | grep -q 'Service "xepdb1" has 1 instance(s).'; do echo -n .; sleep 1; done && \
+    chmod +x /scripts/*.sh && chmod +x /scripts/delius/install/*.sh && chown -R oracle:oinstall /scripts && \
+    su - oracle -c "/scripts/uplift.sh && /scripts/shutdown.sh"
+
+# Flatten the image to reduce final size
+FROM base
+COPY --from=uplift $ORACLE_HOME/oracore $ORACLE_HOME/oracore
+COPY --from=uplift /opt/oracle/oradata /opt/oracle/oradata
+COPY --from=uplift /scripts /scripts
+
+EXPOSE 1521
+EXPOSE 5500
+CMD exec $ORACLE_BASE/$RUN_FILE
