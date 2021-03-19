@@ -115,7 +115,53 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"eventId\": 2500011406,\n    \"expectedEndDate\": \"{{endDate}}\",\n    \"expectedStartDate\": \"{{startDate}}\",\n    \"intendedProvider\": \"CRS\",\n    \"manager\": {\n        \"provider\": \"CRS\",\n        \"staff\": \"CRSUATU\",\n        \"team\": \"CRSUAT\"\n    },\n    \"notes\": \"End-to-End Delius API test\",\n    \"offenderCrn\": \"X009923\",\n    \"referralDate\": \"{{startDate}}\",\n    \"requirementId\": 2500007925,\n    \"startDate\":  \"{{startDate}}\",\n    \"status\": \"INPROG\",\n    \"statusDate\":  \"{{startDateTime}}\",\n    \"type\": \"CRS01\"\n}"
+							"raw": "{\n    \"eventId\": {{eventId}},\n    \"expectedEndDate\": \"{{endDate}}\",\n    \"expectedStartDate\": \"{{startDate}}\",\n    \"intendedProvider\": \"CRS\",\n    \"manager\": {\n        \"provider\": \"CRS\",\n        \"staff\": \"CRSUATU\",\n        \"team\": \"CRSUAT\"\n    },\n    \"notes\": \"End-to-End Delius API test\",\n    \"offenderCrn\": \"{{offenderCrn}}\",\n    \"referralDate\": \"{{startDate}}\",\n    \"requirementId\": {{rarRequirementId}},\n    \"startDate\":  \"{{startDate}}\",\n    \"status\": \"INPROG\",\n    \"statusDate\":  \"{{startDateTime}}\",\n    \"type\": \"CRS01\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/nsi",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"nsi"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Creates a terminated NSI",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"NSI has an ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.be.a('number')",
+									"});",
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"NSI-ID\", jsonData.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"eventId\": {{eventId}},\n    \"expectedStartDate\": \"2021-01-04\",\n    \"expectedEndDate\": \"2021-02-01\",\n    \"intendedProvider\": \"CRS\",\n    \"manager\": {\n        \"provider\": \"CRS\",\n        \"staff\": \"CRSUATU\",\n        \"team\": \"CRSUAT\"\n    },\n    \"notes\": \"End-to-End Delius API test\",\n    \"offenderCrn\": \"{{offenderCrn}}\",\n    \"referralDate\": \"2021-01-04\",\n    \"requirementId\": {{rarRequirementId}},\n    \"startDate\":  \"2021-01-04\",\n    \"status\": \"INPROG\",\n    \"statusDate\":  \"2021-01-04T12:00:00\",\n    \"type\": \"CRS01\",\n    \"endDate\": \"2021-02-01\",\n    \"outcome\": \"CRS01\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/v1/nsi",
@@ -161,7 +207,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"date\": \"{{startDate}}\",\n    \"offenderCrn\": \"X009923\",\n    \"provider\": \"CRS\",\n    \"staff\": \"CRSUATU\",\n    \"team\": \"CRSUAT\",\n    \"type\": \"CRS01\",\n    \"alert\": false,\n    \"description\": \"Test contact from Delius API\",\n    \"endTime\": \"{{endDateTime}}\",\n    \"eventId\": 2500011406,\n    \"notes\": \"Test contact from Delius API\",\n    \"nsiId\": {{NSI-ID}},\n    \"sensitive\": false,\n    \"startTime\": \"{{startDateTime}}\"\n}"
+							"raw": "{\n    \"date\": \"{{startDate}}\",\n    \"offenderCrn\": \"{{offenderCrn}}\",\n    \"provider\": \"CRS\",\n    \"staff\": \"CRSUATU\",\n    \"team\": \"CRSUAT\",\n    \"type\": \"CRS01\",\n    \"alert\": false,\n    \"description\": \"Test contact from Delius API\",\n    \"endTime\": \"{{endDateTime}}\",\n    \"eventId\": {{eventId}},\n    \"notes\": \"Test contact from Delius API\",\n    \"nsiId\": {{NSI-ID}},\n    \"sensitive\": false,\n    \"startTime\": \"{{startDateTime}}\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/v1/contact",
@@ -206,7 +252,52 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"date\": \"{{startDate}}\",\n    \"offenderCrn\": \"X009923\",\n    \"provider\": \"CRS\",\n    \"staff\": \"CRSUATU\",\n    \"team\": \"CRSUAT\",\n    \"type\": \"CHVS\",\n    \"alert\": false,\n    \"description\": \"Test contact from Delius API\",\n    \"endTime\": \"{{endTime}}\",\n    \"eventId\": 2500011406,\n    \"notes\": \"Test contact from Delius API\",\n    \"sensitive\": false,\n    \"startTime\": \"{{startTime}}\"\n}"
+							"raw": "{\n    \"date\": \"{{startDate}}\",\n    \"offenderCrn\": \"{{offenderCrn}}\",\n    \"provider\": \"CRS\",\n    \"staff\": \"CRSUATU\",\n    \"team\": \"CRSUAT\",\n    \"type\": \"CHVS\",\n    \"alert\": false,\n    \"description\": \"Test contact from Delius API\",\n    \"endTime\": \"{{endTime}}\",\n    \"eventId\": {{eventId}},\n    \"notes\": \"Test contact from Delius API\",\n    \"sensitive\": false,\n    \"startTime\": \"{{startTime}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v1/contact",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v1",
+								"contact"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Creates a new editable contact with type CRSAPT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Contact has an ID\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.be.a('number')",
+									"    pm.globals.set(\"createdContactId\", jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"date\": \"{{startDate}}\",\n    \"offenderCrn\": \"{{offenderCrn}}\",\n    \"provider\": \"CRS\",\n    \"staff\": \"CRSUATU\",\n    \"team\": \"CRSUAT\",\n    \"type\": \"CRSAPT\",\n    \"alert\": false,\n    \"description\": \"Test contact from Delius API\",\n    \"endTime\": \"{{endTime}}\",\n    \"eventId\": {{eventId}},\n    \"requirementId\": {{rarRequirementId}},\n    \"notes\": \"Test contact from Delius API\",\n    \"sensitive\": false,\n    \"startTime\": \"{{startTime}}\",\n    \"officeLocation\": \"CRSSHEF\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/v1/contact",
@@ -250,7 +341,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"date\": \"{{startDate}}\",\n    \"offenderCrn\": \"X009923\",\n    \"provider\": \"CRS\",\n    \"staff\": \"CRSUATU\",\n    \"team\": \"CRSUAT\",\n    \"type\": \"CRS01\",\n    \"alert\": false,\n    \"description\": \"Test contact from Delius API\",\n    \"endTime\": \"{{endTime}}\",\n    \"nsiId\": {{NSI-ID}},\n    \"notes\": \"Test contact from Delius API\",\n    \"sensitive\": false,\n    \"startTime\": \"{{startTime}}\"\n}"
+							"raw": "{\n    \"date\": \"{{startDate}}\",\n    \"offenderCrn\": \"{{offenderCrn}}\",\n    \"provider\": \"CRS\",\n    \"staff\": \"CRSUATU\",\n    \"team\": \"CRSUAT\",\n    \"type\": \"CRS01\",\n    \"alert\": false,\n    \"description\": \"Test contact from Delius API\",\n    \"endTime\": \"{{endTime}}\",\n    \"nsiId\": {{NSI-ID}},\n    \"notes\": \"Test contact from Delius API\",\n    \"sensitive\": false,\n    \"startTime\": \"{{startTime}}\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/v1/contact",
@@ -294,7 +385,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"date\": \"{{startDate}}\",\n    \"offenderCrn\": \"X012902\",\n    \"provider\": \"CRS\",\n    \"staff\": \"CRSUATU\",\n    \"team\": \"CRSUAT\",\n    \"type\": \"COTH\",\n    \"alert\": false,\n    \"description\": \"Test contact from Delius API\",\n    \"endTime\": \"{{endTime}}\",\n    \"eventId\": 2500018519,\n    \"requirementId\": 2500010983,\n    \"notes\": \"Test contact from Delius API\",\n    \"sensitive\": false,\n    \"startTime\": \"{{startTime}}\"\n}"
+							"raw": "{\n    \"date\": \"{{startDate}}\",\n    \"offenderCrn\": \"{{offenderCrn}}\",\n    \"provider\": \"CRS\",\n    \"staff\": \"CRSUATU\",\n    \"team\": \"CRSUAT\",\n    \"type\": \"COTH\",\n    \"alert\": false,\n    \"description\": \"Test contact from Delius API\",\n    \"endTime\": \"{{endTime}}\",\n    \"eventId\": {{eventId}},\n    \"requirementId\": {{rarRequirementId}},\n    \"notes\": \"Test contact from Delius API\",\n    \"sensitive\": false,\n    \"startTime\": \"{{startTime}}\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/v1/contact",
@@ -338,7 +429,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"date\": \"{{startDate}}\",\n    \"offenderCrn\": \"X012902\",\n    \"provider\": \"CRS\",\n    \"staff\": \"CRSUATU\",\n    \"team\": \"CRSUAT\",\n    \"type\": \"COTH\",\n    \"alert\": false,\n    \"description\": \"Test contact from Delius API\",\n    \"endTime\": \"{{endTime}}\",\n    \"eventId\": 2500018519,\n    \"notes\": \"Test contact from Delius API\",\n    \"sensitive\": false,\n    \"startTime\": \"{{startTime}}\"\n}"
+							"raw": "{\n    \"date\": \"{{startDate}}\",\n    \"offenderCrn\": \"{{offenderCrn}}\",\n    \"provider\": \"CRS\",\n    \"staff\": \"CRSUATU\",\n    \"team\": \"CRSUAT\",\n    \"type\": \"COTH\",\n    \"alert\": false,\n    \"description\": \"Test contact from Delius API\",\n    \"endTime\": \"{{endTime}}\",\n    \"eventId\": {{eventId}},\n    \"notes\": \"Test contact from Delius API\",\n    \"sensitive\": false,\n    \"startTime\": \"{{startTime}}\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/v1/contact",
@@ -382,7 +473,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"date\": \"{{startDate}}\",\n    \"offenderCrn\": \"X009923\",\n    \"provider\": \"CRS\",\n    \"staff\": \"CRSUATU\",\n    \"team\": \"CRSUAT\",\n    \"type\": \"CHVS\",\n    \"alert\": false,\n    \"description\": \"Test contact from Delius API\",\n    \"endTime\": \"{{endTime}}\",\n    \"eventId\": 2500011406,\n    \"notes\": \"Test contact from Delius API\",\n    \"sensitive\": false,\n    \"startTime\": \"{{startTime}}\",\n    \"outcome\": \"AFTA\",\n    \"enforcement\": \"ROM\"\n}"
+							"raw": "{\n    \"date\": \"{{startDate}}\",\n    \"offenderCrn\": \"{{offenderCrn}}\",\n    \"provider\": \"CRS\",\n    \"staff\": \"CRSUATU\",\n    \"team\": \"CRSUAT\",\n    \"type\": \"CHVS\",\n    \"alert\": false,\n    \"description\": \"Test contact from Delius API\",\n    \"endTime\": \"{{endTime}}\",\n    \"eventId\": {{eventId}},\n    \"notes\": \"Test contact from Delius API\",\n    \"sensitive\": false,\n    \"startTime\": \"{{startTime}}\",\n    \"outcome\": \"AFTA\",\n    \"enforcement\": \"ROM\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/v1/contact",
@@ -578,6 +669,12 @@
 					"  pm.environment.set(\"endTime\", endTime);",
 					"};",
 					"",
+					"const addEnvSpecificData = () => {",
+					"    pm.environment.set(\"offenderCrn\", \"X009923\");",
+					"    pm.environment.set(\"rarRequirementId\", 2500199144);",
+					"    pm.environment.set(\"eventId\", 2500443138);",
+					"}",
+					"",
 					"const authString = `${pm.environment.get(\"oauth2Client\")}:${pm.environment.get(",
 					"  \"oauth2Secret\"",
 					")}`;",
@@ -597,6 +694,7 @@
 					"clearSession();",
 					"obtainToken();",
 					"addDateTimesToEnvironment();",
+					"addEnvSpecificData();",
 					"",
 					""
 				]
