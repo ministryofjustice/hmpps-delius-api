@@ -1,4 +1,5 @@
-tokenverification.api.base.url: http://localhost:9090/auth
+tokenverification:
+  enabled: false
 
 spring:
   security.oauth2.resourceserver.jwt.public-key-location: classpath:local-public-key.pub

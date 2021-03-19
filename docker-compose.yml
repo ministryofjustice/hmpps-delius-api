@@ -11,13 +11,44 @@ services:
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/auth/health" ]
     environment:
-      - SERVER_PORT=8080
-      - SPRING_PROFILES_ACTIVE=dev
+      SERVER_PORT: 8080
+      SPRING_PROFILES_ACTIVE: dev,token-verification
+      TOKENVERIFICATION_ENDPOINT_URL: "http://token-verification-api:8080"
+      DELIUS_ENABLED: "false"
+
+  redis:
+    image: 'bitnami/redis:5.0'
+    networks:
+      - hmpps
+    container_name: redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '6379:6379'
+
+  token-verification-api:
+    image: quay.io/hmpps/token-verification-api:latest
+    networks:
+      - hmpps
+    container_name: token-verification-api
+    depends_on:
+      - redis
+      - oauth
+    ports:
+      - "8100:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ping"]
+    environment:
+      SPRING_PROFILES_ACTIVE: local-redis
+      SPRING_REDIS_HOST: redis
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "http://oauth:8080/auth/.well-known/jwks.json"
 
   hmpps-delius-api:
     build:
       context: .
     container_name: hmpps-delius-api
+    depends_on:
+      - token-verification-api
     networks:
       - hmpps
     ports:
@@ -25,8 +56,11 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health/ping"]
     environment:
-      - SERVER_PORT=8080
-      - SPRING_PROFILES_ACTIVE=dev
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:h2:mem:delius-api;MODE=Oracle;
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://oauth:8080/auth/.well-known/jwks.json
+      TOKENVERIFICATION_API_BASE_URL: http://token-verification-api:8080
+      TOKENVERIFICATION_ENABLED: "true"
 
 networks:
   hmpps:

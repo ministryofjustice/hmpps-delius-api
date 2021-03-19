@@ -74,5 +74,8 @@ logging:
     uk.gov.justice.digital.hmpps: DEBUG
     com.microsoft.applicationinsights: INFO
 
+tokenverification:
+  enabled: true
+
 contacts:
   allowed-types: ~ # Allow all types. Update this once the reference data is ready (DAPI-44).
