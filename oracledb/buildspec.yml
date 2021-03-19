@@ -1,0 +1,30 @@
+version: 0.2
+
+env:
+  variables:
+    IMAGE_NAME: hmpps/delius-test-db
+
+phases:
+  install:
+    commands:
+      - apt-get update -y
+      - apt-get install -y dos2unix
+  pre_build:
+    commands:
+      - echo Logging in to ECR...
+      - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_URL
+      - echo Calculate latest available NDelius version...
+      - if [ -z $ND_VERSION ]; then ND_VERSION=$(aws s3 ls $BUCKET_URI/ | grep 'NDelius\-.*\..*\..*' | sort -V | tail -n 1 | sed -E 's/.*NDelius\-(.*\..*\..*)\//\1/'); fi
+      - echo Downloading scripts for ND_VERSION=$ND_VERSION...
+      - aws s3 cp --recursive --only-show-errors $BUCKET_URI/NDelius-$ND_VERSION/scripts oracledb/scripts/delius
+      - dos2unix oracledb/scripts/delius/*
+  build:
+    commands:
+      - echo Building image...
+      - cd oracledb
+      - docker build --file Dockerfile.uplift --tag $DOCKER_URL/$IMAGE_NAME:$ND_VERSION --tag $DOCKER_URL/$IMAGE_NAME:latest .
+  post_build:
+    commands:
+      - echo Pushing to ECR...
+      - docker push $DOCKER_URL/$IMAGE_NAME:$ND_VERSION
+      - docker push $DOCKER_URL/$IMAGE_NAME:latest
