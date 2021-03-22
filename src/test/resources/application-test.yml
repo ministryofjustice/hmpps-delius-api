@@ -6,6 +6,6 @@ management.endpoint:
   info.cache.time-to-live: 0
 
 tokenverification:
-  api.base.url: http://localhost:9090/auth
+  api.base.url: http://localhost:9100/
 
 contacts.allowed-types: TST01,TST02,TST03,TST05,SMLI001,EAP0,CCCS,RRIR
