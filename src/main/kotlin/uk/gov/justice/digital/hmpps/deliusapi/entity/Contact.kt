@@ -62,7 +62,7 @@ class Contact(
   @Column(name = "CONTACT_END_TIME")
   var endTime: LocalTime? = null,
 
-  @Column(name = "HOURS_CREDITED")
+  @Column(name = "HOURS_CREDITED", columnDefinition = "NUMBER")
   var hoursCredited: Double? = null,
 
   @Column(name = "NOTES")
