@@ -1,15 +1,19 @@
 package uk.gov.justice.digital.hmpps.deliusapi.integration.v1.contact
 
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments.of
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact.ContactDto
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact.NewContact
 import uk.gov.justice.digital.hmpps.deliusapi.integration.IntegrationTestBase
@@ -20,7 +24,6 @@ import uk.gov.justice.digital.hmpps.deliusapi.util.Fake
 import uk.gov.justice.digital.hmpps.deliusapi.util.hasProperty
 import java.time.LocalDate
 import java.time.LocalTime
-import javax.transaction.Transactional
 import kotlin.reflect.KProperty1
 
 data class Operation(val op: String, val path: String, val value: Any? = null)
@@ -34,6 +37,9 @@ class UpdateCase(
 class PatchContactTest @Autowired constructor(
   private val contactRepository: ContactRepository
 ) : IntegrationTestBase() {
+
+  @SpyBean
+  lateinit var contactMapper: ContactMapper
 
   companion object {
     @JvmStatic
@@ -155,6 +161,25 @@ class PatchContactTest @Autowired constructor(
         ContactDto::enforcement to null,
       )
     )
+  }
+
+  @Transactional
+  @Test
+  fun `When an error occurs only the audit record is written and the contact remains unmodified`() {
+    val contact = havingExistingContact()
+
+    val originalAuditCount = auditedInteractionRepository.count()
+
+    whenever(contactMapper.toDto(any())).thenThrow(RuntimeException("Throwing exception to trigger rollback"))
+
+    webTestClient
+      .whenPatchingContact(contact.id, Operation("replace", "/startTime", "11:11:00"))
+      .expectStatus().is5xxServerError
+
+    // the contact record was as it was originally written
+    shouldUpdateContact(contact.id, emptyMap())
+
+    assertThat(auditedInteractionRepository.count()).isEqualTo(originalAuditCount + 1)
   }
 
   private fun shouldUpdateContact(id: Long, expected: Map<KProperty1<ContactDto, *>, Any?>) {

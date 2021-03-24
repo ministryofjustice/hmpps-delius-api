@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.deliusapi.service.contact
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.deliusapi.advice.Auditable
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact.ContactDto
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact.CreateOrUpdateContact
@@ -51,6 +52,7 @@ class ContactService(
     return mapper.toUpdate(contact)
   }
 
+  @Transactional
   @ProviderRequestAuthority
   @Auditable(AuditableInteraction.UPDATE_CONTACT)
   fun updateContact(id: Long, request: UpdateContact): ContactDto {
@@ -106,6 +108,7 @@ class ContactService(
     return mapper.toDto(entity)
   }
 
+  @Transactional
   @ProviderRequestAuthority
   @Auditable(AuditableInteraction.ADD_CONTACT)
   fun createContact(request: NewContact): ContactDto {

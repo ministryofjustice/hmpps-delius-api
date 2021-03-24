@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.deliusapi.integration.v1.contact
 
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.greaterThan
@@ -9,27 +11,28 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.of
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact.NewContact
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Contact
 import uk.gov.justice.digital.hmpps.deliusapi.integration.DEFAULT_INTEGRATION_TEST_USER_NAME
 import uk.gov.justice.digital.hmpps.deliusapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.deliusapi.mapper.ContactMapper
 import uk.gov.justice.digital.hmpps.deliusapi.repository.ContactRepository
-import uk.gov.justice.digital.hmpps.deliusapi.repository.EventRepository
 import uk.gov.justice.digital.hmpps.deliusapi.util.Fake
 import uk.gov.justice.digital.hmpps.deliusapi.util.comparingDateTimesToNearestSecond
 import uk.gov.justice.digital.hmpps.deliusapi.util.hasProperty
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.stream.Stream
-import javax.transaction.Transactional
 
 @ActiveProfiles("test-h2")
 class CreateContactTest : IntegrationTestBase() {
   @Autowired private lateinit var contactRepository: ContactRepository
-  @Autowired private lateinit var eventRepository: EventRepository
+  @SpyBean lateinit var mapper: ContactMapper
 
   companion object {
     private val valid = Fake.validNewContact()
@@ -222,6 +225,32 @@ class CreateContactTest : IntegrationTestBase() {
       .whenSendingMalformedJson()
       .expectStatus().isBadRequest
       .expectBody().shouldReturnJsonParseError()
+  }
+
+  @Test
+  fun `Creating a valid contact results in increased record counts`() {
+    val originalContactCount = contactRepository.count()
+    val originalAuditCount = auditedInteractionRepository.count()
+
+    webTestClient.whenCreatingContact(valid.copy(outcome = "UBHV", enforcement = "ROM"))
+      .expectStatus().is2xxSuccessful
+
+    assertThat(contactRepository.count()).isEqualTo(originalContactCount + 2)
+    assertThat(auditedInteractionRepository.count()).isEqualTo(originalAuditCount + 1)
+  }
+
+  @Test
+  fun `When an error occurs only the audit record is written`() {
+    whenever(mapper.toDto(any())).thenThrow(RuntimeException("Throwing exception to trigger rollback"))
+
+    val originalContactCount = contactRepository.count()
+    val originalAuditCount = auditedInteractionRepository.count()
+
+    webTestClient.whenCreatingContact(valid.copy(outcome = "UBHV", enforcement = "ROM"))
+      .expectStatus().is5xxServerError
+
+    assertThat(contactRepository.count()).isEqualTo(originalContactCount)
+    assertThat(auditedInteractionRepository.count()).isEqualTo(originalAuditCount + 1)
   }
 
   private fun WebTestClient.BodyContentSpec.shouldReturnCreatedContact(request: NewContact): WebTestClient.BodyContentSpec {

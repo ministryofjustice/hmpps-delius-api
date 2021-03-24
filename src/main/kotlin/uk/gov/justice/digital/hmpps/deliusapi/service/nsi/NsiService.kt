@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.deliusapi.service.nsi
 
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.deliusapi.advice.Auditable
 import uk.gov.justice.digital.hmpps.deliusapi.config.Authorities
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.nsi.NewNsi
@@ -51,6 +52,7 @@ class NsiService(
       "and hasAuthority('${Authorities.PROVIDER}'.concat(#request.manager.provider))"
   )
   @Auditable(AuditableInteraction.ADMINISTER_NSI)
+  @Transactional
   fun createNsi(request: NewNsi): NsiDto {
     val active = request.endDate == null
     val offender = offenderRepository.findByCrnOrBadRequest(request.offenderCrn)

@@ -1,17 +1,23 @@
 package uk.gov.justice.digital.hmpps.deliusapi.integration.v1.nsi
 
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.nsi.NewNsi
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.nsi.NewNsiManager
+import uk.gov.justice.digital.hmpps.deliusapi.entity.Nsi
 import uk.gov.justice.digital.hmpps.deliusapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.deliusapi.mapper.NsiMapper
 import uk.gov.justice.digital.hmpps.deliusapi.repository.ContactRepository
 import uk.gov.justice.digital.hmpps.deliusapi.repository.NsiRepository
 import uk.gov.justice.digital.hmpps.deliusapi.util.Fake
@@ -20,13 +26,15 @@ import uk.gov.justice.digital.hmpps.deliusapi.validation.ValidationTestCase
 import uk.gov.justice.digital.hmpps.deliusapi.validation.ValidationTestCaseBuilder
 import java.time.LocalDate
 import java.time.LocalDateTime
-import javax.transaction.Transactional
 
 @ActiveProfiles("test-h2")
 class CreateNsiTest @Autowired constructor (
   private val nsiRepository: NsiRepository,
   private val contactRepository: ContactRepository,
 ) : IntegrationTestBase() {
+
+  @SpyBean
+  lateinit var mapper: NsiMapper
 
   companion object {
     private fun validNsiFactory() = Fake.newNsi().copy(
@@ -155,6 +163,36 @@ class CreateNsiTest @Autowired constructor (
       .whenSendingMalformedJson()
       .expectStatus().isBadRequest
       .expectBody().shouldReturnJsonParseError()
+  }
+
+  @Test
+  fun `Creating a valid nsi results in increased record counts`() {
+    val originalContactCount = contactRepository.count()
+    val originalNsiCount = nsiRepository.count()
+    val originalAuditCount = auditedInteractionRepository.count()
+
+    webTestClient.whenCreatingNsi(validNsiFactory())
+      .expectStatus().is2xxSuccessful
+
+    assertThat(contactRepository.count()).isEqualTo(originalContactCount + 4)
+    assertThat(nsiRepository.count()).isEqualTo(originalNsiCount + 1)
+    assertThat(auditedInteractionRepository.count()).isEqualTo(originalAuditCount + 1)
+  }
+
+  @Test
+  fun `When an error occurs only the audit record is written`() {
+    whenever(mapper.toDto(any<Nsi>())).thenThrow(RuntimeException("Throwing exception to trigger rollback"))
+
+    val originalContactCount = contactRepository.count()
+    val originalNsiCount = nsiRepository.count()
+    val originalAuditCount = auditedInteractionRepository.count()
+
+    webTestClient.whenCreatingNsi(validNsiFactory())
+      .expectStatus().is5xxServerError
+
+    assertThat(contactRepository.count()).isEqualTo(originalContactCount)
+    assertThat(nsiRepository.count()).isEqualTo(originalNsiCount)
+    assertThat(auditedInteractionRepository.count()).isEqualTo(originalAuditCount + 1)
   }
 
   private fun WebTestClient.whenCreatingNsi(request: NewNsi) = this
