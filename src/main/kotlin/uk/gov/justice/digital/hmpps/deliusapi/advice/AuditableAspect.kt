@@ -17,6 +17,15 @@ import uk.gov.justice.digital.hmpps.deliusapi.service.audit.AuditableInteraction
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Auditable(val interaction: AuditableInteraction)
 
+/**
+ * Regarding the ordering:
+ *
+ * By default the transaction runs at the lowest precedence.
+ * Running at one higher means our audit aspect runs before the transaction on the way in,
+ * and after on the way out, meaning the audit is unaffected by transaction rollbacks due to errors.
+ *
+ * This could be any value lower than Integer.MAX_VALUE (Ordered.LOWEST_PRECEDENCE) and would work.
+ */
 @Aspect
 @Component
 @Order(Ordered.LOWEST_PRECEDENCE - 1)
