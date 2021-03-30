@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.nsi.NsiDto
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.nsi.NsiManagerDto
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.nsi.UpdateNsi
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.nsi.UpdateNsiManager
+import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.staff.NewStaff
 import uk.gov.justice.digital.hmpps.deliusapi.entity.AuditedInteraction
 import uk.gov.justice.digital.hmpps.deliusapi.entity.BusinessInteraction
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Contact
@@ -38,6 +39,7 @@ import uk.gov.justice.digital.hmpps.deliusapi.entity.User
 import uk.gov.justice.digital.hmpps.deliusapi.entity.YesNoBoth.Y
 import uk.gov.justice.digital.hmpps.deliusapi.mapper.ContactMapper
 import uk.gov.justice.digital.hmpps.deliusapi.mapper.NsiMapper
+import uk.gov.justice.digital.hmpps.deliusapi.mapper.StaffMapper
 import uk.gov.justice.digital.hmpps.deliusapi.service.contact.NewSystemContact
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -51,6 +53,7 @@ object Fake {
   val faker = Faker()
   val contactMapper: ContactMapper = ContactMapper.INSTANCE
   val nsiMapper: NsiMapper = NsiMapper.INSTANCE
+  val staffMapper: StaffMapper = StaffMapper.INSTANCE
 
   const val ALLOWED_CONTACT_TYPES = "TST01,TST02,TST03"
   private val allowedContactTypes = ALLOWED_CONTACT_TYPES.split(',').toTypedArray()
@@ -108,29 +111,37 @@ object Fake {
     enforceable = true,
   )
 
-  fun provider() = Provider(
-    id = id(),
-    code = faker.lorem().characters(3),
-    description = faker.company().bs(),
-    teams = listOf(team()),
-  )
+  fun provider(): Provider {
+    val provider = Provider(
+      id = id(),
+      code = faker.lorem().characters(3),
+      description = faker.company().bs(),
+    )
+    provider.teams = listOf(team(provider))
+    return provider
+  }
 
-  fun team() = Team(
+  fun team(provider: Provider = provider()) = Team(
     id = id(),
     code = faker.bothify("?##?##"),
     description = faker.company().bs(),
-    staff = listOf(staff()),
-    officeLocations = listOf(officeLocation())
+    staff = listOf(staff(provider)),
+    officeLocations = listOf(officeLocation()),
   )
 
   fun officeLocation() = OfficeLocation(id = id(), code = faker.lorem().characters(7))
-  fun staff() = Staff(
+
+  fun staff(provider: Provider = provider()) = Staff(
     id = id(),
     code = faker.bothify("?##?###"),
+    provider = provider,
+    startDate = randomPastLocalDate(),
     firstName = faker.name().firstName(),
     middleName = faker.name().firstName(),
     lastName = faker.name().lastName(),
   )
+
+  fun staffDto() = staffMapper.toDto(staff())
 
   fun requirementTypeCategory() = RequirementTypeCategory(
     id = id(),
@@ -405,5 +416,12 @@ object Fake {
     id = id(),
     code = faker.lorem().characters(1, 20),
     standardReferences = listOf(standardReference(), standardReference()),
+  )
+
+  fun validNewStaff() = NewStaff(
+    firstName = "Wamberto",
+    lastName = "Decapode",
+    provider = "C00",
+    teams = null
   )
 }

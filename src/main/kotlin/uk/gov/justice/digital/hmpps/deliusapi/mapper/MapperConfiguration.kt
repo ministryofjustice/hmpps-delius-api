@@ -10,4 +10,7 @@ class MapperConfiguration {
 
   @Bean
   fun nsiMapper(): NsiMapper = NsiMapper.INSTANCE
+
+  @Bean
+  fun staffMapper(): StaffMapper = StaffMapper.INSTANCE
 }

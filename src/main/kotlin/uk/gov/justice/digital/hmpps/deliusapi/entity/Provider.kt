@@ -28,4 +28,7 @@ class Provider(
   @OneToMany
   @JoinColumn(name = "PROBATION_AREA_ID")
   var teams: List<Team>? = null,
+
+  @Column(name = "PRIVATE")
+  var privateTrust: Boolean = false
 )

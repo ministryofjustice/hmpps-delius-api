@@ -15,7 +15,7 @@ import javax.persistence.Table
 class Team(
   @Id
   @Column(name = "TEAM_ID")
-  var id: Long,
+  var id: Long = 0,
 
   @Column(name = "CODE", columnDefinition = "CHAR(6)")
   var code: String,

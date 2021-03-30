@@ -60,8 +60,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:h2:mem:delius-api;MODE=Oracle;
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://oauth:8080/auth/.well-known/jwks.json
       TOKENVERIFICATION_API_BASE_URL: http://token-verification-api:8080
-      FEATURES_TOKENVERIFICATION: true
-      FEATURES_NSI_STATUS_HISTORY: true
+      FEATURES_TOKENVERIFICATION: "true"
+      FEATURES_NSI_STATUS_HISTORY: "true"
 
 networks:
   hmpps:
