@@ -26,6 +26,7 @@ class AuditService(
       AuditParameter.OFFENDER_ID to (context.offenderId ?: -1),
       AuditParameter.NSI_ID to (context.nsiId ?: -1),
       AuditParameter.CONTACT_ID to (context.contactId ?: -1),
+      AuditParameter.PROVIDER_ID to (context.providerId ?: -1),
     ).filter { e -> e.value > 0 }
 
     val userId = securityUserContext.getCurrentDeliusUserId()

@@ -35,9 +35,9 @@ class SystemContactService(
       ?: throw IllegalArgumentException("Offender with id '${request.offenderId}' does not exist")
     val provider = providerRepository.findByIdOrNull(request.providerId)
       ?: throw IllegalArgumentException("Provider with id '${request.providerId}' does not exist")
-    val team = provider.teams?.find { it.id == request.teamId }
+    val team = provider.teams.find { it.id == request.teamId }
       ?: throw IllegalArgumentException("Team with id '${request.teamId}' does not exist on provider '${provider.code}'")
-    val staff = team.staff?.find { it.id == request.staffId }
+    val staff = team.staff.find { it.staff.id == request.staffId }?.staff
       ?: throw IllegalArgumentException("Staff with id '${request.staffId}' does not exist on team '${team.code}'")
 
     val event = if (request.eventId == null) null

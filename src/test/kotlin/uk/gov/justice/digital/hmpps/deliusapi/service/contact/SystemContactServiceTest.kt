@@ -259,11 +259,11 @@ class SystemContactServiceTest {
     type = Fake.contactType()
 
     this.staff = Fake.staff()
-    val staff = if (havingStaff) listOf(this.staff, Fake.staff()) else listOf()
+    val staff = if (havingStaff) mutableListOf(this.staff, Fake.staff()) else listOf()
 
     officeLocation = Fake.officeLocation()
-    team = Fake.team().apply { this.staff = staff }
-    provider = Fake.provider().apply { teams = if (havingTeam) listOf(team, Fake.team()) else listOf() }
+    team = Fake.team().apply { staff.map(this::addStaff) }
+    provider = Fake.provider().apply { if (havingTeam) teams.addAll(listOf(team, Fake.team())) }
 
     nsi = Fake.nsi()
   }

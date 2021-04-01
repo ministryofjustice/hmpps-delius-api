@@ -6,6 +6,7 @@ import com.github.fge.jsonpatch.JsonPatchException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
+import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.ResponseEntity
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import uk.gov.justice.digital.hmpps.deliusapi.exception.BadJsonPatchException
 import uk.gov.justice.digital.hmpps.deliusapi.exception.BadRequestException
+import uk.gov.justice.digital.hmpps.deliusapi.exception.ConflictException
 import javax.validation.ValidationException
 
 @RestControllerAdvice
@@ -49,6 +51,17 @@ class HmppsDeliusApiExceptionHandler {
     return ErrorResponse(
       status = BAD_REQUEST,
       userMessage = "Validation failure: $errors",
+      developerMessage = e.message
+    )
+  }
+
+  @ResponseStatus(CONFLICT)
+  @ExceptionHandler(ConflictException::class)
+  fun handleConflict(e: Exception): ErrorResponse {
+    log.debug("Conflict", e)
+    return ErrorResponse(
+      status = CONFLICT,
+      userMessage = "Conflict: ${e.message}",
       developerMessage = e.message
     )
   }

@@ -61,10 +61,10 @@ abstract class NsiManagerServiceTest {
   ) {
     staff = Fake.staff()
     team = Fake.team().also {
-      it.staff = if (havingStaff) listOf(staff) else emptyList()
+      if (havingStaff) it.addStaff(staff)
     }
     provider = Fake.provider().apply {
-      teams = if (havingTeam) listOf(team) else emptyList()
+      if (havingTeam) teams.add(team)
     }
 
     if (having != null) {
@@ -298,8 +298,8 @@ class UpdateNsiManagerTest : NsiManagerServiceTest() {
     nsi = Fake.nsi()
     oldManager = nsi.manager!!
     oldManager.provider = provider
-    provider.teams = provider.teams!! + oldManager.team!!
-    team.staff = team.staff!! + oldManager.staff!!
+    provider.teams.addAll(provider.teams + oldManager.team!!)
+    team.addStaff(oldManager.staff!!)
 
     request = UpdateNsiManager(
       team = if (havingTransfer) team.code else nsi.manager?.team?.code,

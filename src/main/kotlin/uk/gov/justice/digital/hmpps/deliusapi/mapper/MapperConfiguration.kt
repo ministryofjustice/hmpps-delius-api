@@ -13,4 +13,7 @@ class MapperConfiguration {
 
   @Bean
   fun staffMapper(): StaffMapper = StaffMapper.INSTANCE
+
+  @Bean
+  fun teamMapper(): TeamMapper = TeamMapper.INSTANCE
 }

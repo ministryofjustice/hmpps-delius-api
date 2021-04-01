@@ -65,10 +65,14 @@ class StaffServiceTest {
   }
 
   private fun withRequest(invalidTeam: Boolean = false) {
-    val staff = Fake.staff()
-    if (invalidTeam) {
-      staff.apply { teams = listOf(Fake.team()) }
+
+    if (!invalidTeam) {
+      staff.apply {
+        staff.teams.clear()
+        this.addTeam(provider!!.teams.first())
+      }
     }
+
     request = Fake.staffMapper.toNew(Fake.staffMapper.toDto(staff))
   }
 

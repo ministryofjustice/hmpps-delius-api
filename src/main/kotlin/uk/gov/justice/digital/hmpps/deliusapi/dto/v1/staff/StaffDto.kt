@@ -9,5 +9,5 @@ data class StaffDto(
   val firstName: String,
   val privateStaff: Boolean,
   val provider: String,
-  val teams: List<String>?,
+  val teams: MutableList<String>,
 )

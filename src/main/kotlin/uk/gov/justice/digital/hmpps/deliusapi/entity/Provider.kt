@@ -27,8 +27,16 @@ class Provider(
 
   @OneToMany
   @JoinColumn(name = "PROBATION_AREA_ID")
-  var teams: List<Team>? = null,
+  var teams: MutableList<Team> = mutableListOf(),
+
+  @OneToMany
+  @JoinColumn(name = "PROBATION_AREA_ID")
+  var clusters: MutableList<Cluster> = mutableListOf(),
 
   @Column(name = "PRIVATE")
-  var privateTrust: Boolean = false
+  var privateTrust: Boolean = false,
+
+  @OneToMany
+  @JoinColumn(name = "PROBATION_AREA_ID")
+  var teamTypes: MutableList<TeamType> = mutableListOf(),
 )

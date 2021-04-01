@@ -11,8 +11,10 @@ import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.nsi.NsiManagerDto
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.nsi.UpdateNsi
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.nsi.UpdateNsiManager
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.staff.NewStaff
+import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.team.NewTeam
 import uk.gov.justice.digital.hmpps.deliusapi.entity.AuditedInteraction
 import uk.gov.justice.digital.hmpps.deliusapi.entity.BusinessInteraction
+import uk.gov.justice.digital.hmpps.deliusapi.entity.Cluster
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Contact
 import uk.gov.justice.digital.hmpps.deliusapi.entity.ContactOutcomeType
 import uk.gov.justice.digital.hmpps.deliusapi.entity.ContactType
@@ -21,6 +23,7 @@ import uk.gov.justice.digital.hmpps.deliusapi.entity.DisposalType
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Enforcement
 import uk.gov.justice.digital.hmpps.deliusapi.entity.EnforcementAction
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Event
+import uk.gov.justice.digital.hmpps.deliusapi.entity.LocalDeliveryUnit
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Nsi
 import uk.gov.justice.digital.hmpps.deliusapi.entity.NsiManager
 import uk.gov.justice.digital.hmpps.deliusapi.entity.NsiStatus
@@ -34,12 +37,14 @@ import uk.gov.justice.digital.hmpps.deliusapi.entity.RequirementTypeCategory
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Staff
 import uk.gov.justice.digital.hmpps.deliusapi.entity.StandardReference
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Team
+import uk.gov.justice.digital.hmpps.deliusapi.entity.TeamType
 import uk.gov.justice.digital.hmpps.deliusapi.entity.TransferReason
 import uk.gov.justice.digital.hmpps.deliusapi.entity.User
 import uk.gov.justice.digital.hmpps.deliusapi.entity.YesNoBoth.Y
 import uk.gov.justice.digital.hmpps.deliusapi.mapper.ContactMapper
 import uk.gov.justice.digital.hmpps.deliusapi.mapper.NsiMapper
 import uk.gov.justice.digital.hmpps.deliusapi.mapper.StaffMapper
+import uk.gov.justice.digital.hmpps.deliusapi.mapper.TeamMapper
 import uk.gov.justice.digital.hmpps.deliusapi.service.contact.NewSystemContact
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -54,6 +59,7 @@ object Fake {
   val contactMapper: ContactMapper = ContactMapper.INSTANCE
   val nsiMapper: NsiMapper = NsiMapper.INSTANCE
   val staffMapper: StaffMapper = StaffMapper.INSTANCE
+  val teamMapper: TeamMapper = TeamMapper.INSTANCE
 
   const val ALLOWED_CONTACT_TYPES = "TST01,TST02,TST03"
   private val allowedContactTypes = ALLOWED_CONTACT_TYPES.split(',').toTypedArray()
@@ -117,21 +123,34 @@ object Fake {
       code = faker.lorem().characters(3),
       description = faker.company().bs(),
     )
-    provider.teams = listOf(team(provider))
+    provider.clusters.add(cluster(provider))
+    provider.teamTypes.add(teamType(provider))
+    provider.teams.add(team(provider))
     return provider
   }
 
-  fun team(provider: Provider = provider()) = Team(
-    id = id(),
-    code = faker.bothify("?##?##"),
-    description = faker.company().bs(),
-    staff = listOf(staff(provider)),
-    officeLocations = listOf(officeLocation()),
-  )
+  fun team(provider: Provider = provider()): Team {
+    val team = Team(
+      id = id(),
+      code = provider.code + faker.bothify("?##"),
+      description = faker.company().bs(),
+      officeLocations = listOf(officeLocation()),
+      startDate = randomPastLocalDate(),
+      provider = provider,
+      privateTeam = provider.privateTrust,
+      teamType = provider.teamTypes.first(),
+      localDeliveryUnit = provider.clusters.first().localDeliveryUnits.first(),
+      unpaidWorkTeam = faker.bool().bool()
+    )
+
+    team.apply { addStaff(staff(provider, team)) }
+
+    return team
+  }
 
   fun officeLocation() = OfficeLocation(id = id(), code = faker.lorem().characters(7))
 
-  fun staff(provider: Provider = provider()) = Staff(
+  fun staff(provider: Provider = provider(), team: Team = team()) = Staff(
     id = id(),
     code = faker.bothify("?##?###"),
     provider = provider,
@@ -139,7 +158,7 @@ object Fake {
     firstName = faker.name().firstName(),
     middleName = faker.name().firstName(),
     lastName = faker.name().lastName(),
-  )
+  ).apply { addTeam(team) }
 
   fun staffDto() = staffMapper.toDto(staff())
 
@@ -200,7 +219,7 @@ object Fake {
   fun contact(): Contact {
     val contactOutcomeType = contactOutcomeType()
     val team = team()
-    val provider = provider().apply { teams = listOf(team) }
+    val provider = provider().apply { teams.add(team) }
     return Contact(
       id = id(),
       offender = offender(),
@@ -316,8 +335,8 @@ object Fake {
 
   fun nsiManager(nsi: Nsi = nsi()): NsiManager {
     val staff = staff()
-    val team = team().apply { this.staff = listOf(staff) }
-    val provider = provider().apply { teams = listOf(team) }
+    val team = team().apply { addStaff(staff) }
+    val provider = provider().apply { teams.add(team) }
     return NsiManager(
       id = id(),
       nsi = nsi,
@@ -424,4 +443,42 @@ object Fake {
     provider = "C00",
     teams = null
   )
+
+  fun validNewTeam() = NewTeam(
+    code = "C00T21",
+    cluster = "C00100",
+    ldu = "C00CRCA",
+    type = "C00CRC1",
+    provider = "C00",
+    description = "New Test Team",
+    unpaidWorkTeam = false
+  )
+
+  fun teamType(provider: Provider = provider()) = TeamType(
+    id = id(),
+    provider = provider,
+    description = faker.lorem().characters(1, 50),
+    code = faker.lorem().characters(1, 10),
+  )
+
+  fun localDeliveryUnit(cluster: Cluster = cluster()) = LocalDeliveryUnit(
+    id = id(),
+    cluster = cluster,
+    description = faker.lorem().characters(1, 50),
+    code = faker.lorem().characters(1, 10),
+    teams = listOf()
+  )
+
+  fun cluster(provider: Provider = provider()): Cluster {
+    val cluster = Cluster(
+      id = id(),
+      description = faker.lorem().characters(1, 50),
+      code = faker.lorem().characters(1, 10),
+      provider = provider
+    )
+
+    cluster.localDeliveryUnits.add(localDeliveryUnit(cluster))
+
+    return cluster
+  }
 }

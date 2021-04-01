@@ -6,6 +6,7 @@ data class AuditContext(
   var offenderId: Long? = null,
   var nsiId: Long? = null,
   var contactId: Long? = null,
+  var providerId: Long? = null
 ) {
 
   companion object {
