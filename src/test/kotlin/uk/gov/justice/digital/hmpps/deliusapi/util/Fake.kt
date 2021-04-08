@@ -129,24 +129,18 @@ object Fake {
     return provider
   }
 
-  fun team(provider: Provider = provider()): Team {
-    val team = Team(
-      id = id(),
-      code = provider.code + faker.bothify("?##"),
-      description = faker.company().bs(),
-      officeLocations = listOf(officeLocation()),
-      startDate = randomPastLocalDate(),
-      provider = provider,
-      privateTeam = provider.privateTrust,
-      teamType = provider.teamTypes.first(),
-      localDeliveryUnit = provider.clusters.first().localDeliveryUnits.first(),
-      unpaidWorkTeam = faker.bool().bool()
-    )
-
-    team.apply { addStaff(staff(provider, team)) }
-
-    return team
-  }
+  fun team(provider: Provider = provider()) = Team(
+    id = id(),
+    code = provider.code + faker.bothify("?##"),
+    description = faker.company().bs(),
+    officeLocations = listOf(officeLocation()),
+    startDate = randomPastLocalDate(),
+    provider = provider,
+    privateTeam = provider.privateTrust,
+    teamType = provider.teamTypes.first(),
+    localDeliveryUnit = provider.clusters.first().localDeliveryUnits.first(),
+    unpaidWorkTeam = faker.bool().bool()
+  ).apply { addStaff(staff(provider, this)) }
 
   fun officeLocation() = OfficeLocation(id = id(), code = faker.lorem().characters(7))
 
@@ -159,8 +153,6 @@ object Fake {
     middleName = faker.name().firstName(),
     lastName = faker.name().lastName(),
   ).apply { addTeam(team) }
-
-  fun staffDto() = staffMapper.toDto(staff())
 
   fun requirementTypeCategory() = RequirementTypeCategory(
     id = id(),
@@ -358,37 +350,31 @@ object Fake {
 
   fun updateNsiManager(): UpdateNsiManager = nsiMapper.toUpdate(nsiManager())
 
-  fun nsi(): Nsi {
-    val nsi = Nsi(
-      id = id(),
-      offender = offender(),
-      event = event(),
-      type = nsiType(),
-      subType = standardReference(),
-      length = faker.number().numberBetween(25L, 75L),
-      referralDate = faker.date().past(100, 20, TimeUnit.DAYS).toLocalDate(),
-      expectedStartDate = randomPastLocalDate(),
-      expectedEndDate = randomFutureLocalDate(),
-      startDate = randomPastLocalDate(),
-      endDate = LocalDate.now(),
-      status = nsiStatus(),
-      statusDate = randomLocalDateTime(),
-      notes = faker.lorem().paragraph(),
-      outcome = standardReference(),
-      active = false, // end date is provided here
-      pendingTransfer = false,
-      requirement = requirement(),
-      intendedProvider = provider(),
-      createdDateTime = randomLocalDateTime(),
-      lastUpdatedDateTime = randomLocalDateTime(),
-      createdByUserId = id(),
-      lastUpdatedUserId = id(),
-    )
-
-    nsi.managers.add(nsiManager(nsi))
-
-    return nsi
-  }
+  fun nsi(): Nsi = Nsi(
+    id = id(),
+    offender = offender(),
+    event = event(),
+    type = nsiType(),
+    subType = standardReference(),
+    length = faker.number().numberBetween(25L, 75L),
+    referralDate = faker.date().past(100, 20, TimeUnit.DAYS).toLocalDate(),
+    expectedStartDate = randomPastLocalDate(),
+    expectedEndDate = randomFutureLocalDate(),
+    startDate = randomPastLocalDate(),
+    endDate = LocalDate.now(),
+    status = nsiStatus(),
+    statusDate = randomLocalDateTime(),
+    notes = faker.lorem().paragraph(),
+    outcome = standardReference(),
+    active = false, // end date is provided here
+    pendingTransfer = false,
+    requirement = requirement(),
+    intendedProvider = provider(),
+    createdDateTime = randomLocalDateTime(),
+    lastUpdatedDateTime = randomLocalDateTime(),
+    createdByUserId = id(),
+    lastUpdatedUserId = id(),
+  ).apply { managers.add(nsiManager(this)) }
 
   fun nsiDto(): NsiDto = nsiMapper.toDto(nsi())
 
@@ -469,16 +455,10 @@ object Fake {
     teams = listOf()
   )
 
-  fun cluster(provider: Provider = provider()): Cluster {
-    val cluster = Cluster(
-      id = id(),
-      description = faker.lorem().characters(1, 50),
-      code = faker.lorem().characters(1, 10),
-      provider = provider
-    )
-
-    cluster.localDeliveryUnits.add(localDeliveryUnit(cluster))
-
-    return cluster
-  }
+  fun cluster(provider: Provider = provider()) = Cluster(
+    id = id(),
+    description = faker.lorem().characters(1, 50),
+    code = faker.lorem().characters(1, 10),
+    provider = provider
+  ).apply { localDeliveryUnits.add(localDeliveryUnit(this)) }
 }

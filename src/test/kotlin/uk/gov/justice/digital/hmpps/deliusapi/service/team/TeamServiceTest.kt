@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoSettings
 import org.mockito.quality.Strictness
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.team.NewTeam
 import uk.gov.justice.digital.hmpps.deliusapi.exception.BadRequestException
+import uk.gov.justice.digital.hmpps.deliusapi.exception.ConflictException
 import uk.gov.justice.digital.hmpps.deliusapi.mapper.TeamMapper
 import uk.gov.justice.digital.hmpps.deliusapi.repository.ProviderRepository
 import uk.gov.justice.digital.hmpps.deliusapi.repository.TeamRepository
@@ -86,6 +87,13 @@ class TeamServiceTest {
     shouldThrowBadRequest()
   }
 
+  @Test
+  fun `attempting to create team with conflicting code`() {
+    withRequest()
+    havingRepositories(teamCodeExists = true)
+    shouldThrowConflict()
+  }
+
   private fun withRequest(unknownCluster: Boolean = false, unknownTeamType: Boolean = false, unknownLdu: Boolean = false, badCode: Boolean = false) {
     request = Fake.teamMapper.toNew(team)
 
@@ -102,12 +110,16 @@ class TeamServiceTest {
       request = request.copy(code = request.code.reversed())
   }
 
-  private fun havingRepositories(providerExists: Boolean = true) {
+  private fun havingRepositories(providerExists: Boolean = true, teamCodeExists: Boolean = false) {
     if (providerExists) {
       whenever(providerRepository.findByCodeAndSelectableIsTrue(any())).thenReturn(provider)
     }
 
-    whenever(teamRepository.findByCodeAndProviderCode(any(), any())).thenReturn(null)
+    whenever(teamRepository.findByCodeAndProviderCode(any(), any())).thenReturn(
+      if (teamCodeExists) provider.teams.first()
+      else null
+    )
+
     whenever(teamRepository.saveAndFlush(any())).thenReturn(team)
     whenever(mapper.toDto(any())).thenReturn(Fake.teamMapper.toDto(team))
   }
@@ -121,6 +133,12 @@ class TeamServiceTest {
 
   private fun shouldThrowBadRequest() {
     assertThrows<BadRequestException> {
+      subject.create(request)
+    }
+  }
+
+  private fun shouldThrowConflict() {
+    assertThrows<ConflictException> {
       subject.create(request)
     }
   }
