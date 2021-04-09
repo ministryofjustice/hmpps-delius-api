@@ -18,11 +18,8 @@ We follow the API standards as defined by both GDS and HMPPS in the following ar
 
 ### GDS Standards
 
-We follow the GDS standards document for general API design guidelines:
-
-* https://www.gov.uk/guidance/gds-api-technical-and-data-standards
-
-The guidelines are followed explicitly for:
+We follow the [GDS API Technical Standards](https://www.gov.uk/guidance/gds-api-technical-and-data-standards)
+for general API design guidelines. The guidelines are followed explicitly for:
 
 * REST as an overall style
 * HTTPS transport
@@ -40,17 +37,14 @@ The guidelines are followed explicitly for:
 * Iteration of the API via non-breaking changes, backwards compatibility and
   versioning for significant changes
 * Using path parameters for resource identifiers
-* Using a course grained API versioning scheme (/v1)
+* Using a coarse-grained API versioning scheme (e.g. /v1)
 * Providing a test service
 * Documenting the API using OpenAPI v3
 
 ### HMPPS Standards
 
-We follow the HMPPS standards document for more specific API implementation details:
-
-* https://tech-docs.hmpps.service.justice.gov.uk/#readme
-
-The guidelines are followed explicitly for:
+We follow the [HMPPS Tech Team Standards](https://tech-docs.hmpps.service.justice.gov.uk/#readme) for more
+specific API implementation details. The guidelines are followed explicitly for:
 
 * Providing an application README
 * Standard service endpoints (/health, /info etc.)
