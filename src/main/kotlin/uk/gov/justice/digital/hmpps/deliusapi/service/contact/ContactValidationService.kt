@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.deliusapi.entity.Requirement
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Team
 import uk.gov.justice.digital.hmpps.deliusapi.entity.YesNoBoth
 import uk.gov.justice.digital.hmpps.deliusapi.exception.BadRequestException
+import uk.gov.justice.digital.hmpps.deliusapi.exception.ConflictException
 import uk.gov.justice.digital.hmpps.deliusapi.repository.ContactRepository
 import uk.gov.justice.digital.hmpps.deliusapi.repository.EnforcementActionRepository
 import uk.gov.justice.digital.hmpps.deliusapi.service.extensions.getDuration
@@ -147,7 +148,7 @@ class ContactValidationService(
 
     if (clashes.isNotEmpty()) {
       val ids = clashes.joinToString(", ") { "'${it.id}'" }
-      throw BadRequestException(
+      throw ConflictException(
         "Contact type '${type.code}' is an attendance type so must not clash with any other " +
           "attendance contacts but clashes with contacts with ids $ids"
       )

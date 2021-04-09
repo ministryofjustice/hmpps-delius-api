@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.Arguments.of
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.SpyBean
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
@@ -41,32 +42,32 @@ class CreateContactTest : IntegrationTestBase() {
     init {
       failureCases.addAll(
         listOf(
-          of(valid.copy(offenderCrn = ""), "offenderCrn"),
-          of(valid.copy(offenderCrn = "1234567"), "offenderCrn"),
-          of(valid.copy(type = ""), "type"),
-          of(valid.copy(type = "12345678910"), "type"),
-          of(valid.copy(provider = "1234"), "provider"),
-          of(valid.copy(team = "1234567"), "team"),
-          of(valid.copy(staff = "12345678"), "staff"),
-          of(valid.copy(officeLocation = "12345678"), "officeLocation"),
-          of(valid.copy(requirementId = 1L, eventId = null), "requirementId cannot be provided without also providing eventId"),
-          of(valid.copy(requirementId = 2500083652, nsiId = 2500018597), "nsiId cannot be provided when requirementId is also provided"),
+          of(valid.copy(offenderCrn = ""), "offenderCrn", HttpStatus.BAD_REQUEST),
+          of(valid.copy(offenderCrn = "1234567"), "offenderCrn", HttpStatus.BAD_REQUEST),
+          of(valid.copy(type = ""), "type", HttpStatus.BAD_REQUEST),
+          of(valid.copy(type = "12345678910"), "type", HttpStatus.BAD_REQUEST),
+          of(valid.copy(provider = "1234"), "provider", HttpStatus.BAD_REQUEST),
+          of(valid.copy(team = "1234567"), "team", HttpStatus.BAD_REQUEST),
+          of(valid.copy(staff = "12345678"), "staff", HttpStatus.BAD_REQUEST),
+          of(valid.copy(officeLocation = "12345678"), "officeLocation", HttpStatus.BAD_REQUEST),
+          of(valid.copy(requirementId = 1L, eventId = null), "requirementId cannot be provided without also providing eventId", HttpStatus.BAD_REQUEST),
+          of(valid.copy(requirementId = 2500083652, nsiId = 2500018597), "nsiId cannot be provided when requirementId is also provided", HttpStatus.BAD_REQUEST),
         )
       )
       successCases.add(of(valid))
       // DAPI-70 Contact types should be restricted to allowed values
       successCases.add(of(valid.copy(type = "TST01")))
-      failureCases.add(of(valid.copy(type = "TST04"), "type must match one of the following values"))
+      failureCases.add(of(valid.copy(type = "TST04"), "type must match one of the following values", HttpStatus.BAD_REQUEST))
       // DAPI-73 Outcomes should only be required for past appointments
       successCases.add(of(valid.copy(type = "TST03", outcome = null, date = Fake.randomFutureLocalDate())))
-      failureCases.add(of(valid.copy(type = "TST03", outcome = null), "Contact type 'TST03' requires an outcome type"))
+      failureCases.add(of(valid.copy(type = "TST03", outcome = null), "Contact type 'TST03' requires an outcome type", HttpStatus.BAD_REQUEST))
       // DAPI-74 Office location should only be mandatory if required by contact type
       successCases.add(of(valid.copy(type = "TST03")))
-      failureCases.add(of(valid.copy(type = "TST03", officeLocation = null), "Location is required for contact type 'TST03'"))
+      failureCases.add(of(valid.copy(type = "TST03", officeLocation = null), "Location is required for contact type 'TST03'", HttpStatus.BAD_REQUEST))
       // Non-selectable contact types with SPG Override set are allowed
       successCases.add(of(valid.copy(type = "TST05")))
       // Non-selectable contact types without SPG Override set are not allowed
-      failureCases.add(of(valid.copy(type = "SMLI001"), "Contact type with code 'SMLI001' does not exist"))
+      failureCases.add(of(valid.copy(type = "SMLI001"), "Contact type with code 'SMLI001' does not exist", HttpStatus.BAD_REQUEST))
       // NSI and event supplied, requirement left blank
       successCases.add(of(valid.copy(type = "RRIR", officeLocation = null, outcome = null, nsiId = 2500018597, eventId = 2500295345, requirementId = null)))
 
@@ -81,7 +82,8 @@ class CreateContactTest : IntegrationTestBase() {
             startTime = LocalTime.NOON,
             endTime = LocalTime.NOON.plusHours(1),
           ),
-          "must not clash with any other attendance contacts"
+          "must not clash with any other attendance contacts",
+          HttpStatus.CONFLICT
         )
       )
       // Clashing appointment in the past is ok
@@ -106,9 +108,9 @@ class CreateContactTest : IntegrationTestBase() {
 
   @ParameterizedTest(name = "[{index}] Invalid contact ({1})")
   @MethodSource("failureCases")
-  fun `should throw a validation failure`(request: NewContact, expectedResult: String) {
+  fun `should throw a validation failure`(request: NewContact, expectedResult: String, expectedStatus: HttpStatus) {
     webTestClient.whenCreatingContact(request)
-      .expectStatus().isBadRequest
+      .expectStatus().isEqualTo(expectedStatus)
       .expectBody().shouldReturnValidationError(expectedResult)
   }
 

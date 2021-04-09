@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.deliusapi.entity.Contact
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Enforcement
 import uk.gov.justice.digital.hmpps.deliusapi.entity.YesNoBoth
 import uk.gov.justice.digital.hmpps.deliusapi.exception.BadRequestException
+import uk.gov.justice.digital.hmpps.deliusapi.exception.ConflictException
 import uk.gov.justice.digital.hmpps.deliusapi.repository.ContactRepository
 import uk.gov.justice.digital.hmpps.deliusapi.repository.EnforcementActionRepository
 import uk.gov.justice.digital.hmpps.deliusapi.util.Fake
@@ -388,7 +389,7 @@ class ContactValidationServiceTest {
     if (success) {
       assertDoesNotThrow { subject.validateFutureAppointmentClashes(request, type, offender, existing.id) }
     } else {
-      assertThrows<BadRequestException> { subject.validateFutureAppointmentClashes(request, type, offender, existing.id) }
+      assertThrows<ConflictException> { subject.validateFutureAppointmentClashes(request, type, offender, existing.id) }
     }
   }
 
