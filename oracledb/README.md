@@ -40,6 +40,8 @@ A pre-built image is available from a private Delius ECR repository:
 ```
 Access can be requested in the [#delius_infra_support](https://mojdt.slack.com/archives/CNXK9893K) Slack channel.
 
+An updated image is published each week with the latest Delius physical data model (PDM) - see [buildspec.yml](buildspec.yml) and [build-delius-test-db.tf](https://github.com/ministryofjustice/hmpps-delius-pipelines/blob/master/engineering/builds/build-delius-test-db.tf).
+
 
 Follow these instructions to pull the image: 
 1. Configure the AWS CLI to assume a role with access to ECR in the Delius Engineering account. 
@@ -62,12 +64,12 @@ aws ecr get-login-password --profile eng-dev | docker login --username AWS --pas
 docker run -p 1521:1521 895523100917.dkr.ecr.eu-west-2.amazonaws.com/hmpps/delius-test-db:latest
 ```
 
-The Oracle Database will be available on local port `1521`, and can be accessed using any of the following accounts:
-* `delius_app_schema` - for full access to the Delius application tables and code
-* `delius_pool` - for restricted access (by Oracle VPD)
-* `system` - for system-level access, useful for managing users etc.
+The Oracle Database will be available on local port `1521`, and can be accessed using any of the following accounts :
+* `delius_app_schema` (password=`NDelius1`) - for full access to the Delius application tables and code,
+* `delius_pool` (password=`NDelius1`) - for restricted access using Oracle VPD,
+* `system` (password=`NDAmanager1`) - for system-level access, useful for managing users etc.
 
-All accounts have the same password: `NDelius1`, and the service name should be set to `XEPDB1`.
+The service name should be set to `XEPDB1`.
 
 *Example:*
 ```shell
