@@ -21,11 +21,6 @@ data class NewTeam(
   @field:NotBlank
   val type: String,
 
-  @ApiModelProperty("The code for the new team")
-  @field:NotBlank
-  @field:Size(max = 6)
-  val code: String,
-
   @ApiModelProperty("The description for the new team")
   @field:NotBlank
   @field:Size(max = 50)

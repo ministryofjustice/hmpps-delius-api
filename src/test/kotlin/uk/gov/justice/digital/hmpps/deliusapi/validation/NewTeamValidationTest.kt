@@ -22,7 +22,6 @@ class NewTeamValidationTest : ValidationTest<NewTeam>() {
 
     @JvmStatic
     fun invalidCases() = ValidationTestCaseBuilder.fromFake<NewTeam>()
-      .string(NewTeam::code) { it.empty().blank().length(7) }
       .string(NewTeam::description) { it.empty().blank().length(51) }
       .string(NewTeam::cluster) { it.empty().blank() }
       .string(NewTeam::ldu) { it.empty().blank() }

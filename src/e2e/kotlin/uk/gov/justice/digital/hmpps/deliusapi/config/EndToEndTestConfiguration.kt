@@ -15,4 +15,6 @@ open class EndToEndTestConfiguration(
   open val staff: String,
   open val contacts: ContactTestsConfiguration,
   open val nsis: NsiTestsConfiguration,
+  open val staffs: StaffTestsConfiguration,
+  open val teams: TeamTestsConfiguration,
 )

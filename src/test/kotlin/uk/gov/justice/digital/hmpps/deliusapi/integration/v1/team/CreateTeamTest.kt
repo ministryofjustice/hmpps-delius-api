@@ -44,7 +44,7 @@ class CreateTeamTest : IntegrationTestBase() {
     .exchange()
 
   private fun WebTestClient.BodyContentSpec.shouldReturnCreatedTeam(request: NewTeam): WebTestClient.BodyContentSpec {
-    jsonPath("$.code").value(Matchers.equalTo(request.code))
+    jsonPath("$.code").value(Matchers.matchesRegex("C00\\d{3}"))
     jsonPath("$.description").value(Matchers.equalTo(request.description))
     jsonPath("$.provider").value(Matchers.equalTo(request.provider))
     jsonPath("$.ldu").value(Matchers.equalTo(request.ldu))
@@ -53,17 +53,18 @@ class CreateTeamTest : IntegrationTestBase() {
     return this
   }
 
-  private fun WebTestClient.BodyContentSpec.shouldSaveTeam(request: NewTeam): WebTestClient.BodyContentSpec {
-    val savedTeam = teamRepository.findByCodeAndProviderCodeOrBadRequest(request.code, request.provider)
-    Assertions.assertThat(savedTeam).describedAs("should save entity").isNotNull
-    Assertions.assertThat(savedTeam.code).isEqualTo(request.code)
-    Assertions.assertThat(savedTeam.description).isEqualTo(request.description)
-    Assertions.assertThat(savedTeam.provider.code).isEqualTo(request.provider)
-    Assertions.assertThat(savedTeam.localDeliveryUnit.code).isEqualTo(request.ldu)
-    Assertions.assertThat(savedTeam.unpaidWorkTeam).isEqualTo(request.unpaidWorkTeam)
-    Assertions.assertThat(savedTeam.teamType.code).isEqualTo(request.type)
-    Assertions.assertThat(savedTeam.startDate).isEqualTo(LocalDate.now())
-    Assertions.assertThat(savedTeam.createdDateTime).isCloseTo(LocalDateTime.now(), Assertions.within(1, ChronoUnit.MINUTES))
-    return this
-  }
+  private fun WebTestClient.BodyContentSpec.shouldSaveTeam(request: NewTeam): WebTestClient.BodyContentSpec =
+    this.jsonPath("$.code").value<String> {
+      val savedTeam = teamRepository.findByCodeAndProviderCodeOrBadRequest(it, request.provider)
+      Assertions.assertThat(savedTeam).describedAs("should save entity").isNotNull
+      Assertions.assertThat(savedTeam.code).isEqualTo(it)
+      Assertions.assertThat(savedTeam.description).isEqualTo(request.description)
+      Assertions.assertThat(savedTeam.provider.code).isEqualTo(request.provider)
+      Assertions.assertThat(savedTeam.localDeliveryUnit.code).isEqualTo(request.ldu)
+      Assertions.assertThat(savedTeam.unpaidWorkTeam).isEqualTo(request.unpaidWorkTeam)
+      Assertions.assertThat(savedTeam.teamType.code).isEqualTo(request.type)
+      Assertions.assertThat(savedTeam.startDate).isEqualTo(LocalDate.now())
+      Assertions.assertThat(savedTeam.createdDateTime)
+        .isCloseTo(LocalDateTime.now(), Assertions.within(1, ChronoUnit.MINUTES))
+    }
 }

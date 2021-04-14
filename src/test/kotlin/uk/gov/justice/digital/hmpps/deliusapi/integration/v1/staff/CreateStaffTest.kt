@@ -82,7 +82,7 @@ class CreateStaffTest : IntegrationTestBase() {
 
   private fun WebTestClient.BodyContentSpec.shouldSaveStaff(request: NewStaff): WebTestClient.BodyContentSpec =
     this.jsonPath("$.code").value<String> {
-      val savedStaff = staffRepository.findByCode(it)
+      val savedStaff = staffRepository.findByCode(it)!!
       assertThat(savedStaff).describedAs("should save entity").isNotNull
       assertThat(savedStaff.firstName).isEqualTo(request.firstName)
       assertThat(savedStaff.firstName).isEqualTo(request.firstName)

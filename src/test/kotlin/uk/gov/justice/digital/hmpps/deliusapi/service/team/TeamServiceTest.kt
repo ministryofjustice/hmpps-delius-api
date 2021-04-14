@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.deliusapi.service.team
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
@@ -81,20 +82,13 @@ class TeamServiceTest {
   }
 
   @Test
-  fun `attempting to create team with invalid code`() {
-    withRequest(badCode = true)
-    havingRepositories()
-    shouldThrowBadRequest()
-  }
-
-  @Test
   fun `attempting to create team with conflicting code`() {
     withRequest()
     havingRepositories(teamCodeExists = true)
     shouldThrowConflict()
   }
 
-  private fun withRequest(unknownCluster: Boolean = false, unknownTeamType: Boolean = false, unknownLdu: Boolean = false, badCode: Boolean = false) {
+  private fun withRequest(unknownCluster: Boolean = false, unknownTeamType: Boolean = false, unknownLdu: Boolean = false) {
     request = Fake.teamMapper.toNew(team)
 
     if (unknownCluster)
@@ -105,9 +99,6 @@ class TeamServiceTest {
 
     if (unknownLdu)
       request = request.copy(ldu = "XYZ")
-
-    if (badCode)
-      request = request.copy(code = request.code.reversed())
   }
 
   private fun havingRepositories(providerExists: Boolean = true, teamCodeExists: Boolean = false) {
@@ -119,6 +110,8 @@ class TeamServiceTest {
       if (teamCodeExists) provider.teams.first()
       else null
     )
+
+    whenever(teamRepository.findByProviderCode(any())).thenReturn(listOf(Fake.team(provider).apply { code = team.provider.code + "001" }))
 
     whenever(teamRepository.saveAndFlush(any())).thenReturn(team)
     whenever(mapper.toDto(any())).thenReturn(Fake.teamMapper.toDto(team))
@@ -144,12 +137,13 @@ class TeamServiceTest {
   }
 
   private fun shouldSaveTeam() {
-    verify(teamRepository, times(1)).findByCodeAndProviderCode(request.code, provider.code)
+    verify(teamRepository, times(1)).findByProviderCode(any())
+    verify(teamRepository, times(1)).findByCodeAndProviderCode(any(), eq(provider.code))
 
     verify(teamRepository).saveAndFlush(
       ArgumentMatchers.argThat {
         !it.privateTeam &&
-          it.code == request.code &&
+          it.code == request.provider + "002" &&
           it.description == request.description &&
           it.localDeliveryUnit.code == request.ldu &&
           it.provider.code == request.provider &&

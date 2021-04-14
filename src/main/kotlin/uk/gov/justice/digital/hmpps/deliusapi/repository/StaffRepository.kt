@@ -6,5 +6,5 @@ import uk.gov.justice.digital.hmpps.deliusapi.entity.Staff
 
 @Repository
 interface StaffRepository : JpaRepository<Staff, Long> {
-  fun findByCode(code: String): Staff
+  fun findByCode(code: String): Staff?
 }

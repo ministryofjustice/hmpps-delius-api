@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.deliusapi.config
 import uk.gov.justice.digital.hmpps.deliusapi.client.model.NewContact
 import uk.gov.justice.digital.hmpps.deliusapi.client.model.NewNsi
 import uk.gov.justice.digital.hmpps.deliusapi.client.model.NewNsiManager
+import uk.gov.justice.digital.hmpps.deliusapi.client.model.NewStaff
+import uk.gov.justice.digital.hmpps.deliusapi.client.model.NewTeam
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.reflect.KProperty1
@@ -58,5 +60,31 @@ fun EndToEndTestConfiguration.newNsi(select: NsiSelector): NewNsi {
     startDate = LocalDate.now(),
     expectedStartDate = LocalDate.now(),
     expectedEndDate = LocalDate.now().plusDays(7),
+  )
+}
+
+typealias StaffSelector = KProperty1<StaffTestsConfiguration, StaffTestConfiguration>
+
+fun EndToEndTestConfiguration.newStaff(select: StaffSelector): NewStaff {
+  val staffMember = select(staffs)
+  return NewStaff(
+    firstName = staffMember.firstName,
+    lastName = staffMember.lastName,
+    provider = staffMember.provider,
+    teams = staffMember.teams
+  )
+}
+
+typealias TeamSelector = KProperty1<TeamTestsConfiguration, TeamTestConfiguration>
+
+fun EndToEndTestConfiguration.newTeam(select: TeamSelector): NewTeam {
+  val team = select(teams)
+  return NewTeam(
+    cluster = team.cluster,
+    description = team.description,
+    ldu = team.ldu,
+    provider = team.provider,
+    type = team.type,
+    unpaidWorkTeam = team.unpaidWorkTeam,
   )
 }

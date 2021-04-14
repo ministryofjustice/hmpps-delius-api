@@ -59,3 +59,18 @@ e2e:
     refer:
       type: CRS01
       status: REFER
+  staffs:
+    withTeam:
+      firstName: Rhiannon
+      lastName: Dennis
+      provider: CRS
+      teams:
+        - CRSUAT
+  teams:
+    default:
+      cluster: CRSUAT
+      ldu: CRSUAT
+      provider: CRS
+      type: CRSUAT
+      description: Test team
+      unpaidWorkTeam: false

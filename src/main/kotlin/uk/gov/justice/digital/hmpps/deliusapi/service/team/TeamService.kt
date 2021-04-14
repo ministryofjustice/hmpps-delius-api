@@ -35,9 +35,7 @@ class TeamService(
     val audit = AuditContext.get(AuditableInteraction.ADD_TEAM)
     audit.providerId = provider.id
 
-    if (!request.code.startsWith(request.provider)) {
-      throw BadRequestException("Team code must have provider '${provider.code}' prefix")
-    }
+    val newTeamCode = getNextAvailableTeamCode(provider.code)
 
     val cluster = provider.clusters.find { it.code == request.cluster }
       ?: throw BadRequestException("Cluster with id '${request.cluster}' does not exist on provider '${provider.code}'")
@@ -48,12 +46,12 @@ class TeamService(
     val teamType = provider.teamTypes.find { it.code == request.type }
       ?: throw BadRequestException("Team type with id '${request.type}' does not exist on provider '${provider.code}'")
 
-    if (teamRepository.findByCodeAndProviderCode(request.code, provider.code) != null) {
-      throw ConflictException("Team with id '${request.code}' already exists on provider '${provider.code}'")
+    if (teamRepository.findByCodeAndProviderCode(newTeamCode, provider.code) != null) {
+      throw ConflictException("Team with code '$newTeamCode' already exists on provider '${provider.code}'")
     }
 
     val unallocatedStaff = Staff(
-      code = request.code + UNALLOCATED_STAFF_CODE_SUFFIX,
+      code = newTeamCode + UNALLOCATED_STAFF_CODE_SUFFIX,
       firstName = "Unallocated",
       middleName = "",
       lastName = "Staff",
@@ -63,7 +61,7 @@ class TeamService(
     )
 
     val team = Team(
-      code = request.code,
+      code = newTeamCode,
       description = request.description,
       provider = provider,
       localDeliveryUnit = ldu,
@@ -76,5 +74,14 @@ class TeamService(
     team.staff.add(StaffTeam(staff = unallocatedStaff, team = team))
 
     return mapper.toDto(teamRepository.saveAndFlush(team))
+  }
+
+  fun getNextAvailableTeamCode(providerCode: String): String {
+    val existingHighest = teamRepository.findByProviderCode(providerCode)
+      .filter { it.code.matches("$providerCode\\d{3}".toRegex()) }
+      .map { Integer.parseInt(it.code.substring(3, 6)) }
+      .maxOrNull() ?: 0
+
+    return "$providerCode${(existingHighest + 1).toString().padStart(3, '0')}"
   }
 }

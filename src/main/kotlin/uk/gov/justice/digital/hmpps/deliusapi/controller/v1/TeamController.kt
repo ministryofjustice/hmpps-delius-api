@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.deliusapi.controller.v1
 
+import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiResponse
 import io.swagger.annotations.ApiResponses
@@ -16,6 +17,7 @@ import uk.gov.justice.digital.hmpps.deliusapi.service.team.TeamService
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
 
+@Api(tags = ["Team v1"], description = "Team API")
 @RestController
 @RequestMapping(value = ["v1/team"], produces = [MediaType.APPLICATION_JSON_VALUE])
 class TeamController(

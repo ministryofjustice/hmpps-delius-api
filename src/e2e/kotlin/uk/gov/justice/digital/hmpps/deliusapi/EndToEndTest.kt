@@ -14,6 +14,8 @@ import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.deliusapi.client.api.ContactV1Api
 import uk.gov.justice.digital.hmpps.deliusapi.client.api.NSIV1Api
 import uk.gov.justice.digital.hmpps.deliusapi.client.api.OperationHandlerApi
+import uk.gov.justice.digital.hmpps.deliusapi.client.api.StaffV1Api
+import uk.gov.justice.digital.hmpps.deliusapi.client.api.TeamV1Api
 import uk.gov.justice.digital.hmpps.deliusapi.client.model.ContactDto
 import uk.gov.justice.digital.hmpps.deliusapi.client.model.NewContact
 import uk.gov.justice.digital.hmpps.deliusapi.client.model.NewNsi
@@ -38,6 +40,8 @@ abstract class EndToEndTest {
 
   protected val contactV1 by lazy { ContactV1Api(configuration.url) }
   protected val nsiV1 by lazy { NSIV1Api(configuration.url) }
+  protected val staffV1 by lazy { StaffV1Api(configuration.url) }
+  protected val teamV1 by lazy { TeamV1Api(configuration.url) }
   protected val instrumentationApi by lazy { OperationHandlerApi(configuration.url) }
 
   @BeforeEach

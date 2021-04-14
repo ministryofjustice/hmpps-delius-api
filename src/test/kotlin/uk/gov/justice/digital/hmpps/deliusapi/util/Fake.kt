@@ -431,7 +431,6 @@ object Fake {
   )
 
   fun validNewTeam() = NewTeam(
-    code = "C00T21",
     cluster = "C00100",
     ldu = "C00CRCA",
     type = "C00CRC1",

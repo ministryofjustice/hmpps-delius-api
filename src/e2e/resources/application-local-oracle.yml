@@ -62,3 +62,18 @@ e2e:
       type: ROL
       subType: ROL03
       status: ROL01 # TODO add the REFER status to the local oracle DB
+  staffs:
+    withTeam:
+      firstName: Rhiannon
+      lastName: Dennis
+      provider: N07
+      teams:
+        - N07UAT
+  teams:
+    default:
+      cluster: N07100
+      ldu: N07NPSA
+      provider: N07
+      type: N07UAT
+      description: Test team
+      unpaidWorkTeam: false

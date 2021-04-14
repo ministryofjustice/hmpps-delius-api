@@ -63,3 +63,18 @@ e2e:
       subType: KSS026
       status: REFER
       length: 1
+  staffs:
+    withTeam:
+      firstName: Rhiannon
+      lastName: Dennis
+      provider: C21
+      teams:
+        - 200B21
+  teams:
+    default:
+      cluster: C21UAT
+      ldu: C21UAT
+      provider: C21
+      type: C21UAT
+      description: Test team
+      unpaidWorkTeam: false
