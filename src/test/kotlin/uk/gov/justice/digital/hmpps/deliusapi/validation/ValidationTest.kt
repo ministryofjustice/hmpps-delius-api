@@ -102,6 +102,12 @@ class LocalTimePropertyCaseBuilder<T : Any>(property: KProperty1<T, LocalTime?>,
     add("$name is before ${other.name}", mapOf(name to other.get(subject)?.minusSeconds(1)), name, other.name)
 }
 
+class ListPropertyCaseBuilder<T : Any>(property: KProperty1<T, List<*>?>, builder: ValidationTestCaseBuilder<T>) :
+  PropertyCaseBuilder<T, List<*>?, ListPropertyCaseBuilder<T>>(property, builder) {
+
+  fun empty() = value(listOf<T>(), "empty")
+}
+
 class ValidationTestCaseBuilder<T : Any>(val factory: (existing: T?, parameters: Map<String, Any?>?) -> T) {
 
   var valid = false
@@ -126,6 +132,9 @@ class ValidationTestCaseBuilder<T : Any>(val factory: (existing: T?, parameters:
 
   fun time(property: KProperty1<T, LocalTime?>, strict: Boolean = true, delegate: (b: LocalTimePropertyCaseBuilder<T>) -> LocalTimePropertyCaseBuilder<T>) =
     add(LocalTimePropertyCaseBuilder(property, this), delegate, strict)
+
+  fun list(property: KProperty1<T, List<*>?>, delegate: (b: ListPropertyCaseBuilder<T>) -> ListPropertyCaseBuilder<T>) =
+    add(ListPropertyCaseBuilder(property, this), delegate)
 
   fun kitchenSink() = add("kitchen sink", mapOf())
 

@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.deliusapi.dto.v1.staff
 import io.swagger.annotations.ApiModelProperty
 import uk.gov.justice.digital.hmpps.deliusapi.validation.ProviderCode
 import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.Size
 
 data class NewStaff(
@@ -21,5 +22,6 @@ data class NewStaff(
   @ProviderCode
   val provider: String,
 
-  val teams: List<String>?,
+  @field:NotEmpty
+  val teams: List<String>,
 )

@@ -18,7 +18,6 @@ class NewStaffValidationTest : ValidationTest<NewStaff>() {
     fun validCases() = ValidationTestCaseBuilder.fromFake<NewStaff>()
       .setValid()
       .kitchenSink()
-      .allNull(NewStaff::teams)
       .cases
 
     @JvmStatic
@@ -26,6 +25,7 @@ class NewStaffValidationTest : ValidationTest<NewStaff>() {
       .string(NewStaff::firstName) { it.empty().blank().length(36) }
       .string(NewStaff::lastName) { it.empty().blank().length(36) }
       .string(NewStaff::provider) { it.empty().blank().value("bacon", "not a valid provider code") }
+      .list(NewStaff::teams) { it.empty() }
       .cases
   }
 }

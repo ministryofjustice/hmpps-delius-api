@@ -427,7 +427,7 @@ object Fake {
     firstName = "Wamberto",
     lastName = "Decapode",
     provider = "C00",
-    teams = null
+    teams = listOf("C00T01")
   )
 
   fun validNewTeam() = NewTeam(
