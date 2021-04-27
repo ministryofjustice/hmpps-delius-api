@@ -84,6 +84,20 @@ jobs:
                 command: |
                   docker tag "public.ecr.aws/hmpps/delius-api:$APP_VERSION" "public.ecr.aws/hmpps/delius-api:latest"
                   docker push public.ecr.aws/hmpps/delius-api:latest
+  sast-scan:
+    executor: sast-orb/default
+    steps:
+      - mem/recall:
+          env_var: APP_VERSION
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Rename artifact
+          command: mv /tmp/hmpps-delius-api-*.jar /tmp/hmpps-delius-api.jar
+      - sast-orb/pipeline-scan:
+          filepath: /tmp/hmpps-delius-api.jar
+          version: "${CIRCLE_BRANCH} - ${APP_VERSION}"
+          teams: delius-api
   deploy:
     docker:
       - image: circleci/python
@@ -145,6 +159,10 @@ workflows:
           filters:
             tags:
               ignore: /.*/
+      - sast-scan:
+          context: hmpps-common-vars
+          requires:
+            - build-gradle
       - deploy:
           name: deploy-to-dev
           context:
