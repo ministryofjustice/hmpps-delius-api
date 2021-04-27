@@ -48,6 +48,10 @@ jobs:
           paths:
             - ~/.gradle
           key: gradle-{{ checksum "build.gradle.kts" }}
+      - persist_to_workspace:
+          root: build/libs
+          paths:
+            - hmpps-delius-api-*.jar
       - store_test_results:
           path: build/test-results
       - store_artifacts:
