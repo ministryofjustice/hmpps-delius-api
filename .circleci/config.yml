@@ -87,8 +87,6 @@ jobs:
   sast-scan:
     executor: sast-orb/default
     steps:
-      - mem/recall:
-          env_var: APP_VERSION
       - attach_workspace:
           at: /tmp
       - run:
@@ -96,7 +94,6 @@ jobs:
           command: mv /tmp/hmpps-delius-api-*.jar /tmp/hmpps-delius-api.jar
       - sast-orb/policy-scan:
           filepath: /tmp/hmpps-delius-api.jar
-          version: "${CIRCLE_BRANCH} - ${APP_VERSION}"
           teams: delius-api
   deploy:
     docker:
