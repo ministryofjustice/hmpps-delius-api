@@ -40,7 +40,7 @@ e2e:
       outcome: AFTA
       enforcement: ROM
     appointment:
-      type: CRSAPT
+      type: COAP
       eventId: 2500024029
       requirementId: 2500024510
       officeLocation: LDN_BCS
