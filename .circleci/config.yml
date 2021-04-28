@@ -2,28 +2,20 @@ version: 2.1
 
 orbs:
   owasp: entur/owasp@0.0.10
-  hmpps: ministryofjustice/hmpps@2.2
+  hmpps: ministryofjustice/hmpps@3.1
   mem: circleci/rememborb@0.0.1
-  aws-ecs: circleci/aws-ecs@0.0.10
-  aws-cli: circleci/aws-cli@1.3.2
+  aws-ecs: circleci/aws-ecs@2.2.0
+  aws-cli: circleci/aws-cli@2.0.0
   queue: eddiewebb/queue@1.5.0
+  sast-orb: orb-01scan/sast-orb@0.0.8
   slack: circleci/slack@4.1.3
+
 commands:
-  configure_profile:
-    parameters:
-      profile-name:
-        type: string
-      role-arn:
-        type: string
-    steps:
-      - run:
-          name: Configure credentials profile
-          command: |
-            aws configure set role_arn "<<parameters.role-arn>>" --profile <<parameters.profile-name>>
-            aws configure set source_profile default --profile <<parameters.profile-name>>
-  # This is a workaround for the aws-ecs/update-service CircleCI command not taking a profile parameter, and the underlying aws cli command not honouring the AWS_PROFILE env var.
-  # See https://github.com/CircleCI-Public/aws-ecs-orb/issues/41 for further details
   assume_role:
+    description: |
+      Assume an IAM role in AWS.
+      This is a workaround for the aws-ecs/update-service CircleCI command not taking a profile parameter, and the underlying aws cli command not honouring the AWS_PROFILE env var.
+      See https://github.com/CircleCI-Public/aws-ecs-orb/issues/41 for further details
     parameters:
       role-arn:
         type: string
@@ -31,72 +23,18 @@ commands:
       - run:
           name: Assume IAM role
           command: |
-            temp_role=$(aws sts assume-role --role-arn <<parameters.role-arn>> --role-session-name "role_session")
+            temp_role=$(aws sts assume-role --role-arn "<< parameters.role-arn >>" --role-session-name "circleci-$CIRCLE_BUILD_NUM-$RANDOM")
             echo "export AWS_ACCESS_KEY_ID=$(echo $temp_role | jq .Credentials.AccessKeyId | xargs)" >> $BASH_ENV; source $BASH_ENV;
             echo "export AWS_SECRET_ACCESS_KEY=$(echo $temp_role | jq .Credentials.SecretAccessKey | xargs)" >> $BASH_ENV; source $BASH_ENV;
             echo "export AWS_SESSION_TOKEN=$(echo $temp_role | jq .Credentials.SessionToken | xargs)" >> $BASH_ENV; source $BASH_ENV;
-  deploy_to_env:
-    parameters:
-      role-arn:
-        type: string
-      family:
-        type: string
-      cluster-name:
-        type: string
-      service-name:
-        type: string
-      env-name:
-        type: string
-    steps:
-      - mem/recall:
-          env_var: APP_VERSION
-      - aws-cli/setup
-      - assume_role:
-          role-arn: <<parameters.role-arn>>
-      - aws-ecs/update-service:
-          family: <<parameters.family>>
-          cluster-name: <<parameters.cluster-name>>
-          service-name: <<parameters.service-name>>
-          container-image-name-updates: container=delius-api,tag=$APP_VERSION
-          verify-revision-is-deployed: true
-      - slack/notify:
-          event: always
-          channel: delius-api-notifications
-          custom: |
-              {
-                "blocks": [
-                  {
-                    "type": "context",
-                    "elements": [
-                      {
-                        "type": "mrkdwn",
-                        "text": ":circleci-${CCI_STATUS}: CircleCI deploy ${CCI_STATUS}"
-                      }
-                    ]
-                  },
-                  {
-                    "type": "section",
-                    "text": {
-                      "type": "mrkdwn",
-                      "text": "*${CIRCLE_PROJECT_REPONAME}* version `${APP_VERSION}` deploy to *<< parameters.env-name >>*"
-                    },
-                    "accessory": {
-                      "type": "button",
-                      "text": {
-                        "type": "plain_text",
-                        "text": "View job"
-                      },
-                      "url": "${CIRCLE_BUILD_URL}"
-                    }
-                  }
-                ]
-              } 
+            aws configure set aws_session_token "$(echo $temp_role | jq .Credentials.SessionToken | xargs)" --profile default
 
 jobs:
-  validate:
-    executor: hmpps/java
+  build-gradle:
+    docker:
+      - image: cimg/openjdk:11.0
     environment:
-      _JAVA_OPTIONS: -Xms512m -Xmx1G -Dorg.gradle.daemon=false
+      JAVA_TOOL_OPTIONS: -Xmx3g -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process
     steps:
       - checkout
       - restore_cache:
@@ -104,20 +42,21 @@ jobs:
             - gradle-{{ checksum "build.gradle.kts" }}
             - gradle-
       - run:
-          name: gradle check
-          command: ./gradlew check
-      - run:
-          name: Compile e2e tests # TODO get the e2e tests running against local-oracle here
-          command: ./gradlew e2eClasses
+          name: Gradle build # TODO get the e2e tests running against local-oracle here
+          command: ./gradlew build e2eClasses
       - save_cache:
           paths:
             - ~/.gradle
           key: gradle-{{ checksum "build.gradle.kts" }}
+      - persist_to_workspace:
+          root: build/libs
+          paths:
+            - hmpps-delius-api-*.jar
       - store_test_results:
           path: build/test-results
       - store_artifacts:
           path: build/reports/tests
-  build_docker:
+  build-docker:
     docker:
        - image: circleci/python
     steps:
@@ -125,23 +64,21 @@ jobs:
       - hmpps/create_app_version
       - setup_remote_docker:
           docker_layer_caching: true
-      - aws-cli/setup:
-          profile-name: default
-      - configure_profile:
-          profile-name: engineering_dev
-          role-arn: $ROLE_ARN_PUSH_DOCKER_IMAGE
+      - aws-cli/setup
+      - assume_role:
+          role-arn: $AWS_ROLE_ARN
       # Currently the aws-ecr orb does not support logging in/ pushing to public repos
       - run:
           name: Docker Image
           command: |
-            aws ecr-public get-login-password --region us-east-1 --profile engineering_dev| docker login --username AWS --password-stdin $AWS_ECS_ACCOUNT_URL
-            docker build --tag $AWS_ECS_ACCOUNT_URL/delius-api:$APP_VERSION \
+            aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/hmpps
+            docker build --tag public.ecr.aws/hmpps/delius-api:$APP_VERSION \
               --label "app.version=${APP_VERSION}" \
               --label "build.version=${APP_VERSION}" \
               --label "build.number=${CIRCLE_BUILD_NUM}" \
               --label "build.url=${CIRCLE_BUILD_URL}" \
               --label "build.gitref=${CIRCLE_SHA1}" .
-            docker push $AWS_ECS_ACCOUNT_URL/delius-api:$APP_VERSION
+            docker push public.ecr.aws/hmpps/delius-api:$APP_VERSION
       - when:
           condition:
             equal: [ main, << pipeline.git.branch >> ]
@@ -149,97 +86,125 @@ jobs:
             - run:
                 name: Tag latest
                 command: |
-                  docker tag "$AWS_ECS_ACCOUNT_URL/delius-api:$APP_VERSION" "$AWS_ECS_ACCOUNT_URL/delius-api:latest"
-                  docker push $AWS_ECS_ACCOUNT_URL/delius-api:latest
-  deploy-dev:
+                  docker tag "public.ecr.aws/hmpps/delius-api:$APP_VERSION" "public.ecr.aws/hmpps/delius-api:latest"
+                  docker push public.ecr.aws/hmpps/delius-api:latest
+  sast-scan:
+    executor: sast-orb/default
+    steps:
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Rename artifact
+          command: mv /tmp/hmpps-delius-api-*.jar /tmp/hmpps-delius-api.jar
+      - sast-orb/policy-scan:
+          filepath: /tmp/hmpps-delius-api.jar
+          teams: delius-api
+  deploy:
     docker:
       - image: circleci/python
     steps:
+      - mem/recall:
+          env_var: APP_VERSION
       - queue/until_front_of_line:
           consider-branch: false
           time: '10'
-      - deploy_to_env:
-          role-arn: $ROLE_ARN_DEPLOY_DEV
-          family: dlc-dev-delius-api-task-definition
-          cluster-name: dlc-dlc-dev-ecscluster-private-ecs
-          service-name: dlc-dev-delius-api-service
-          env-name: delius-core-dev
-  deploy-test:
-    docker:
-      - image: circleci/python
-    steps:
-      - deploy_to_env:
-          role-arn: $ROLE_ARN_DEPLOY_TEST
-          family: del-test-delius-api-task-definition
-          cluster-name: del-delius-ecscluster-private-ecs
-          service-name: del-test-delius-api-service
-          env-name: delius-test
-  deploy-stage:
-    docker:
-      - image: circleci/python
-    steps:
-      - deploy_to_env:
-          role-arn: $ROLE_ARN_DEPLOY_STAGE
-          family: del-stage-delius-api-task-definition
-          cluster-name: del-delius-ecscluster-private-ecs
-          service-name: del-stage-delius-api-service
-          env-name: delius-stage
-  deploy-prod:
-    docker:
-      - image: circleci/python
-    steps:
-      - deploy_to_env:
-          role-arn: $ROLE_ARN_DEPLOY_PROD
-          family: del-prod-delius-api-task-definition
-          cluster-name: del-prod-ecscluster-private-ecs
-          service-name: del-prod-delius-api-service
-          env-name: delius-prod
+      - aws-cli/setup
+      - assume_role:
+          role-arn: $AWS_ROLE_ARN
+      - aws-ecs/update-service:
+          cluster-name: $AWS_ECS_CLUSTER_NAME
+          family: $AWS_ECS_ENV_NAME-delius-api-task-definition
+          service-name: $AWS_ECS_ENV_NAME-delius-api-service
+          container-image-name-updates: container=delius-api,tag=$APP_VERSION
+          verify-revision-is-deployed: true
+      - slack/notify:
+          event: always
+          channel: delius-api-notifications
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "mrkdwn",
+                      "text": ":circleci-${CCI_STATUS}: CircleCI deploy ${CCI_STATUS}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*${CIRCLE_PROJECT_REPONAME}* version `${APP_VERSION}` deploy to *${AWS_ECS_ENV_NAME}*"
+                  },
+                  "accessory": {
+                    "type": "button",
+                    "text": {
+                      "type": "plain_text",
+                      "text": "View job"
+                    },
+                    "url": "${CIRCLE_BUILD_URL}"
+                  }
+                }
+              ]
+            }
 
 workflows:
   version: 2
   build-test-and-deploy:
     jobs:
-      - validate:
+      - build-docker:
+          context: hmpps-delius-push-to-ecr
+      - build-gradle:
           filters:
             tags:
               ignore: /.*/
-      - build_docker:
+      - sast-scan:
+          context: hmpps-common-vars
           requires:
-            - validate
-      - deploy-dev:
-          requires:
-          - validate
-          - build_docker
+            - build-gradle
+      - deploy:
+          name: deploy-to-dev
           context:
-            - moj-slack-notifications          
-      - deploy-test:
+            - hmpps-common-vars
+            - hmpps-delius-deploy-to-ecs-dev
+          requires:
+            - build-gradle
+            - build-docker
+      - deploy:
+          name: deploy-to-test
+          context:
+            - hmpps-common-vars
+            - hmpps-delius-deploy-to-ecs-test
           filters:
             branches:
               only:
                 - main
           requires:
-            - validate
-            - build_docker
-          context:
-            - moj-slack-notifications            
+            - deploy-to-dev
       - request-stage-approval:
           type: approval
           requires:
-            - deploy-test
-      - deploy-stage:
+            - deploy-to-test
+      - deploy:
+          name: deploy-to-stage
+          context:
+            - hmpps-common-vars
+            - hmpps-delius-deploy-to-ecs-stage
           requires:
             - request-stage-approval
-          context:
-            - moj-slack-notifications
       - request-prod-approval:
           type: approval
           requires:
-            - deploy-stage
-      - deploy-prod:
+            - deploy-to-stage
+      - deploy:
+          name: deploy-to-prod
+          context:
+            - hmpps-common-vars
+            - hmpps-delius-deploy-to-ecs-prod
           requires:
             - request-prod-approval
-          context:
-            - moj-slack-notifications
 
   scheduled:
     triggers:
