@@ -88,6 +88,7 @@ object Fake {
   fun contactType() = ContactType(
     id = id(),
     code = faker.options().option(*allowedContactTypes),
+    description = faker.lorem().characters(1, 4000),
     selectable = true,
     spgOverride = false,
     alertFlag = true,
@@ -111,6 +112,7 @@ object Fake {
   fun contactOutcomeType() = ContactOutcomeType(
     id = id(),
     code = faker.lorem().characters(1, 10),
+    description = faker.lorem().characters(1, 50),
     compliantAcceptable = true,
     attendance = true,
     actionRequired = true,
@@ -142,7 +144,7 @@ object Fake {
     unpaidWorkTeam = faker.bool().bool()
   ).apply { addStaff(staff(provider, this)) }
 
-  fun officeLocation() = OfficeLocation(id = id(), code = faker.lorem().characters(7))
+  fun officeLocation() = OfficeLocation(id = id(), code = faker.lorem().characters(7), description = faker.lorem().characters(1, 50))
 
   fun staff(provider: Provider = provider(), team: Team = team()) = Staff(
     id = id(),

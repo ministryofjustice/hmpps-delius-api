@@ -22,6 +22,9 @@ class ContactType(
   @Column(name = "CODE", nullable = false)
   var code: String,
 
+  @Column(name = "DESCRIPTION", length = 4000, nullable = false)
+  var description: String,
+
   @Column(name = "SELECTABLE", nullable = false)
   @Type(type = "yes_no")
   var selectable: Boolean,

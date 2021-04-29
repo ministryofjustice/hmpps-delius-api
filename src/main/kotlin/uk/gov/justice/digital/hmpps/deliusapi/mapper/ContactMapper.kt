@@ -16,12 +16,20 @@ interface ContactMapper {
   @Mappings(
     Mapping(source = "offender.crn", target = "offenderCrn"),
     Mapping(source = "type.code", target = "type"),
+    Mapping(source = "type.description", target = "typeDescription"),
     Mapping(source = "outcome.code", target = "outcome"),
+    Mapping(source = "outcome.description", target = "outcomeDescription"),
     Mapping(target = "enforcement", expression = GET_ENFORCEMENT_CODE),
+    Mapping(target = "enforcementDescription", expression = GET_ENFORCEMENT_DESCRIPTION),
     Mapping(source = "provider.code", target = "provider"),
+    Mapping(source = "provider.description", target = "providerDescription"),
     Mapping(source = "team.code", target = "team"),
+    Mapping(source = "team.description", target = "teamDescription"),
     Mapping(source = "staff.code", target = "staff"),
+    Mapping(source = "staff.firstName", target = "staffFirstName"),
+    Mapping(source = "staff.lastName", target = "staffLastName"),
     Mapping(source = "officeLocation.code", target = "officeLocation"),
+    Mapping(source = "officeLocation.description", target = "officeLocationDescription"),
     Mapping(source = "event.id", target = "eventId"),
     Mapping(source = "requirement.id", target = "requirementId"),
     Mapping(source = "nsi.id", target = "nsiId"),
@@ -41,7 +49,10 @@ interface ContactMapper {
 
   companion object {
     private const val GET_ENFORCEMENT_CODE = "java(ContactMapper.Companion.getEnforcementCode(src))"
+    private const val GET_ENFORCEMENT_DESCRIPTION = "java(ContactMapper.Companion.getEnforcementDescription(src))"
     val INSTANCE = Mappers.getMapper(ContactMapper::class.java)
-    fun getEnforcementCode(contact: Contact) = contact.enforcements.getOrNull(0)?.action?.code
+    fun getEnforcement(contact: Contact) = contact.enforcements.getOrNull(0)?.action
+    fun getEnforcementCode(contact: Contact) = getEnforcement(contact)?.code
+    fun getEnforcementDescription(contact: Contact) = getEnforcement(contact)?.description
   }
 }

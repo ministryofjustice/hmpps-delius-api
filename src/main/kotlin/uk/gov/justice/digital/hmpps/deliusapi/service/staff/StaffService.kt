@@ -42,10 +42,10 @@ class StaffService(
       provider = provider
     )
 
-    request.teams?.map { teamCode ->
+    request.teams.map { teamCode ->
       provider.teams.find { team -> team.code == teamCode }
         ?: throw BadRequestException("Team with id '$teamCode' does not exist on provider '${provider.code}'")
-    }?.map(staff::addTeam)
+    }.map(staff::addTeam)
 
     return mapper.toDto(staffRepository.saveAndFlush(staff))
   }
