@@ -15,8 +15,11 @@ class ContactOutcomeType(
   @Column(name = "CONTACT_OUTCOME_TYPE_ID")
   var id: Long,
 
-  @Column(name = "CODE")
+  @Column(name = "CODE", nullable = false)
   var code: String,
+
+  @Column(name = "DESCRIPTION", length = 50, nullable = false)
+  var description: String,
 
   @Column(name = "OUTCOME_COMPLIANT_ACCEPTABLE", length = 1)
   @Type(type = "yes_no")

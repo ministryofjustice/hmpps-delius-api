@@ -20,4 +20,7 @@ class OfficeLocation(
 
   @Column(name = "CODE", columnDefinition = "CHAR(7)")
   var code: String,
+
+  @Column(name = "DESCRIPTION", length = 50, nullable = false)
+  var description: String,
 )
