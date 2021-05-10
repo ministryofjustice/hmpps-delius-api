@@ -1,0 +1,21 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="HmppsDeliusApi - dev" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="hmpps-delius-api.main" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="uk.gov.justice.digital.hmpps.deliusapi.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <option name="SPRING_BOOT_MAIN_CLASS" value="uk.gov.justice.digital.hmpps.deliusapi.HmppsDeliusApi" />
+    <option name="ACTIVE_PROFILES" value="dev" />
+    <option name="ALTERNATIVE_JRE_PATH" />
+    <option name="SHORTEN_COMMAND_LINE" value="NONE" />
+    <envs>
+      <env name="SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI" value="http://localhost:9090/auth/.well-known/jwks.json" />
+    </envs>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
