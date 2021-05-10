@@ -1,43 +1,54 @@
 # Delius API Development
 
-## Building and Testing Locally
+## Dependencies
+* [JDK 11](https://openjdk.java.net/projects/jdk/11/)
 
-``` sh
-# Build and unit test the application
-./gradlew check
-```
-
-## Development Setup
-
-``` sh
-# Install dependencies
-# JDK v11
-
+## Source
+```shell
 # Check out the application code
 git clone git@github.com:ministryofjustice/hmpps-delius-api.git
 
-# Build & run the application & dependencies in docker
-docker-compose up --build --force-recreate
-
-# Obtain an oauth token from the local HMPPS-Auth
-AUTH_TOKEN=$( \
-    curl --location \
-         --request POST "http://localhost:9090/auth/oauth/token?grant_type=client_credentials" \
-         --header "Authorization: Basic $(echo -n community-api-client:community-api-client | base64)" \
-    | jq -r .access_token)
-
-# Make a request to the local Delius API
-curl -v http://localhost:8081/health/ping --header "Authorization: Bearer $AUTH_TOKEN" | jq .
-
-# Run the application from the local filesystem sources
-./gradlew bootRun
-
+# or, pull the latest docker image
+docker pull public.ecr.aws/hmpps/delius-api
 ```
 
-## Container
-```sh
-# Pull the latest docker image
-docker pull public.ecr.aws/hmpps/delius-api
+## Run
+### Using Gradle
+```shell
+# Build and unit test the application
+./gradlew check
+
+# Run the standalone Spring Boot application
+SPRING_PROFILES_ACTIVE=dev ./gradlew bootRun
+```
+
+### Using Docker
+```shell
+# Build & run the application & dependencies in docker
+docker-compose up --build --force-recreate
+```
+
+### Using IntelliJ
+1. *Import* the project (File > New > Project from Version Control...)
+2. Run the *HmppsAuth - dev* configuration
+3. Run the *HmppsDeliusApi - dev* configuration
+
+This will start up hmpps-auth in a Docker container, but runs the Spring Boot app
+separately to allow better integration with IntelliJ dev tooling.
+
+## Connect
+
+For testing, use the`delius-api-client` client with secret: `delius-api-client`.
+Client details are created here: [V900_1__delius_api_oauth.sql](/src/main/resources/db/auth/V900_1__delius_api_oauth.sql).
+
+```shell
+# Obtain an OAuth token from the local HMPPS-Auth container
+AUTH_TOKEN=$(curl --request POST --user delius-api-client:delius-api-client \
+             "http://localhost:9090/auth/oauth/token?grant_type=client_credentials" \
+            | jq -r .access_token)
+
+# Make a request to the local Delius API
+curl -v http://localhost:8080/health/ping --header "Authorization: Bearer $AUTH_TOKEN" | jq .
 ```
 
 ## Integration Testing

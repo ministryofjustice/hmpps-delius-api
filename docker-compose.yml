@@ -12,8 +12,10 @@ services:
       test: [ "CMD", "curl", "-f", "http://localhost:9090/auth/health" ]
     environment:
       SERVER_PORT: 9090
-      SPRING_PROFILES_ACTIVE: dev,dev-config
-      DELIUS_ENABLED: "false"
+      SPRING_PROFILES_ACTIVE: dev
+      AUTH_FLYWAY_LOCATIONS: classpath:db/auth,classpath:db/auth_h2,classpath:db/dev/data/auth,filesystem:/app/db/auth
+    volumes:
+      - "./src/main/resources/db/auth:/app/db/auth:ro"
 
   hmpps-delius-api:
     build:
