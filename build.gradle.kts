@@ -85,7 +85,12 @@ openApiGenerate {
 }
 
 dependencyCheck {
-  skipConfigurations.add("_classStructurekaptTestKotlin")
+  skipConfigurations.addAll(
+    listOf(
+      "_classStructurekaptTestKotlin",
+      "_classStructurekaptE2eKotlin"
+    )
+  )
 }
 
 configurations {
