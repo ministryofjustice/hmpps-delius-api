@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.1.5"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.2.0"
   kotlin("plugin.spring") version "1.4.32"
   kotlin("plugin.jpa") version "1.4.32"
   kotlin("kapt") version "1.4.32"
@@ -85,7 +85,12 @@ openApiGenerate {
 }
 
 dependencyCheck {
-  skipConfigurations.add("_classStructurekaptTestKotlin")
+  skipConfigurations.addAll(
+    listOf(
+      "_classStructurekaptTestKotlin",
+      "_classStructurekaptE2eKotlin"
+    )
+  )
 }
 
 configurations {
