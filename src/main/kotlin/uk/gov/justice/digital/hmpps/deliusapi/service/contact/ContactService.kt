@@ -226,6 +226,22 @@ class ContactService(
   @Transactional
   fun replaceContact(contactId: Long, replaceContact: ReplaceContact): ContactDto? {
     val contact = getContact(contactId)
+
+    validation.validateReplaceContactType(contact);
+    validation.validateReplaceContactOffenderId(replaceContact.offenderId, contact)
+
+    if(replaceContact.eventId != null) {
+      validation.validateReplaceContactEventId(replaceContact.eventId, contact)
+    }
+
+    if(replaceContact.requirementId != null) {
+      validation.validateReplaceContactRequirementId(replaceContact.requirementId, contact)
+    }
+
+    if(replaceContact.nsiId != null) {
+      validation.validateReplaceContactNsiId(replaceContact.nsiId, contact)
+    }
+
     val updateContact = mapper.toUpdate(contact)
 
     // 1) Get the original contact and add outcome

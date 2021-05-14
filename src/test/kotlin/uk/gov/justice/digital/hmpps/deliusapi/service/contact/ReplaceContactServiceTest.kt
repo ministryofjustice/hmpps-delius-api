@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.deliusapi.service.contact
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doNothing
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
@@ -75,6 +76,66 @@ class ReplaceContactServiceTest : ContactServiceTestBase() {
     }
   }
 
+  @Test
+  fun `Fails when contact type is not an attendance contact`(){
+    havingDependentEntities()
+    havingMappedContacts()
+    havingRepositories()
+    havingValidation(havingValidContactAttendanceType = false)
+
+    assertThrows<BadRequestException>("not an attendance contact") {
+      whenReplacingContact()
+    }
+  }
+
+  @Test
+  fun `Fails when contact id does not match the contact contactId`(){
+    havingDependentEntities()
+    havingMappedContacts()
+    havingRepositories()
+    havingValidation(havingValidOffenderId = false)
+
+    assertThrows<BadRequestException>("offender ID does not match") {
+      whenReplacingContact()
+    }
+  }
+
+  @Test
+  fun `Fails when event id does not match contact eventId`(){
+    havingDependentEntities()
+    havingMappedContacts()
+    havingRepositories()
+    havingValidation(havingValidEventId = false)
+
+    assertThrows<BadRequestException>("event ID does not match") {
+      whenReplacingContact()
+    }
+  }
+
+  @Test
+  fun `Fails when requirement id does not match contact requirementId`(){
+    havingDependentEntities()
+    havingMappedContacts()
+    havingRepositories()
+    havingValidation(havingValidRequirementId = false)
+
+    assertThrows<BadRequestException>("requirement ID does not match") {
+      whenReplacingContact()
+    }
+  }
+
+  @Test
+  fun `Fails when NSI id does not match contact NSI Id`(){
+    havingDependentEntities()
+    havingMappedContacts()
+    havingRepositories()
+    havingValidation(havingValidNsiId = false)
+
+    assertThrows<BadRequestException>("NSI ID does not match") {
+      whenReplacingContact()
+    }
+  }
+
   private fun havingMappedContacts(
     existingContact: Contact = Fake.contact(),
     updateContact: UpdateContact = Fake.updateContact().copy(
@@ -121,14 +182,56 @@ class ReplaceContactServiceTest : ContactServiceTestBase() {
 
   private fun havingValidation(
     havingValidOutcomeType: Boolean? = true,
+    havingValidContactAttendanceType: Boolean? = true,
+    havingValidOffenderId: Boolean? = true,
+    havingValidEventId: Boolean? = true,
+    havingValidRequirementId: Boolean? = true,
+    havingValidNsiId: Boolean? =true,
   ) {
     val outcomeMock = whenever(validationService.validateOutcomeType(any(), any()))
+
     when (havingValidOutcomeType) {
       null -> outcomeMock.thenReturn(null)
       true -> outcomeMock.thenReturn(outcome)
       false -> outcomeMock.thenThrow(BadRequestException("bad outcome"))
     }
+
+    if (havingValidContactAttendanceType == false) {
+      whenever(validationService.validateReplaceContactType(any())).thenThrow(BadRequestException("not an attendance contact"))
+    }
+
+    if (havingValidOffenderId == false) {
+      whenever(validationService.validateReplaceContactOffenderId(any(),any())).thenThrow(BadRequestException("offender ID does not match"))
+    }
+
+    if (havingValidEventId == false) {
+      whenever(validationService.validateReplaceContactEventId(any(),any())).thenThrow(BadRequestException("event ID does not match"))
+    }
+
+    if (havingValidRequirementId == false) {
+      whenever(validationService.validateReplaceContactRequirementId(any(),any())).thenThrow(BadRequestException("event ID does not match"))
+    }
+
+    if (havingValidNsiId == false) {
+      whenever(validationService.validateReplaceContactNsiId(any(),any())).thenThrow(BadRequestException("NSI ID does not match"))
+    }
   }
+
+//  private fun havingAttendanceTypeValidation(
+//    havingValidContactAttendanceType: Boolean? = true,
+//  ){
+//    if (havingValidContactAttendanceType == false) {
+//      whenever(validationService.validateReplaceContactType(any())).thenThrow(BadRequestException("not an attendance contact"))
+//    }
+//  }
+
+//  private fun havingOffenderIdValidation(
+//    havingValidOffenderId: Boolean? =true,
+//  ){
+//    if (havingValidOffenderId == false) {
+//      whenever(validationService.validateReplaceContactOffenderId(any(),any())).thenThrow(BadRequestException("offender ID does not match"))
+//    }
+//  }
 
   private fun whenReplacingContact() {
     request = Fake.replaceContact().copy(outcome = outcome.code)
