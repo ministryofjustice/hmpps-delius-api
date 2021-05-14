@@ -227,18 +227,18 @@ class ContactService(
   fun replaceContact(contactId: Long, replaceContact: ReplaceContact): ContactDto? {
     val contact = getContact(contactId)
 
-    validation.validateReplaceContactType(contact);
-    validation.validateReplaceContactOffenderId(replaceContact.offenderId, contact)
+    validation.validateReplaceContactType(contact)
+    validation.validateReplaceContactOffenderCrn(replaceContact.offenderCrn, contact)
 
-    if(replaceContact.eventId != null) {
+    if (replaceContact.eventId != null) {
       validation.validateReplaceContactEventId(replaceContact.eventId, contact)
     }
 
-    if(replaceContact.requirementId != null) {
+    if (replaceContact.requirementId != null) {
       validation.validateReplaceContactRequirementId(replaceContact.requirementId, contact)
     }
 
-    if(replaceContact.nsiId != null) {
+    if (replaceContact.nsiId != null) {
       validation.validateReplaceContactNsiId(replaceContact.nsiId, contact)
     }
 

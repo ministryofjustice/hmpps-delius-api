@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact
 
+import uk.gov.justice.digital.hmpps.deliusapi.validation.Crn
 import uk.gov.justice.digital.hmpps.deliusapi.validation.EndTime
 import uk.gov.justice.digital.hmpps.deliusapi.validation.FieldGroup
 import uk.gov.justice.digital.hmpps.deliusapi.validation.FieldGroupType
@@ -11,8 +12,8 @@ import javax.validation.constraints.Positive
 import javax.validation.constraints.Size
 
 data class ReplaceContact(
-  @field:Positive
-  val offenderId: Long,
+  @Crn
+  val offenderCrn: String,
 
   @NotBlankWhenProvided
   @field:Size(max = 10)

@@ -82,7 +82,7 @@ object Fake {
   fun id(): Long = faker.number().numberBetween(1L, 900_000_000_000_000_000L) // maxvalue of db sequences
   fun count(): Long = faker.number().numberBetween(1L, 100L)
 
-  private fun crn() = "${faker.lorem().fixedString(1)}${faker.number().randomNumber(6, true)}"
+  fun crn() = "${faker.lorem().fixedString(1)}${faker.number().randomNumber(6, true)}"
 
   fun offender() = Offender(id = id(), crn = crn(), events = listOf(event()))
 
@@ -474,6 +474,6 @@ object Fake {
     nsiId = id(),
     requirementId = id(),
     eventId = id(),
-    offenderId = id()
+    offenderCrn = crn()
   )
 }
