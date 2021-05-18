@@ -73,3 +73,7 @@ ecr.repo
 # Generated open api spec
 .openapi-generator/
 src/generated/
+
+# OracleDB import files
+oracledb/scripts/delius
+oracledb/import.dmp

@@ -1,5 +1,5 @@
 # Take a pre-built image
-FROM 895523100917.dkr.ecr.eu-west-2.amazonaws.com/hmpps/delius-test-db:4.10.3
+FROM 895523100917.dkr.ecr.eu-west-2.amazonaws.com/hmpps/delius-test-db:4.10.10
 
 # Uplift the PDM version and install the latest Delius PLSQL code
 COPY scripts /scripts/
