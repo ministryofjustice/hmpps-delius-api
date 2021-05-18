@@ -277,6 +277,110 @@ class ContactValidationServiceTest {
       .hasProperty(Contact::hoursCredited, 1.5)
   }
 
+  @Test
+  fun `Replacing a non attendance contact`() {
+    val testContact = Fake.contact()
+    testContact.type.attendanceContact = false
+    assertThrows<BadRequestException>("Contact is not an Attendance Contact and can not be replaced") {
+      subject.validateReplaceContactType(testContact)
+    }
+  }
+
+  @Test
+  fun `Replacing an attendance contact`() {
+    val testContact = Fake.contact()
+    testContact.type.attendanceContact = true
+    assertDoesNotThrow {
+      subject.validateReplaceContactType(testContact)
+    }
+  }
+
+  @Test
+  fun `Replacing an attendance contact with a non matching crn`() {
+    val testContact = Fake.contact()
+    testContact.type.attendanceContact = true
+    testContact.offender.crn = "X014799"
+    assertThrows<BadRequestException>("Offender CRN does not match the offender CRN on the contact") {
+      subject.validateReplaceContactOffenderCrn("X014999", testContact)
+    }
+  }
+
+  @Test
+  fun `Replacing an attendance contact with a matching crn`() {
+    val testContact = Fake.contact()
+    testContact.type.attendanceContact = true
+    testContact.offender.crn = "X014799"
+    assertDoesNotThrow {
+      subject.validateReplaceContactOffenderCrn("X014799", testContact)
+    }
+  }
+
+  @Test
+  fun `Replacing an attendance contact with a matching eventId`() {
+    val testContact = Fake.contact()
+    testContact.type.attendanceContact = true
+    testContact.event = Fake.event()
+    testContact.event?.id = 11
+    assertDoesNotThrow {
+      subject.validateReplaceContactEventId(11, testContact)
+    }
+  }
+
+  @Test
+  fun `Replacing an attendance contact with a non matching eventId`() {
+    val testContact = Fake.contact()
+    testContact.type.attendanceContact = true
+    testContact.event = Fake.event()
+    testContact.event?.id = 11
+    assertThrows<BadRequestException>("Event ID does not match the Event ID on the contact") {
+      subject.validateReplaceContactEventId(2, testContact)
+    }
+  }
+
+  @Test
+  fun `Replacing an attendance contact with a non matching requirementId`() {
+    val testContact = Fake.contact()
+    testContact.type.attendanceContact = true
+    testContact.requirement = Fake.requirement()
+    testContact.requirement?.id = 11
+    assertThrows<BadRequestException>("Requirement ID does not match the Requirement ID on the contact") {
+      subject.validateReplaceContactRequirementId(2, testContact)
+    }
+  }
+
+  @Test
+  fun `Replacing an attendance contact with a matching requirementId`() {
+    val testContact = Fake.contact()
+    testContact.type.attendanceContact = true
+    testContact.requirement = Fake.requirement()
+    testContact.requirement?.id = 11
+    assertDoesNotThrow {
+      subject.validateReplaceContactRequirementId(11, testContact)
+    }
+  }
+
+  @Test
+  fun `Replacing an attendance contact with a matching nsiId`() {
+    val testContact = Fake.contact()
+    testContact.type.attendanceContact = true
+    testContact.nsi = Fake.nsi()
+    testContact.nsi?.id = 11
+    assertDoesNotThrow {
+      subject.validateReplaceContactNsiId(11, testContact)
+    }
+  }
+
+  @Test
+  fun `Replacing an attendance contact with a non matching nsiId`() {
+    val testContact = Fake.contact()
+    testContact.type.attendanceContact = true
+    testContact.nsi = Fake.nsi()
+    testContact.nsi?.id = 11
+    assertThrows<BadRequestException>("NSI ID does not match the NSI ID on the contact") {
+      subject.validateReplaceContactNsiId(2, testContact)
+    }
+  }
+
   private fun attemptingToValidateContactType(
     success: Boolean,
     alert: Boolean = true,
