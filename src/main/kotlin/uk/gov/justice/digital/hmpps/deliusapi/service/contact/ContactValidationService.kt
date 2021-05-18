@@ -189,4 +189,34 @@ class ContactValidationService(
       }
     }
   }
+
+  fun validateReplaceContactType(contact: Contact) {
+    if (!contact.type.attendanceContact) {
+      throw BadRequestException("Contact is not an Attendance Contact and can not be replaced")
+    }
+  }
+
+  fun validateReplaceContactOffenderCrn(offenderCrn: String, contact: Contact) {
+    if (offenderCrn != contact.offender.crn) {
+      throw BadRequestException("Offender CRN does not match the offender CRN on the contact")
+    }
+  }
+
+  fun validateReplaceContactEventId(eventId: Long, contact: Contact) {
+    if (eventId != contact.event?.id) {
+      throw BadRequestException("Event ID does not match the Event ID on the contact")
+    }
+  }
+
+  fun validateReplaceContactRequirementId(requirementId: Long, contact: Contact) {
+    if (requirementId != contact.requirement?.id) {
+      throw BadRequestException("Requirement ID does not match the Requirement ID on the contact")
+    }
+  }
+
+  fun validateReplaceContactNsiId(nsiId: Long, contact: Contact) {
+    if (nsiId != contact.nsi?.id) {
+      throw BadRequestException("NSI ID does not match the NSI ID on the contact")
+    }
+  }
 }

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.deliusapi.controller.extensions.applyPatch
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact.ContactDto
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact.NewContact
+import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact.ReplaceContact
 import uk.gov.justice.digital.hmpps.deliusapi.service.contact.ContactService
 import uk.gov.justice.digital.hmpps.deliusapi.validation.validOrThrow
 import javax.validation.Valid
@@ -82,5 +83,27 @@ class ContactController(
   @ApiOperation("Deletes an existing contact by id")
   fun deleteContact(@PathVariable @Positive id: Long) {
     service.deleteContact(id)
+  }
+
+  @PostMapping("{id}/replace")
+  @ApiOperation("Replace/reschedule an existing contact")
+  @ApiResponses(
+    value = [
+      ApiResponse(
+        code = 201,
+        message = "The outcome was stored on the existing contact, and a new contact was created with the provided date/times.",
+        response = ContactDto::class
+      ),
+      ApiResponse(
+        code = 404,
+        message = "No contact exists with that ID"
+      )
+    ]
+  )
+  fun replaceContact(
+    @PathVariable @Positive id: Long,
+    @RequestBody replaceContact: ReplaceContact
+  ): ResponseEntity<ContactDto> {
+    return status(HttpStatus.CREATED).body(service.replaceContact(id, replaceContact))
   }
 }

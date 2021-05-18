@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.deliusapi.advice.Auditable
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact.ContactDto
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact.CreateOrUpdateContact
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact.NewContact
+import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact.ReplaceContact
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact.UpdateContact
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Contact
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Provider
@@ -220,5 +221,39 @@ class ContactService(
     val team = provider.getTeamOrBadRequest(request.team)
     val staff = team.getStaffOrBadRequest(request.staff)
     return Triple(provider, team, staff)
+  }
+
+  @Transactional
+  fun replaceContact(contactId: Long, replaceContact: ReplaceContact): ContactDto? {
+    val contact = getContact(contactId)
+
+    validation.validateReplaceContactType(contact)
+    validation.validateReplaceContactOffenderCrn(replaceContact.offenderCrn, contact)
+
+    if (replaceContact.eventId != null) {
+      validation.validateReplaceContactEventId(replaceContact.eventId, contact)
+    }
+
+    if (replaceContact.requirementId != null) {
+      validation.validateReplaceContactRequirementId(replaceContact.requirementId, contact)
+    }
+
+    if (replaceContact.nsiId != null) {
+      validation.validateReplaceContactNsiId(replaceContact.nsiId, contact)
+    }
+
+    val updateContact = mapper.toUpdate(contact)
+
+    // 1) Get the original contact and add outcome
+    val updatedContact = updateContact.copy(outcome = replaceContact.outcome)
+    updateContact(contactId, updatedContact)
+
+    // 2) Create new contact based on existing one with replaced values
+    val newContact = mapper.toNew(mapper.toDto(contact)).copy(
+      date = replaceContact.date,
+      startTime = replaceContact.startTime,
+      endTime = replaceContact.endTime
+    )
+    return createContact(newContact)
   }
 }

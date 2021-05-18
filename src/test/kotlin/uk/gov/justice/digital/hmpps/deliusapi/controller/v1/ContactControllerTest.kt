@@ -72,4 +72,12 @@ class ContactControllerTest {
 
     verify(service, times(1)).deleteContact(id)
   }
+
+  @Test
+  fun `Replace Contact`() {
+    val id = Fake.faker.number().randomNumber()
+    val replaceContact = Fake.replaceContact()
+    subject.replaceContact(id, replaceContact)
+    verify(service, times(1)).replaceContact(id, replaceContact)
+  }
 }

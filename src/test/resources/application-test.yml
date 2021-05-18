@@ -8,4 +8,4 @@ management.endpoint:
 tokenverification:
   api.base.url: http://localhost:9100/
 
-contacts.allowed-types: TST01,TST02,TST03,TST05,SMLI001,EAP0,CCCS,RRIR,CITA
+contacts.allowed-types: TST01,TST02,TST03,TST05,TST06,SMLI001,EAP0,CCCS,RRIR,CITA

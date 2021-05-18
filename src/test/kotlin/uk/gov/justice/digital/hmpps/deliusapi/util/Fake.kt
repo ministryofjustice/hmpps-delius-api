@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.deliusapi.util
 import com.github.javafaker.Faker
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact.ContactDto
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact.NewContact
+import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact.ReplaceContact
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact.UpdateContact
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.nsi.NewNsi
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.nsi.NewNsiManager
@@ -81,7 +82,7 @@ object Fake {
   fun id(): Long = faker.number().numberBetween(1L, 900_000_000_000_000_000L) // maxvalue of db sequences
   fun count(): Long = faker.number().numberBetween(1L, 100L)
 
-  private fun crn() = "${faker.lorem().fixedString(1)}${faker.number().randomNumber(6, true)}"
+  fun crn() = "${faker.lorem().fixedString(1)}${faker.number().randomNumber(6, true)}"
 
   fun offender() = Offender(id = id(), crn = crn(), events = listOf(event()))
 
@@ -144,7 +145,8 @@ object Fake {
     unpaidWorkTeam = faker.bool().bool()
   ).apply { addStaff(staff(provider, this)) }
 
-  fun officeLocation() = OfficeLocation(id = id(), code = faker.lorem().characters(7), description = faker.lorem().characters(1, 50))
+  fun officeLocation() =
+    OfficeLocation(id = id(), code = faker.lorem().characters(7), description = faker.lorem().characters(1, 50))
 
   fun staff(provider: Provider = provider(), team: Team = team()) = Staff(
     id = id(),
@@ -161,6 +163,7 @@ object Fake {
     code = faker.lorem().characters(1, 20),
     nsiTypes = listOf(nsiType())
   )
+
   fun requirement() = Requirement(
     id = id(),
     offenderId = id(),
@@ -462,4 +465,15 @@ object Fake {
     code = faker.lorem().characters(1, 10),
     provider = provider
   ).apply { localDeliveryUnits.add(localDeliveryUnit(this)) }
+
+  fun replaceContact() = ReplaceContact(
+    outcome = contactOutcomeType().code,
+    date = randomPastLocalDate(),
+    startTime = localTimeBetween(0, 12),
+    endTime = localTimeBetween(12, 23),
+    nsiId = id(),
+    requirementId = id(),
+    eventId = id(),
+    offenderCrn = crn()
+  )
 }
