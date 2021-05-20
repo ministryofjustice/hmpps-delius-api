@@ -131,7 +131,9 @@ class ReplaceContactServiceTest : ContactServiceTestBase() {
     havingValidation(havingValidNsiId = false)
 
     assertThrows<BadRequestException>("NSI ID does not match") {
-      whenReplacingContact()
+      whenReplacingContact(
+        withRequest = Fake.replaceContact().copy(requirementId = null, nsiId = Fake.id())
+      )
     }
   }
 
@@ -215,8 +217,10 @@ class ReplaceContactServiceTest : ContactServiceTestBase() {
     }
   }
 
-  private fun whenReplacingContact() {
-    request = Fake.replaceContact().copy(outcome = outcome.code)
+  private fun whenReplacingContact(
+    withRequest: ReplaceContact = Fake.replaceContact()
+  ) {
+    request = withRequest.copy(outcome = outcome.code)
     subject.replaceContact(existingContact.id, request)
   }
 }

@@ -471,7 +471,6 @@ object Fake {
     date = randomPastLocalDate(),
     startTime = localTimeBetween(0, 12),
     endTime = localTimeBetween(12, 23),
-    nsiId = id(),
     requirementId = id(),
     eventId = id(),
     offenderCrn = crn()
