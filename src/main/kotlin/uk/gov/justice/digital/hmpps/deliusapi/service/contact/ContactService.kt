@@ -243,8 +243,6 @@ class ContactService(
       validation.validateReplaceContactNsiId(replaceContact.nsiId, contact)
     }
 
-    val updateContact = mapper.toUpdate(contact)
-
     // 1) Get the original contact and add outcome
     val updatedContact = mapper.toUpdate(contact).copy(
       outcome = replaceContact.outcome
