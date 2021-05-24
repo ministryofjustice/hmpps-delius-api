@@ -183,7 +183,7 @@ workflows:
                 - main
           requires:
             - deploy-to-dev
-      - request-stage-approval:
+      - request-pre-prod-approval:
           type: approval
           requires:
             - deploy-to-test
@@ -193,11 +193,27 @@ workflows:
             - hmpps-common-vars
             - hmpps-delius-deploy-to-ecs-stage
           requires:
-            - request-stage-approval
+            - request-pre-prod-approval
+      - deploy:
+          name: deploy-to-pre-prod
+          context:
+            - hmpps-common-vars
+            - hmpps-delius-deploy-to-ecs-pre-prod
+          requires:
+            - request-pre-prod-approval
+      - deploy:
+          name: deploy-to-perf
+          context:
+            - hmpps-common-vars
+            - hmpps-delius-deploy-to-ecs-perf
+          requires:
+            - request-pre-prod-approval
       - request-prod-approval:
           type: approval
           requires:
             - deploy-to-stage
+            - deploy-to-pre-prod
+            - deploy-to-perf
       - deploy:
           name: deploy-to-prod
           context:
