@@ -219,4 +219,10 @@ class ContactValidationService(
       throw BadRequestException("NSI ID does not match the NSI ID on the contact")
     }
   }
+
+  fun validateReplaceContactExistingContactOutcome(contact: Contact) {
+    if (contact.outcome != null) {
+      throw BadRequestException("Contact already has an outcome and can not be replaced")
+    }
+  }
 }

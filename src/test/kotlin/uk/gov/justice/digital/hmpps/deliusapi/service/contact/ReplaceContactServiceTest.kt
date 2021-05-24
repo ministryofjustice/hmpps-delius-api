@@ -137,6 +137,18 @@ class ReplaceContactServiceTest : ContactServiceTestBase() {
     }
   }
 
+  @Test
+  fun `Fails when the existing contact has an outcome set`() {
+    havingDependentEntities()
+    havingMappedContacts()
+    havingRepositories()
+    havingValidation(havingNoExistingOutcome = false)
+
+    assertThrows<BadRequestException>("Contact already has an outcome and can not be replaced") {
+      whenReplacingContact()
+    }
+  }
+
   private fun havingMappedContacts(
     existingContact: Contact = Fake.contact(),
     updateContact: UpdateContact = Fake.updateContact().copy(
@@ -188,6 +200,7 @@ class ReplaceContactServiceTest : ContactServiceTestBase() {
     havingValidEventId: Boolean = true,
     havingValidRequirementId: Boolean = true,
     havingValidNsiId: Boolean = true,
+    havingNoExistingOutcome: Boolean = true,
   ) {
     val outcomeMock = whenever(validationService.validateOutcomeType(any(), any()))
 
@@ -214,6 +227,10 @@ class ReplaceContactServiceTest : ContactServiceTestBase() {
 
     if (!havingValidNsiId) {
       whenever(validationService.validateReplaceContactNsiId(any(), any())).thenThrow(BadRequestException("NSI ID does not match"))
+    }
+
+    if (!havingNoExistingOutcome) {
+      whenever(validationService.validateReplaceContactExistingContactOutcome(any())).thenThrow(BadRequestException("Contact already has an outcome and can not be replaced"))
     }
   }
 

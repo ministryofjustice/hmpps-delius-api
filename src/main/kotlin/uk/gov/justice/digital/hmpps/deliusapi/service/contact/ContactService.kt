@@ -227,6 +227,7 @@ class ContactService(
   fun replaceContact(contactId: Long, replaceContact: ReplaceContact): ContactDto? {
     val contact = getContact(contactId)
 
+    validation.validateReplaceContactExistingContactOutcome(contact)
     validation.validateReplaceContactType(contact)
     validation.validateReplaceContactOffenderCrn(replaceContact.offenderCrn, contact)
 
@@ -245,15 +246,20 @@ class ContactService(
     val updateContact = mapper.toUpdate(contact)
 
     // 1) Get the original contact and add outcome
-    val updatedContact = updateContact.copy(outcome = replaceContact.outcome)
+    val updatedContact = mapper.toUpdate(contact).copy(
+      outcome = replaceContact.outcome
+    )
+
     updateContact(contactId, updatedContact)
 
     // 2) Create new contact based on existing one with replaced values
     val newContact = mapper.toNew(mapper.toDto(contact)).copy(
       date = replaceContact.date,
       startTime = replaceContact.startTime,
-      endTime = replaceContact.endTime
-    )
+      endTime = replaceContact.endTime,
+      outcome = null
+    ).copy(outcome = null)
+
     return createContact(newContact)
   }
 }

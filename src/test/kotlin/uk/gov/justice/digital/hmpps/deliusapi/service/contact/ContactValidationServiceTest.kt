@@ -381,6 +381,16 @@ class ContactValidationServiceTest {
     }
   }
 
+  @Test
+  fun `Replacing an attendance contact which already has an outcome should fail`() {
+    val testContact = Fake.contact()
+    testContact.type.attendanceContact = true
+    testContact.outcome = Fake.contactOutcomeType()
+    assertThrows<BadRequestException>("Contact already has an outcome and can not be replaced") {
+      subject.validateReplaceContactExistingContactOutcome(testContact)
+    }
+  }
+
   private fun attemptingToValidateContactType(
     success: Boolean,
     alert: Boolean = true,
