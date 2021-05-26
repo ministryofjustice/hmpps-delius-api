@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.deliusapi.integration.v1.contact
 
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
@@ -8,19 +9,30 @@ import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact.ContactDto
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact.ReplaceContact
 import uk.gov.justice.digital.hmpps.deliusapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.deliusapi.repository.ContactRepository
 import uk.gov.justice.digital.hmpps.deliusapi.util.Fake
 
 @ActiveProfiles("test-h2")
 class ReplaceContactTest : IntegrationTestBase() {
 
+  @Autowired
+  lateinit var contactRepository: ContactRepository
+
   @Transactional
   @Test
   fun `should successfully create a new contact`() {
-    val existingContact = havingExistingContact(Fake.validNewContact().copy(type = "TST06"))
+    val existingContact = havingExistingContact(
+      Fake.validNewContact().copy(
+        outcome = null,
+        type = "TST06"
+      )
+    )
     val request = havingValidRequest(existingContact)
     webTestClient
       .whenReplacingContact(existingContact.id, request)
       .expectStatus().isCreated
+      .expectBody()
+      .jsonPath("$.outcome").doesNotExist()
   }
 
   private fun havingValidRequest(existingContact: ContactDto): ReplaceContact {
@@ -34,7 +46,7 @@ class ReplaceContactTest : IntegrationTestBase() {
   @Transactional
   @Test
   fun `should fail if existing contact is not an attendance contact`() {
-    val existingContact = havingExistingContact(Fake.validNewContact().copy(type = "TST01"))
+    val existingContact = havingExistingContact(Fake.validNewContact().copy(outcome = null, type = "TST01"))
     val request = havingValidRequest(existingContact)
 
     webTestClient
@@ -46,7 +58,7 @@ class ReplaceContactTest : IntegrationTestBase() {
   @Transactional
   @Test
   fun `should fail if eventId does not match the contact eventId `() {
-    val existingContact = havingExistingContact(Fake.validNewContact().copy(type = "TST02"))
+    val existingContact = havingExistingContact(Fake.validNewContact().copy(outcome = null, type = "TST02"))
     val request = havingValidRequest(existingContact).copy(eventId = Fake.id())
 
     webTestClient
@@ -58,7 +70,7 @@ class ReplaceContactTest : IntegrationTestBase() {
   @Transactional
   @Test
   fun `should fail if requirement ID does not match the contact requirementId `() {
-    val existingContact = havingExistingContact(Fake.validNewContact().copy(type = "TST02"))
+    val existingContact = havingExistingContact(Fake.validNewContact().copy(outcome = null, type = "TST02"))
     val request = havingValidRequest(existingContact).copy(requirementId = Fake.id())
 
     webTestClient
@@ -70,7 +82,7 @@ class ReplaceContactTest : IntegrationTestBase() {
   @Transactional
   @Test
   fun `should fail if nsi ID does not match the contact NsiId `() {
-    val existingContact = havingExistingContact(Fake.validNewContact().copy(type = "TST02"))
+    val existingContact = havingExistingContact(Fake.validNewContact().copy(outcome = null, type = "TST02"))
     val request = havingValidRequest(existingContact).copy(nsiId = Fake.id())
 
     webTestClient
@@ -82,7 +94,7 @@ class ReplaceContactTest : IntegrationTestBase() {
   @Transactional
   @Test
   fun `should fail if offender ID does not match the contact offender ID `() {
-    val existingContact = havingExistingContact(Fake.validNewContact().copy(type = "TST02"))
+    val existingContact = havingExistingContact(Fake.validNewContact().copy(outcome = null, type = "TST02"))
     val request = havingValidRequest(existingContact).copy(offenderCrn = Fake.crn())
 
     webTestClient
