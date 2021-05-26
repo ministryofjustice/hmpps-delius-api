@@ -12,12 +12,14 @@ import uk.gov.justice.digital.hmpps.deliusapi.client.safely
 import uk.gov.justice.digital.hmpps.deliusapi.config.TeamTestsConfiguration
 import uk.gov.justice.digital.hmpps.deliusapi.config.newTeam
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Team
+import uk.gov.justice.digital.hmpps.deliusapi.repository.StaffRepository
 import uk.gov.justice.digital.hmpps.deliusapi.repository.TeamRepository
 import uk.gov.justice.digital.hmpps.deliusapi.util.hasProperty
 import java.time.LocalDate
 
 class CreateTeamTest @Autowired constructor(
-  private val repository: TeamRepository,
+  private val teamRepository: TeamRepository,
+  private val staffRepository: StaffRepository
 ) :
   EndToEndTest() {
   private lateinit var request: NewTeam
@@ -54,7 +56,7 @@ class CreateTeamTest @Autowired constructor(
   }
 
   private fun shouldSaveTeam() = withDatabase {
-    created = repository.findByCodeAndProviderCode(response.code, response.provider)
+    created = teamRepository.findByCodeAndProviderCode(response.code, response.provider)
       ?: throw RuntimeException("Team with code = '${response.code}' does not exist in the database")
 
     assertThat(created)
@@ -75,6 +77,7 @@ class CreateTeamTest @Autowired constructor(
   }
 
   private fun removeInsertedRows() = withDatabase {
-    repository.delete(created)
+    teamRepository.delete(created)
+    created.staff.forEach { staff -> staffRepository.delete(staff.staff) }
   }
 }
