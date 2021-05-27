@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.deliusapi.service.extensions.isPermissibleAb
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 
 @Service
@@ -135,7 +136,8 @@ class ContactValidationService(
   }
 
   fun validateFutureAppointmentClashes(request: CreateOrUpdateContact, type: ContactType, offender: Offender, existingId: Long? = null) {
-    if (!type.attendanceContact || request.endTime == null || !request.date.isAfter(LocalDate.now())) {
+    if (!type.attendanceContact || request.endTime == null || LocalDateTime.of(request.date, request.startTime).isBefore(LocalDateTime.now())) {
+      // contact is not an appointment in the future
       return
     }
 

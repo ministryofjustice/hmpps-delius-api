@@ -97,6 +97,10 @@ class ContactValidationServiceTest {
     attemptingToValidateFutureAppointmentClashes(success = true, havingFutureDate = false)
 
   @Test
+  fun `Successfully validating appointment on today's date with clashes`() =
+    attemptingToValidateFutureAppointmentClashes(success = true, havingFutureDate = null)
+
+  @Test
   fun `Successfully validating future appointment without end time`() =
     attemptingToValidateFutureAppointmentClashes(success = true, havingEndTime = false)
 
@@ -478,12 +482,18 @@ class ContactValidationServiceTest {
     success: Boolean,
     attendanceContact: Boolean = true,
     havingEndTime: Boolean = true,
-    havingFutureDate: Boolean = true,
+    havingFutureDate: Boolean? = true, // true -> future, false -> past, null -> today
     havingClashes: Boolean? = null,
   ) {
+    val startTime = LocalTime.now().minusMinutes(1)
     val request = Fake.newContact().copy(
-      endTime = if (havingEndTime) LocalTime.NOON else null,
-      date = if (havingFutureDate) Fake.randomFutureLocalDate() else Fake.randomPastLocalDate()
+      startTime = startTime,
+      endTime = if (havingEndTime) startTime.plusMinutes(1) else null,
+      date = when (havingFutureDate) {
+        true -> Fake.randomFutureLocalDate()
+        false -> Fake.randomPastLocalDate()
+        null -> LocalDate.now()
+      }
     )
     val type = Fake.contactType().apply { this.attendanceContact = attendanceContact }
     val offender = Fake.offender()
