@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.deliusapi.service.contact
 
+import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -128,14 +129,23 @@ class ContactService(
     // If contact is an attendance contact & has a start & end time then check for appointment clashes
     validation.validateFutureAppointmentClashes(request, type, offender)
 
-    // Associated entity validation
-    val event = if (request.eventId == null) null else offender.getEventOrBadRequest(request.eventId)
-    val requirement = if (event == null || request.requirementId == null) null
-    else offender.getRequirementOrBadRequest(event, request.requirementId)
-
     val nsi = if (request.nsiId == null) null
     else nsiRepository.findByIdOrNull(request.nsiId)
       ?: throw BadRequestException("NSI with id '${request.nsiId}' does not exist")
+
+    // Associated entity validation
+    if (nsi?.event?.id != null && request.eventId != null) {
+      log.warn("Event ID not needed on request when event level NSI supplied - will use NSI event ID")
+    }
+
+    val event = when {
+      nsi?.event?.id != null -> offender.getEventOrBadRequest(nsi.event?.id!!)
+      request.eventId != null -> offender.getEventOrBadRequest(request.eventId)
+      else -> null
+    }
+
+    val requirement = if (event == null || request.requirementId == null) null
+    else offender.getRequirementOrBadRequest(event, request.requirementId)
 
     validation.validateAssociatedEntity(type, requirement, event, nsi)
 
@@ -259,5 +269,9 @@ class ContactService(
     ).copy(outcome = null)
 
     return createContact(newContact)
+  }
+
+  companion object {
+    private val log = LoggerFactory.getLogger(this::class.java)
   }
 }

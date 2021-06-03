@@ -355,10 +355,10 @@ object Fake {
 
   fun updateNsiManager(): UpdateNsiManager = nsiMapper.toUpdate(nsiManager())
 
-  fun nsi(): Nsi = Nsi(
+  fun nsi(event: Event = event()): Nsi = Nsi(
     id = id(),
     offender = offender(),
-    event = event(),
+    event = event,
     type = nsiType(),
     subType = standardReference(),
     length = faker.number().numberBetween(25L, 75L),

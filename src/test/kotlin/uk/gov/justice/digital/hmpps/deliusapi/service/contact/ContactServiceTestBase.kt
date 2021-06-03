@@ -87,7 +87,7 @@ abstract class ContactServiceTestBase {
     team = Fake.team().apply { staffs.map(this::addStaff) }
     provider = Fake.provider().apply { if (havingTeam) teams.addAll(listOf(team, Fake.team())) }
 
-    nsi = Fake.nsi()
+    nsi = Fake.nsi(event)
   }
 
   protected fun shouldAssertProviderAuthority(code: String) =
