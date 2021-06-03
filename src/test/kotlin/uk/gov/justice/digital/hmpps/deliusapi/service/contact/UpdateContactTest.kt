@@ -49,6 +49,15 @@ class UpdateContactTest : ContactServiceTestBase() {
   }
 
   @Test
+  fun `Attempting to update contact and invalidating rar requirement`() {
+    havingDependentEntities()
+    havingContact()
+    whenever(validationService.validateRarRequirement(request, contact.type, contact.requirement, contact.nsi))
+      .thenThrow(BadRequestException("bad rar requirement"))
+    assertThrows<BadRequestException>("bad rar requirement") { whenUpdatingContact() }
+  }
+
+  @Test
   fun `Attempting to update contact with missing provider`() {
     havingDependentEntities()
     havingContact()

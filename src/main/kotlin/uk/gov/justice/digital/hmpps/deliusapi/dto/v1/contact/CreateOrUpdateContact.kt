@@ -17,4 +17,5 @@ interface CreateOrUpdateContact {
   val sensitive: Boolean
   val notes: String?
   val description: String?
+  val rarActivity: Boolean?
 }

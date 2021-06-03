@@ -88,6 +88,10 @@ class ContactType(
   @Lob
   var defaultHeadings: String?,
 
+  @Column(name = "RAR_ACTIVITY", length = 1)
+  @Type(type = "yes_no")
+  var rarActivityRecorded: Boolean?,
+
   @ManyToMany
   @JoinTable(
     name = "R_CONTACT_TYPE_OUTCOME",

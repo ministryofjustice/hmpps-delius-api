@@ -41,6 +41,7 @@ class ContactMapperTest {
       .hasProperty(ContactDto::description, source.description)
       .hasProperty(ContactDto::eventId, source.event?.id!!)
       .hasProperty(ContactDto::requirementId, source.requirement?.id!!)
+      .hasProperty(ContactDto::rarActivity, source.rarActivity!!)
   }
 
   @Test
@@ -62,5 +63,6 @@ class ContactMapperTest {
       .hasProperty(UpdateContact::sensitive, source.sensitive)
       .hasProperty(UpdateContact::notes, null)
       .hasProperty(UpdateContact::description, source.description)
+      .hasProperty(UpdateContact::rarActivity, source.rarActivity!!)
   }
 }

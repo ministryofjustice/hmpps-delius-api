@@ -56,4 +56,6 @@ data class UpdateContact(
 
   @field:Size(max = 200)
   override val description: String?,
+
+  override val rarActivity: Boolean?
 ) : CreateOrUpdateContact
