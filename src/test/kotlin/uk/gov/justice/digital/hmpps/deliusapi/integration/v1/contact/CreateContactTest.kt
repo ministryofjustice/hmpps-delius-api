@@ -39,6 +39,7 @@ class CreateContactTest : IntegrationTestBase() {
     private val valid = Fake.validNewContact()
     private val successCases: MutableList<Arguments> = mutableListOf()
     private val failureCases: MutableList<Arguments> = mutableListOf()
+    private val eventTestCases: MutableList<Arguments> = mutableListOf()
     init {
       failureCases.addAll(
         listOf(
@@ -68,9 +69,12 @@ class CreateContactTest : IntegrationTestBase() {
       successCases.add(of(valid.copy(type = "TST05")))
       // Non-selectable contact types without SPG Override set are not allowed
       failureCases.add(of(valid.copy(type = "SMLI001"), "Contact type with code 'SMLI001' does not exist", HttpStatus.BAD_REQUEST))
-      // NSI and event supplied, requirement left blank
-      successCases.add(of(valid.copy(type = "RRIR", officeLocation = null, outcome = null, nsiId = 2500018597, eventId = 2500295345, requirementId = null)))
-
+      // Event NSI provided
+      eventTestCases.add(of(valid.copy(type = "RRIR", officeLocation = null, outcome = null, nsiId = 2500018597, eventId = null, requirementId = null), 2500295345L))
+      // Event NSI and event ID supplied, event ID ignored
+      eventTestCases.add(of(valid.copy(type = "RRIR", officeLocation = null, outcome = null, nsiId = 2500018597, eventId = 123456, requirementId = null), 2500295345L))
+      // Offender level NSI, null event ID recorded
+      eventTestCases.add(of(valid.copy(type = "RRIR", officeLocation = null, outcome = null, nsiId = 2500018599, eventId = null, requirementId = null), null))
       // Clashing appointments in the future is not ok
       failureCases.add(
         of(
@@ -104,6 +108,8 @@ class CreateContactTest : IntegrationTestBase() {
     fun successCases(): Stream<Arguments> = successCases.stream()
     @JvmStatic
     fun failureCases(): Stream<Arguments> = failureCases.stream()
+    @JvmStatic
+    fun eventTestCases(): Stream<Arguments> = eventTestCases.stream()
   }
 
   @ParameterizedTest(name = "[{index}] Invalid contact ({1})")
@@ -126,6 +132,17 @@ class CreateContactTest : IntegrationTestBase() {
       .shouldReturnCreatedContact(request)
       // And it should save the entity to the database with the correct details
       .shouldSaveContact(request)
+  }
+
+  @Transactional
+  @ParameterizedTest(name = "[{index}] Event ID correct {arguments}")
+  @MethodSource("eventTestCases")
+  fun `correct eventID value should be recorded on contact`(request: NewContact, eventId: Long?) {
+    webTestClient.whenCreatingContact(request)
+      .expectStatus().isCreated
+      .expectBody()
+      .shouldReturnCreatedContact(request, eventId)
+      .shouldSaveContact(request, eventId)
   }
 
   @Transactional
@@ -255,9 +272,17 @@ class CreateContactTest : IntegrationTestBase() {
     assertThat(auditedInteractionRepository.count()).isEqualTo(originalAuditCount + 1)
   }
 
-  private fun WebTestClient.BodyContentSpec.shouldReturnCreatedContact(request: NewContact): WebTestClient.BodyContentSpec {
-    jsonPath("$.eventId").value(equalTo(request.eventId))
+  private fun WebTestClient.BodyContentSpec.shouldReturnCreatedContact(request: NewContact, eventId: Long? = request.eventId): WebTestClient.BodyContentSpec {
     jsonPath("$.id").value(greaterThan(0L))
+
+    when (eventId) {
+      null -> {
+        jsonPath("$.eventId").doesNotExist()
+      }
+      else -> {
+        jsonPath("$.eventId").value(equalTo(eventId))
+      }
+    }
 
     if (request.requirementId != null) {
       jsonPath("$.requirementId").value(equalTo(request.requirementId))
@@ -269,15 +294,18 @@ class CreateContactTest : IntegrationTestBase() {
     return this
   }
 
-  private fun WebTestClient.BodyContentSpec.shouldSaveContact(request: NewContact) = this
+  private fun WebTestClient.BodyContentSpec.shouldSaveContact(request: NewContact, eventId: Long? = request.eventId) = this
     .shouldCreateEntityById(contactRepository) { entity ->
 
       val observed = Fake.contactMapper.toNew(Fake.contactMapper.toDto(entity))
       assertThat(observed)
         .usingRecursiveComparison()
         .ignoringCollectionOrder()
+        .ignoringFields("eventId")
         .comparingDateTimesToNearestSecond()
         .isEqualTo(request)
+
+      assertThat(entity?.event?.id).isEqualTo(eventId)
 
       assertThat(entity)
         .hasProperty(Contact::partitionAreaId, 0L)
