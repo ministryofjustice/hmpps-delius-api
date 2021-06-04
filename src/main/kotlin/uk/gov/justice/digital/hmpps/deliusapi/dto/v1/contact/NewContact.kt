@@ -79,4 +79,6 @@ data class NewContact(
 
   @field:Size(max = 200)
   override val description: String? = null,
+
+  override val rarActivity: Boolean? = null
 ) : CreateOrUpdateContact

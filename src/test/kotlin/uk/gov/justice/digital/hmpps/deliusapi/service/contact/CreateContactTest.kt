@@ -204,6 +204,14 @@ class CreateContactTest : ContactServiceTestBase() {
     shouldThrowBadRequest()
   }
 
+  @Test
+  fun `Attempting to create contact with invalid rar requirement`() {
+    havingDependentEntities()
+    havingRepositories()
+    havingValidation(havingValidRarRequirement = false)
+    shouldThrowBadRequest()
+  }
+
   private fun havingRepositories(
     havingOffender: Boolean = true,
     havingType: Boolean = true,
@@ -240,6 +248,7 @@ class CreateContactTest : ContactServiceTestBase() {
     havingValidOfficeLocation: Boolean? = true,
     havingValidFutureAppointment: Boolean = true,
     havingValidAssociatedEntity: Boolean = true,
+    havingValidRarRequirement: Boolean = true,
   ) {
     if (!havingValidType) {
       whenever(validationService.validateContactType(request, type))
@@ -276,6 +285,11 @@ class CreateContactTest : ContactServiceTestBase() {
     if (!havingValidAssociatedEntity) {
       whenever(validationService.validateAssociatedEntity(type, requirement, event, null))
         .thenThrow(BadRequestException("bad associated entity"))
+    }
+
+    if (!havingValidRarRequirement) {
+      whenever(validationService.validateRarRequirement(request, type, requirement, null))
+        .thenThrow(BadRequestException("bad rar requirement"))
     }
   }
 

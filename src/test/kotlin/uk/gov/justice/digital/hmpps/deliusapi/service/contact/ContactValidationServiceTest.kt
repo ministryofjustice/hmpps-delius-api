@@ -395,6 +395,87 @@ class ContactValidationServiceTest {
     }
   }
 
+  @Test
+  fun `Attempting to validate rar requirement but not provided`() = attemptingToValidateRarRequirement(
+    success = false,
+    havingRarActivity = null
+  )
+
+  @Test
+  fun `Successfully validating rar requirement directly`() = attemptingToValidateRarRequirement(
+    success = true,
+    havingRarActivity = true
+  )
+
+  @Test
+  fun `Successfully validating rar requirement through nsi`() = attemptingToValidateRarRequirement(
+    success = true,
+    havingRarActivity = true,
+    havingRequirementThroughNsi = true
+  )
+
+  @Test
+  fun `Successfully validating rar requirement through nsi for attendance contact`() = attemptingToValidateRarRequirement(
+    success = true,
+    havingRarActivity = true,
+    havingRequirementThroughNsi = true,
+    havingRarActivityRecorded = false,
+  )
+
+  @Test
+  fun `Successfully validating rar requirement when not required or provided`() = attemptingToValidateRarRequirement(
+    success = true,
+    havingRarActivity = null,
+    havingRarActivityRecorded = false
+  )
+
+  @Test
+  fun `Successfully validating rar requirement when not rar requirement & not provided`() = attemptingToValidateRarRequirement(
+    success = true,
+    havingRarActivity = null,
+    havingRarRequirement = false
+  )
+
+  @Test
+  fun `Successfully validating rar requirement when no requirement & not provided`() = attemptingToValidateRarRequirement(
+    success = true,
+    havingRarActivity = null,
+    havingRarRequirement = null
+  )
+
+  @Test
+  fun `Successfully validating rar requirement when terminated & not provided`() = attemptingToValidateRarRequirement(
+    success = true,
+    havingRarActivity = null,
+    havingTerminatedRequirement = true
+  )
+
+  private fun attemptingToValidateRarRequirement(
+    success: Boolean,
+    havingRarActivity: Boolean?,
+    havingRarActivityRecorded: Boolean = true,
+    havingRequirementThroughNsi: Boolean = false,
+    havingRarRequirement: Boolean? = true,
+    havingTerminatedRequirement: Boolean = false,
+  ) {
+    val request = Fake.newContact().copy(rarActivity = havingRarActivity, date = LocalDate.of(2021, 6, 3))
+    val type = Fake.contactType().apply {
+      rarActivityRecorded = havingRarActivityRecorded
+      attendanceContact = true
+    }
+    val requirement = if (havingRarRequirement != null) Fake.requirement().apply {
+      terminationDate = if (havingTerminatedRequirement) LocalDate.of(2021, 6, 2) else null
+      typeCategory?.code = if (havingRarRequirement) ContactValidationService.RAR_CODE else "not-a-rar-requirement"
+    } else null
+    val nsi = if (havingRequirementThroughNsi) Fake.nsi().apply { this.requirement = requirement } else null
+
+    if (success) {
+      assertDoesNotThrow { subject.validateRarRequirement(request, type, requirement, nsi) }
+    } else {
+      assertThrows<BadRequestException> { subject.validateRarRequirement(request, type, requirement, nsi) }
+    }
+  }
+
   private fun attemptingToValidateContactType(
     success: Boolean,
     alert: Boolean = true,

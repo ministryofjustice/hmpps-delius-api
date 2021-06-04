@@ -162,6 +162,10 @@ class Contact(
 
   @OneToMany(mappedBy = "linkedContact", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
   var linkedContacts: MutableList<Contact> = mutableListOf(),
+
+  @Column(name = "RAR_ACTIVITY", length = 1)
+  @Type(type = "yes_no")
+  var rarActivity: Boolean? = null
 ) {
 
   /**

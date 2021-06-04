@@ -108,6 +108,7 @@ object Fake {
     requirementTypeCategories = listOf(requirementTypeCategory()),
     nsiTypes = listOf(nsiType()),
     nationalStandardsContact = true,
+    rarActivityRecorded = false
   )
 
   fun contactOutcomeType() = ContactOutcomeType(
@@ -246,6 +247,7 @@ object Fake {
       attended = faker.bool().bool(),
       complied = faker.bool().bool(),
       hoursCredited = faker.number().randomDouble(1, 1, 12),
+      rarActivity = false
     )
   }
 

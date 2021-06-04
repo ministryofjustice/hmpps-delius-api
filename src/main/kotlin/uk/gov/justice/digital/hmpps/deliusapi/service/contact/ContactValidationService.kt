@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.deliusapi.repository.ContactRepository
 import uk.gov.justice.digital.hmpps.deliusapi.repository.EnforcementActionRepository
 import uk.gov.justice.digital.hmpps.deliusapi.service.extensions.getDuration
 import uk.gov.justice.digital.hmpps.deliusapi.service.extensions.isPermissibleAbsence
+import uk.gov.justice.digital.hmpps.deliusapi.service.extensions.isTerminated
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
@@ -226,5 +227,32 @@ class ContactValidationService(
     if (contact.outcome != null) {
       throw BadRequestException("Contact already has an outcome and can not be replaced")
     }
+  }
+
+  /**
+   * Validates the RAR requirement flag on the request.
+   * The RAR flag is required when:
+   * `contact linked to non-terminated requirement with type category "F" (either directly or through nsi)`
+   *   AND (
+   *     `contact type has rar requirement flag set`
+   *     OR `contact is linked to nsi, which is linked to non-terminated rar requirement` AND `contact type has attendance flag set`
+   *   )
+   */
+  fun validateRarRequirement(request: CreateOrUpdateContact, type: ContactType, requirement: Requirement?, nsi: Nsi?) {
+    val linkedRequirement = requirement ?: nsi?.requirement
+    val rarRequired = linkedRequirement != null && linkedRequirement.typeCategory?.code == RAR_CODE && !linkedRequirement.isTerminated(request.date) &&
+      (type.rarActivityRecorded == true || nsi != null && type.attendanceContact)
+
+    if (rarRequired) {
+      if (request.rarActivity == null) {
+        throw BadRequestException("RAR activity is required for type '${type.code}' & requirement '${linkedRequirement?.id}'")
+      }
+    } else if (request.rarActivity != null) {
+      throw BadRequestException("RAR activity can not be recorded for type '${type.code}' & requirement '${linkedRequirement?.id ?: "none"}'")
+    }
+  }
+
+  companion object {
+    val RAR_CODE = "F"
   }
 }

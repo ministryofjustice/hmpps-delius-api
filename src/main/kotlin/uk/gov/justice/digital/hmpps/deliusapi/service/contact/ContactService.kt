@@ -65,6 +65,8 @@ class ContactService(
     audit.contactId = entity.id
 
     validation.validateContactType(request, entity.type)
+    validation.validateRarRequirement(request, entity.type, entity.requirement, entity.nsi)
+
     val (provider, team, staff) = getProviderTeamStaff(request)
 
     // If contact is an attendance contact & has a start & end time then check for appointment clashes
@@ -84,6 +86,7 @@ class ContactService(
     entity.alert = request.alert
     entity.sensitive = request.sensitive
     entity.description = request.description
+    entity.rarActivity = request.rarActivity
     entity.updateNotes(request.notes)
 
     val createSystemEnforcementAction = if (request.enforcement != entity.enforcement?.action?.code) {
@@ -148,6 +151,7 @@ class ContactService(
     else offender.getRequirementOrBadRequest(event, request.requirementId)
 
     validation.validateAssociatedEntity(type, requirement, event, nsi)
+    validation.validateRarRequirement(request, type, requirement, nsi)
 
     val contact = Contact(
       offender = offender,
@@ -166,6 +170,7 @@ class ContactService(
       alert = request.alert,
       sensitive = request.sensitive,
       description = request.description,
+      rarActivity = request.rarActivity
     )
 
     contact.updateNotes(type.defaultHeadings, request.notes)

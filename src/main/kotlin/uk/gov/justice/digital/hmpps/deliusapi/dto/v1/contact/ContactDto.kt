@@ -33,4 +33,5 @@ data class ContactDto(
   val description: String? = null,
   val eventId: Long? = null,
   val requirementId: Long? = null,
+  val rarActivity: Boolean? = null
 )
