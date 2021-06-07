@@ -60,6 +60,26 @@ interface ContactRepository : JpaRepository<Contact, Long> {
   fun deleteAllByEventIdAndTypeCode(eventId: Long, typeCode: String)
 
   fun findAllByEventIdAndTypeCode(eventId: Long, typeCode: String): List<Contact>
+
+  @Query(
+    "select count(distinct c.date) from Contact c where c.rarActivity = true " +
+      "and c.requirement.id = :requirementId " +
+      "and c.softDeleted = false AND c.requirement.typeCategory.code = 'F'"
+  )
+  fun countRequirementRar(@Param("requirementId") requirementId: Long): Long
+
+  @Query(
+    "select count(distinct c.date) from Contact c where c.rarActivity = true " +
+      "and c.nsi.id = :nsiId " +
+      "and c.softDeleted = false AND c.nsi.requirement.typeCategory.code = 'F'"
+  )
+  fun countNsiRar(@Param("nsiId") nsiId: Long): Long
+
+  fun deleteAllByRequirementIdAndDate(requirementId: Long, date: LocalDate)
+
+  fun deleteAllByNsiIdAndDate(nsiId: Long, date: LocalDate)
+
+  fun deleteAllByOffenderCrnAndDateAndStartTimeAndEndTime(offenderCrn: String, date: LocalDate, startTime: LocalTime, endTime: LocalTime)
 }
 
 fun ContactRepository.isEnforcementUnderReview(eventId: Long, contactCode: String, breachEnd: LocalDate?) =

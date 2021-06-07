@@ -69,10 +69,10 @@ class NsiValidationService {
       return
     }
 
-    val names = supported.joinToString(" or ") { it.name.toLowerCase() }
+    val names = supported.joinToString(" or ") { it.name.lowercase() }
     throw BadRequestException(
       "NSI type with code '${nsi.type.code}' supports association to $names only " +
-        "& this request is attempting to associate to ${level.name.toLowerCase()}"
+        "& this request is attempting to associate to ${level.name.lowercase()}"
     )
   }
 

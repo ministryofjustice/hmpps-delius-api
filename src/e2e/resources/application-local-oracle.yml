@@ -11,7 +11,7 @@ e2e:
     url: "http://localhost:9090/auth"
     clientId: "community-api-client"
     clientSecret: "community-api-client"
-  offenderCrn: X012482
+  offenderCrn: X017492
   provider: N07
   team: N07T01
   staff: N07P002
@@ -20,58 +20,73 @@ e2e:
       type: C073
     nsi:
       type: C073
-      eventId: 2500024029
+      eventId: 2500128560
     notUpdatable:
       type: ERGD
     updatable:
       type: CHVS
       outcome: ATTC
-      eventId: 2500024029
+      eventId: 2500128560
     event:
       type: C073
-      eventId: 2500024029
+      eventId: 2500128560
     requirement:
       type: C073
-      eventId: 2500024029
-      requirementId: 2500024510
+      eventId: 2500128560
+      requirementId: 2500109012
     enforcement:
       type: CHVS
-      eventId: 2500024029
+      eventId: 2500128560
       outcome: AFTA
       enforcement: ROM
     appointment:
       type: COAP
-      eventId: 2500024029
-      requirementId: 2500024510
+      eventId: 2500128560
+      requirementId: 2500109012
       officeLocation: LDN_BCS
     breachStart:
       type: AIBR
-      eventId: 2500024029
+      eventId: 2500128560
     ftc:
       type: C084
       outcome: AFTC
       enforcement: ROM
-      eventId: 2500024029
-      requirementId: 2500025506
+      eventId: 2500128560
+      requirementId: 2500109012
       officeLocation: LDN_BCS
+    rarNsi:
+      type: C084
+      officeLocation: LDN_BCS
+    rarRequirement:
+      type: C084
+      eventId: 2500149566
+      requirementId: 2500122012
+      officeLocation: LDN_BCS
+
   nsis:
     active:
       type: ROL
       subType: ROL01
       status: ROL01
-      eventId: 2500024029
-      requirementId: 2500024510
+      eventId: 2500149566
+      requirementId: 2500122012
     terminated:
       type: ROL
       subType: ROL02
       status: ROL01
       outcome: ROL01
-      eventId: 2500024029
-      requirementId: 2500024510
+      eventId: 2500149566
+      requirementId: 2500122012
     refer:
       type: ROL
       subType: ROL03
       status: ROL01 # TODO add the REFER status to the local oracle DB
+    rar:
+      type: ROL
+      subType: ROL01
+      status: ROL01
+      eventId: 2500149566
+      requirementId: 2500122012
   staffs:
     withTeam:
       firstName: Rhiannon

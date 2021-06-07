@@ -253,6 +253,6 @@ class ContactValidationService(
   }
 
   companion object {
-    val RAR_CODE = "F"
+    const val RAR_CODE = "F"
   }
 }

@@ -174,6 +174,8 @@ class UpdateContactTest : ContactServiceTestBase() {
     // should update ftc
     verify(contactEnforcementService, times(1)).updateFailureToComply(entityCaptor.value)
 
+    verify(contactRarService, times(1)).updateRarCounts(entityCaptor.value)
+
     shouldAssertProviderAuthority(originalProviderCode)
   }
 

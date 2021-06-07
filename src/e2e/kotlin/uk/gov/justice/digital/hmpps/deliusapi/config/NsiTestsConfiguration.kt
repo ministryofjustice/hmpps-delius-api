@@ -4,6 +4,7 @@ open class NsiTestsConfiguration(
   open val active: NsiTestConfiguration,
   open val terminated: NsiTestConfiguration,
   open val refer: NsiTestConfiguration,
+  open val rar: NsiTestConfiguration,
 )
 
 open class NsiTestConfiguration(

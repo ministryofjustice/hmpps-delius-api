@@ -47,6 +47,7 @@ class ContactService(
   private val systemContactService: SystemContactService,
   private val contactBreachService: ContactBreachService,
   private val contactEnforcementService: ContactEnforcementService,
+  private val contactRarService: ContactRarService,
   private val securityUserContext: SecurityUserContext,
 ) {
   fun getUpdateContact(id: Long): UpdateContact = mapper.toUpdate(getContact(id))
@@ -105,6 +106,7 @@ class ContactService(
 
     contactBreachService.updateBreachOnUpdateContact(entity)
     contactEnforcementService.updateFailureToComply(entity)
+    contactRarService.updateRarCounts(entity)
 
     return mapper.toDto(entity)
   }
@@ -193,6 +195,7 @@ class ContactService(
 
     contactBreachService.updateBreachOnInsertContact(entity)
     contactEnforcementService.updateFailureToComply(entity)
+    contactRarService.updateRarCounts(entity)
 
     return mapper.toDto(entity)
   }
@@ -221,6 +224,7 @@ class ContactService(
       contactBreachService.updateBreachOnUpdateContact(deleted)
     }
     contactEnforcementService.updateFailureToComply(contact)
+    contactRarService.updateRarCounts(contact)
   }
 
   private fun getContact(id: Long): Contact {

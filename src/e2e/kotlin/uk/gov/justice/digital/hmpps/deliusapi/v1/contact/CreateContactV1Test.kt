@@ -15,23 +15,34 @@ import uk.gov.justice.digital.hmpps.deliusapi.entity.Contact
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Event
 import uk.gov.justice.digital.hmpps.deliusapi.repository.ContactRepository
 import uk.gov.justice.digital.hmpps.deliusapi.repository.EventRepository
+import uk.gov.justice.digital.hmpps.deliusapi.repository.NsiRepository
+import uk.gov.justice.digital.hmpps.deliusapi.repository.RequirementRepository
 import uk.gov.justice.digital.hmpps.deliusapi.service.contact.WellKnownContactType
 import uk.gov.justice.digital.hmpps.deliusapi.util.hasProperty
-import java.lang.RuntimeException
 import java.time.LocalDate
+import java.time.LocalTime
 
 class CreateContactV1Test @Autowired constructor(
   private val repository: ContactRepository,
-  private val eventRepository: EventRepository
+  private val eventRepository: EventRepository,
+  private val nsiRepository: NsiRepository,
+  private val requirementRepository: RequirementRepository
 ) : EndToEndTest() {
 
   private lateinit var request: NewContact
   private lateinit var response: ContactDto
   private lateinit var created: Contact
 
+  private var requirementRarCount: Long = 0
+  private var nsiRarCount: Long = 0
+
   @Test
   fun `Creating contact`() {
-    request = configuration.newContact(ContactTestsConfiguration::updatable)
+    request = configuration.newContact(ContactTestsConfiguration::updatable).copy(
+      startTime = "09:00",
+      endTime = "09:09"
+    )
+    ensureNoConflicts()
     whenCreatingContact()
     shouldCreateContact()
   }
@@ -41,58 +52,156 @@ class CreateContactV1Test @Autowired constructor(
     val nsi = havingExistingNsi(NsiTestsConfiguration::active)
     request = configuration.newContact(ContactTestsConfiguration::nsi).copy(
       nsiId = nsi.id,
+      startTime = "09:10",
+      endTime = "09:19"
     )
+    ensureNoConflicts()
+    gettingNsiRarCount()
     whenCreatingContact()
     shouldCreateContact()
+    shouldIncrementNsiRarCount(0)
   }
 
   @Test
   fun `Creating contact against nsi only`() {
-    val nsi = havingExistingNsi(NsiTestsConfiguration::active)
-    request = configuration.newContact(ContactTestsConfiguration::nsiOnly).copy(
+    try {
+      val nsi = havingExistingNsi(NsiTestsConfiguration::active)
+      request = configuration.newContact(ContactTestsConfiguration::nsiOnly).copy(
+        nsiId = nsi.id,
+        startTime = "09:20",
+        endTime = "09:29"
+      )
+      ensureNoConflicts()
+      gettingNsiRarCount()
+      whenCreatingContact()
+      shouldCreateContact()
+      shouldIncrementNsiRarCount(0)
+    } finally {
+      withDatabase {
+        repository.deleteAllByNsiIdAndDate(request.nsiId!!, request.date)
+      }
+    }
+  }
+
+  @Test
+  fun `Creating contact against RAR NSI when RAR activity`() {
+    val nsi = havingExistingNsi(NsiTestsConfiguration::rar)
+    request = configuration.newContact(ContactTestsConfiguration::rarNsi).copy(
+      rarActivity = true,
       nsiId = nsi.id,
+      startTime = "09:30",
+      endTime = "09:39"
     )
+
+    ensureNoConflicts()
+    gettingNsiRarCount()
     whenCreatingContact()
     shouldCreateContact()
+    shouldIncrementNsiRarCount(1)
+  }
+
+  @Test
+  fun `Creating contact against RAR NSI when not RAR activity`() {
+    val nsi = havingExistingNsi(NsiTestsConfiguration::rar)
+    request = configuration.newContact(ContactTestsConfiguration::rarNsi).copy(
+      rarActivity = false,
+      nsiId = nsi.id,
+      startTime = "09:40",
+      endTime = "09:49"
+    )
+
+    ensureNoConflicts()
+    gettingNsiRarCount()
+    whenCreatingContact()
+    shouldCreateContact()
+    shouldIncrementNsiRarCount(0)
   }
 
   @Test
   fun `Creating contact against event`() {
-    request = configuration.newContact(ContactTestsConfiguration::event)
+    request = configuration.newContact(ContactTestsConfiguration::event).copy(
+      startTime = "09:50",
+      endTime = "09:59"
+    )
+    ensureNoConflicts()
     whenCreatingContact()
     shouldCreateContact()
   }
 
   @Test
-  fun `Creating contact against requirement`() {
+  fun `Creating non-RAR contact against requirement`() {
     request = configuration.newContact(ContactTestsConfiguration::requirement)
+    ensureNoConflicts()
+    gettingRequirementRarCount()
     whenCreatingContact()
     shouldCreateContact()
+    shouldIncrementRequirementRarCount(0)
+  }
+
+  @Test
+  fun `Creating RAR activity contact against RAR requirement`() {
+    request = configuration.newContact(ContactTestsConfiguration::rarRequirement).copy(
+      rarActivity = true,
+      startTime = "10:00",
+      endTime = "10:09"
+    )
+    ensureNoConflicts()
+    gettingRequirementRarCount()
+    whenCreatingContact()
+    shouldCreateContact()
+    shouldIncrementRequirementRarCount(1)
+  }
+
+  @Test
+  fun `Creating non-RAR activity contact against RAR requirement`() {
+    request = configuration.newContact(ContactTestsConfiguration::rarRequirement).copy(
+      rarActivity = false,
+      startTime = "10:10",
+      endTime = "10:19"
+    )
+    ensureNoConflicts()
+    gettingRequirementRarCount()
+    whenCreatingContact()
+    shouldCreateContact()
+    shouldIncrementRequirementRarCount(0)
   }
 
   @Test
   fun `Creating contact with enforcement`() {
-    request = configuration.newContact(ContactTestsConfiguration::enforcement)
+    request = configuration.newContact(ContactTestsConfiguration::enforcement).copy(
+      startTime = "10:20",
+      endTime = "10:29"
+    )
+    ensureNoConflicts()
     whenCreatingContact()
     shouldCreateContact()
   }
 
   @Test
-  fun `Creating appointment contact`() {
-    request = configuration.newContact(ContactTestsConfiguration::appointment)
+  fun `Creating appointment contact on contact type that does not support RAR`() {
+    request = configuration.newContact(ContactTestsConfiguration::appointment).copy(
+      startTime = "10:30",
+      endTime = "10:39"
+    )
+
+    ensureNoConflicts()
     whenCreatingContact()
     shouldCreateContact()
   }
 
   @Test
   fun `Creating breach start contact`() {
-    request = configuration.newContact(ContactTestsConfiguration::breachStart)
+    request = configuration.newContact(ContactTestsConfiguration::breachStart).copy(
+      startTime = "10:40",
+      endTime = "10:49"
+    )
 
     havingEvent {
       it.inBreach = false
       it.breachEnd = null
     }
 
+    ensureNoConflicts()
     whenCreatingContact()
     shouldCreateContact()
 
@@ -203,13 +312,40 @@ class CreateContactV1Test @Autowired constructor(
       requirementId = created.requirement?.id,
       nsiId = created.nsi?.id,
       notes = created.notes,
+      rarActivity = created.rarActivity
     )
 
     assertThat(observed)
       .describedAs("contact with id '${created.id}' should be saved")
       .usingRecursiveComparison()
       .ignoringCollectionOrder()
-      .ignoringFields("alert") // TODO determine why this field is always null on insert into test... triggers?
+      .ignoringFields("alert", "eventId") // TODO determine why this field is always null on insert into test... triggers?
       .isEqualTo(request)
+  }
+
+  private fun gettingNsiRarCount() = withDatabase {
+    nsiRarCount = repository.countNsiRar(request.nsiId!!)
+  }
+
+  private fun shouldIncrementNsiRarCount(increment: Long) = withDatabase {
+    val actualRarCount = nsiRepository.getOne(request.nsiId!!).rarCount ?: 0
+    val expectedRarCount = nsiRarCount + increment
+    assertThat(actualRarCount).isEqualTo(expectedRarCount)
+  }
+
+  private fun gettingRequirementRarCount() = withDatabase {
+    requirementRarCount = repository.countRequirementRar(request.requirementId!!)
+  }
+
+  private fun shouldIncrementRequirementRarCount(increment: Long) = withDatabase {
+    val actualRarCount = requirementRepository.getOne(request.requirementId!!).rarCount ?: 0
+    val expectedRarCount = requirementRarCount + increment
+    assertThat(actualRarCount).isEqualTo(expectedRarCount)
+  }
+
+  private fun ensureNoConflicts() {
+    withDatabase {
+      repository.deleteAllByOffenderCrnAndDateAndStartTimeAndEndTime(request.offenderCrn, request.date, LocalTime.parse(request.startTime), LocalTime.parse(request.endTime))
+    }
   }
 }

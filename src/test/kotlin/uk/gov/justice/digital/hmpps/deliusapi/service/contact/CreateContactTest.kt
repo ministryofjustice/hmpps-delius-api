@@ -43,6 +43,7 @@ class CreateContactTest : ContactServiceTestBase() {
     shouldSetAuditContext()
     shouldSetOutcomeMeta()
     shouldUpdateFailureToComply()
+    shouldUpdateRarCounts()
   }
 
   @Test
@@ -58,6 +59,7 @@ class CreateContactTest : ContactServiceTestBase() {
     shouldSetAuditContext()
     shouldSetOutcomeMeta()
     shouldUpdateFailureToComply()
+    shouldUpdateRarCounts()
   }
 
   @Test
@@ -69,6 +71,7 @@ class CreateContactTest : ContactServiceTestBase() {
     havingValidation()
     passesValidation()
     shouldUpdateFailureToComply()
+    shouldUpdateRarCounts()
   }
 
   @Test
@@ -379,4 +382,7 @@ class CreateContactTest : ContactServiceTestBase() {
 
   private fun shouldUpdateFailureToComply() =
     verify(contactEnforcementService, times(1)).updateFailureToComply(savedContact)
+
+  private fun shouldUpdateRarCounts() =
+    verify(contactRarService, times((1))).updateRarCounts(savedContact)
 }
