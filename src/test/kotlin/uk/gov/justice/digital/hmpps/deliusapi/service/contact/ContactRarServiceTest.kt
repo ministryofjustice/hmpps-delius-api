@@ -41,9 +41,8 @@ class ContactRarServiceTest {
 
   @Test
   fun `updateRarCounts saves new requirement RAR count when contact has RAR requirement`() {
-    // Contact with RAR requirement and no NSI
     val contact = Fake.contact().apply {
-      requirement!!.typeCategory!!.code = "F"
+      requirement!!.typeCategory!!.code = RAR_CODE
       requirement!!.rarCount = 0
     }
 
@@ -62,7 +61,6 @@ class ContactRarServiceTest {
 
   @Test
   fun `updateRarCounts doesn't update RAR count when contact has non-RAR requirement`() {
-    // Contact with RAR requirement and no NSI
     val contact = Fake.contact().apply {
       requirement!!.typeCategory!!.code = "X"
       requirement!!.rarCount = 0
@@ -78,11 +76,10 @@ class ContactRarServiceTest {
 
   @Test
   fun `updateRarCounts saves new nsi RAR count when contact has NSI with RAR requirement`() {
-    // Contact with no directly linked requirement and RAR NSI
     val contact = Fake.contact().apply {
       nsi = Fake.nsi().apply {
         rarCount = 3
-        requirement!!.typeCategory!!.code = "F"
+        requirement!!.typeCategory!!.code = RAR_CODE
       }
       requirement = null
     }
@@ -102,7 +99,6 @@ class ContactRarServiceTest {
 
   @Test
   fun `updateRarCounts doesn't update RAR count when contact has non-RAR NSI`() {
-    // Contact with RAR requirement and no NSI
     val contact = Fake.contact().apply {
       nsi = Fake.nsi().apply {
         rarCount = 3
@@ -117,5 +113,9 @@ class ContactRarServiceTest {
     verifyZeroInteractions(contactRepository)
     verifyZeroInteractions(requirementRepository)
     verifyZeroInteractions(nsiRepository)
+  }
+
+  companion object {
+    const val RAR_CODE = "F"
   }
 }
