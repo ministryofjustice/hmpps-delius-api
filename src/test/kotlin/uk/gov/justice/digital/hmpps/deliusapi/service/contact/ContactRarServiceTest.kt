@@ -14,6 +14,7 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Nsi
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Requirement
+import uk.gov.justice.digital.hmpps.deliusapi.entity.RequirementTypeCategory.Companion.RAR_REQUIREMENT_TYPE_CATEGORY_CODE
 import uk.gov.justice.digital.hmpps.deliusapi.repository.ContactRepository
 import uk.gov.justice.digital.hmpps.deliusapi.repository.NsiRepository
 import uk.gov.justice.digital.hmpps.deliusapi.repository.RequirementRepository
@@ -42,7 +43,7 @@ class ContactRarServiceTest {
   @Test
   fun `updateRarCounts saves new requirement RAR count when contact has RAR requirement`() {
     val contact = Fake.contact().apply {
-      requirement!!.typeCategory!!.code = RAR_CODE
+      requirement!!.typeCategory!!.code = RAR_REQUIREMENT_TYPE_CATEGORY_CODE
       requirement!!.rarCount = 0
     }
 
@@ -79,7 +80,7 @@ class ContactRarServiceTest {
     val contact = Fake.contact().apply {
       nsi = Fake.nsi().apply {
         rarCount = 3
-        requirement!!.typeCategory!!.code = RAR_CODE
+        requirement!!.typeCategory!!.code = RAR_REQUIREMENT_TYPE_CATEGORY_CODE
       }
       requirement = null
     }
@@ -113,9 +114,5 @@ class ContactRarServiceTest {
     verifyZeroInteractions(contactRepository)
     verifyZeroInteractions(requirementRepository)
     verifyZeroInteractions(nsiRepository)
-  }
-
-  companion object {
-    const val RAR_CODE = "F"
   }
 }

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Contact
+import uk.gov.justice.digital.hmpps.deliusapi.entity.RequirementTypeCategory.Companion.RAR_REQUIREMENT_TYPE_CATEGORY_CODE
 import uk.gov.justice.digital.hmpps.deliusapi.repository.models.LocalDateTimeWrapper
 import java.time.LocalDate
 import java.time.LocalTime
@@ -64,14 +65,14 @@ interface ContactRepository : JpaRepository<Contact, Long> {
   @Query(
     "select count(distinct c.date) from Contact c where c.rarActivity = true " +
       "and c.requirement.id = :requirementId " +
-      "and c.softDeleted = false AND c.requirement.typeCategory.code = 'F'"
+      "and c.softDeleted = false AND c.requirement.typeCategory.code = '$RAR_REQUIREMENT_TYPE_CATEGORY_CODE'"
   )
   fun countRequirementRar(@Param("requirementId") requirementId: Long): Long
 
   @Query(
     "select count(distinct c.date) from Contact c where c.rarActivity = true " +
       "and c.nsi.id = :nsiId " +
-      "and c.softDeleted = false AND c.nsi.requirement.typeCategory.code = 'F'"
+      "and c.softDeleted = false AND c.nsi.requirement.typeCategory.code = '$RAR_REQUIREMENT_TYPE_CATEGORY_CODE'"
   )
   fun countNsiRar(@Param("nsiId") nsiId: Long): Long
 
