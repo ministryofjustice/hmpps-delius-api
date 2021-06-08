@@ -85,19 +85,25 @@ class CreateContactV1Test @Autowired constructor(
 
   @Test
   fun `Creating contact against RAR NSI when RAR activity`() {
-    val nsi = havingExistingNsi(NsiTestsConfiguration::rar)
-    request = configuration.newContact(ContactTestsConfiguration::rarNsi).copy(
-      rarActivity = true,
-      nsiId = nsi.id,
-      startTime = "09:30",
-      endTime = "09:39"
-    )
+    try {
+      val nsi = havingExistingNsi(NsiTestsConfiguration::rar)
+      request = configuration.newContact(ContactTestsConfiguration::rarNsi).copy(
+        rarActivity = true,
+        nsiId = nsi.id,
+        startTime = "09:30",
+        endTime = "09:39"
+      )
 
-    ensureNoConflicts()
-    gettingNsiRarCount()
-    whenCreatingContact()
-    shouldCreateContact()
-    shouldIncrementNsiRarCount(1)
+      ensureNoConflicts()
+      gettingNsiRarCount()
+      gettingRequirementRarCount(nsi.requirementId!!)
+      whenCreatingContact()
+      shouldCreateContact()
+      shouldIncrementNsiRarCount(1)
+      shouldIncrementRequirementRarCount(0, nsi.requirementId!!)
+    } finally {
+      ensureNoConflicts() // delete appointment so another appointment on the same day still increments counter
+    }
   }
 
   @Test
@@ -112,16 +118,67 @@ class CreateContactV1Test @Autowired constructor(
 
     ensureNoConflicts()
     gettingNsiRarCount()
+    gettingRequirementRarCount(nsi.requirementId!!)
     whenCreatingContact()
     shouldCreateContact()
     shouldIncrementNsiRarCount(0)
+    shouldIncrementRequirementRarCount(0, nsi.requirementId!!)
+  }
+
+  @Test
+  fun `Creating 2 RAR NSI contacts on the same day only increments the RAR count once`() {
+    var firstContact: NewContact? = null
+    var secondContact: NewContact? = null
+    try {
+      val nsi = havingExistingNsi(NsiTestsConfiguration::rar)
+      firstContact = configuration.newContact(ContactTestsConfiguration::rarNsi).copy(
+        rarActivity = true,
+        nsiId = nsi.id,
+        startTime = "09:50",
+        endTime = "09:59"
+      )
+      request = firstContact
+
+      ensureNoConflicts()
+      gettingNsiRarCount()
+      gettingRequirementRarCount(nsi.requirementId!!)
+
+      whenCreatingContact()
+      shouldCreateContact()
+
+      shouldIncrementNsiRarCount(1)
+      shouldIncrementRequirementRarCount(0, nsi.requirementId!!)
+
+      secondContact = configuration.newContact(ContactTestsConfiguration::rarNsi).copy(
+        rarActivity = true,
+        nsiId = nsi.id,
+        startTime = "10:00",
+        endTime = "10:09"
+      )
+      request = secondContact
+
+      whenCreatingContact()
+      shouldCreateContact()
+
+      // count has still only increased by 1
+      shouldIncrementNsiRarCount(1)
+      shouldIncrementRequirementRarCount(0, nsi.requirementId!!)
+    } finally {
+      // delete appointments so another appointment on the same day still increments counter
+      if (firstContact != null) {
+        ensureNoConflicts(firstContact)
+      }
+      if (secondContact != null) {
+        ensureNoConflicts(secondContact)
+      }
+    }
   }
 
   @Test
   fun `Creating contact against event`() {
     request = configuration.newContact(ContactTestsConfiguration::event).copy(
-      startTime = "09:50",
-      endTime = "09:59"
+      startTime = "10:10",
+      endTime = "10:19"
     )
     ensureNoConflicts()
     whenCreatingContact()
@@ -140,24 +197,71 @@ class CreateContactV1Test @Autowired constructor(
 
   @Test
   fun `Creating RAR activity contact against RAR requirement`() {
-    request = configuration.newContact(ContactTestsConfiguration::rarRequirement).copy(
-      rarActivity = true,
-      startTime = "10:00",
-      endTime = "10:09"
-    )
-    ensureNoConflicts()
-    gettingRequirementRarCount()
-    whenCreatingContact()
-    shouldCreateContact()
-    shouldIncrementRequirementRarCount(1)
+    try {
+      request = configuration.newContact(ContactTestsConfiguration::rarRequirement).copy(
+        rarActivity = true,
+        startTime = "10:20",
+        endTime = "10:29"
+      )
+      ensureNoConflicts()
+      gettingRequirementRarCount()
+      whenCreatingContact()
+      shouldCreateContact()
+      shouldIncrementRequirementRarCount(1)
+    } finally {
+      ensureNoConflicts() // delete appointment so another appointment on the same day still increments counter
+    }
+  }
+
+  @Test
+  fun `Creating 2 RAR requirement contacts on the same day only increments the RAR count once`() {
+    var firstContact: NewContact? = null
+    var secondContact: NewContact? = null
+    try {
+      firstContact = configuration.newContact(ContactTestsConfiguration::rarRequirement).copy(
+        rarActivity = true,
+        startTime = "10:30",
+        endTime = "10:39"
+      )
+      request = firstContact
+
+      ensureNoConflicts()
+      gettingRequirementRarCount()
+
+      whenCreatingContact()
+      shouldCreateContact()
+
+      shouldIncrementRequirementRarCount(1)
+
+      secondContact = configuration.newContact(ContactTestsConfiguration::rarRequirement).copy(
+        rarActivity = true,
+        startTime = "10:40",
+        endTime = "10:49"
+      )
+      request = secondContact
+
+      whenCreatingContact()
+      shouldCreateContact()
+
+      // count has still only increased by 1
+      shouldIncrementRequirementRarCount(1)
+    } finally {
+      // delete appointments so another appointment on the same day still increments counter
+      if (firstContact != null) {
+        ensureNoConflicts(firstContact)
+      }
+      if (secondContact != null) {
+        ensureNoConflicts(secondContact)
+      }
+    }
   }
 
   @Test
   fun `Creating non-RAR activity contact against RAR requirement`() {
     request = configuration.newContact(ContactTestsConfiguration::rarRequirement).copy(
       rarActivity = false,
-      startTime = "10:10",
-      endTime = "10:19"
+      startTime = "10:50",
+      endTime = "10:59"
     )
     ensureNoConflicts()
     gettingRequirementRarCount()
@@ -169,8 +273,8 @@ class CreateContactV1Test @Autowired constructor(
   @Test
   fun `Creating contact with enforcement`() {
     request = configuration.newContact(ContactTestsConfiguration::enforcement).copy(
-      startTime = "10:20",
-      endTime = "10:29"
+      startTime = "11:00",
+      endTime = "11:09"
     )
     ensureNoConflicts()
     whenCreatingContact()
@@ -180,8 +284,8 @@ class CreateContactV1Test @Autowired constructor(
   @Test
   fun `Creating appointment contact on contact type that does not support RAR`() {
     request = configuration.newContact(ContactTestsConfiguration::appointment).copy(
-      startTime = "10:30",
-      endTime = "10:39"
+      startTime = "11:10",
+      endTime = "11:19"
     )
 
     ensureNoConflicts()
@@ -192,8 +296,8 @@ class CreateContactV1Test @Autowired constructor(
   @Test
   fun `Creating breach start contact`() {
     request = configuration.newContact(ContactTestsConfiguration::breachStart).copy(
-      startTime = "10:40",
-      endTime = "10:49"
+      startTime = "11:20",
+      endTime = "11:29"
     )
 
     havingEvent {
@@ -325,6 +429,7 @@ class CreateContactV1Test @Autowired constructor(
 
   private fun gettingNsiRarCount() = withDatabase {
     nsiRarCount = repository.countNsiRar(request.nsiId!!)
+    logger.info("Existing NSI RAR count for ${request.nsiId!!} is $nsiRarCount")
   }
 
   private fun shouldIncrementNsiRarCount(increment: Long) = withDatabase {
@@ -333,19 +438,20 @@ class CreateContactV1Test @Autowired constructor(
     assertThat(actualRarCount).isEqualTo(expectedRarCount)
   }
 
-  private fun gettingRequirementRarCount() = withDatabase {
-    requirementRarCount = repository.countRequirementRar(request.requirementId!!)
+  private fun gettingRequirementRarCount(requirementId: Long = request.requirementId!!) = withDatabase {
+    requirementRarCount = repository.countRequirementRar(requirementId)
+    logger.info("Existing requirements RAR count for $requirementId is $requirementRarCount")
   }
 
-  private fun shouldIncrementRequirementRarCount(increment: Long) = withDatabase {
-    val actualRarCount = requirementRepository.getOne(request.requirementId!!).rarCount ?: 0
+  private fun shouldIncrementRequirementRarCount(increment: Long, requirementId: Long = request.requirementId!!) = withDatabase {
+    val actualRarCount = requirementRepository.getOne(requirementId).rarCount ?: 0
     val expectedRarCount = requirementRarCount + increment
     assertThat(actualRarCount).isEqualTo(expectedRarCount)
   }
 
-  private fun ensureNoConflicts() {
+  private fun ensureNoConflicts(contact: NewContact = request) {
     withDatabase {
-      repository.deleteAllByOffenderCrnAndDateAndStartTimeAndEndTime(request.offenderCrn, request.date, LocalTime.parse(request.startTime), LocalTime.parse(request.endTime))
+      repository.deleteAllByOffenderCrnAndDateAndStartTimeAndEndTime(contact.offenderCrn, contact.date, LocalTime.parse(contact.startTime), LocalTime.parse(contact.endTime))
     }
   }
 }
