@@ -28,6 +28,7 @@ class DeleteContactTest : ContactServiceTestBase() {
     shouldDeleteContacts()
     shouldUpdateBreach()
     shouldUpdateFtc()
+    shouldUpdateRarCounts()
     shouldSetAuditContext(AuditableInteraction.DELETE_PREVIOUS_CONTACT)
     shouldAssertProviderAuthority(contact.provider!!.code)
   }
@@ -39,6 +40,7 @@ class DeleteContactTest : ContactServiceTestBase() {
     shouldDeleteContacts()
     shouldUpdateBreach()
     shouldUpdateFtc()
+    shouldUpdateRarCounts()
     shouldSetAuditContext(AuditableInteraction.DELETE_CONTACT)
     shouldAssertProviderAuthority(contact.provider!!.code)
   }
@@ -77,6 +79,9 @@ class DeleteContactTest : ContactServiceTestBase() {
 
   private fun shouldUpdateFtc() =
     verify(contactEnforcementService, times(1)).updateFailureToComply(contact)
+
+  private fun shouldUpdateRarCounts() =
+    verify(contactRarService, times((1))).updateRarCounts(contact)
 
   private fun shouldSetAuditContext(interaction: AuditableInteraction) {
     val context = AuditContext.get(interaction)

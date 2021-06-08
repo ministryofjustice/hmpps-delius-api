@@ -32,18 +32,17 @@ e2e:
       eventId: 2500443138
     requirement:
       type: COTH
-      eventId: 2500443138
-      requirementId: 2500199144
+      eventId: 2500452238
+      requirementId: 2500206720
     enforcement:
       type: CHVS
       eventId: 2500443138
       outcome: AFTA
       enforcement: ROM
     appointment:
-      type: CRSAPT
+      type: COTH
       eventId: 2500443138
       requirementId: 2500199144
-      officeLocation: CRSSHEF
     breachStart:
       type: AIBR
       eventId: 2500443138
@@ -54,6 +53,14 @@ e2e:
       eventId: 2500452238
       requirementId: 2500206720
       officeLocation: CRSSHEF
+    rarNsi:
+      type: CRSAPT
+      officeLocation: CRSSHEF
+    rarRequirement:
+      type: CRSAPT
+      officeLocation: CRSSHEF
+      eventId: 2500452250
+      requirementId: 2500223138
   nsis:
     active:
       type: CRS01
@@ -69,6 +76,11 @@ e2e:
     refer:
       type: CRS01
       status: REFER
+    rar:
+      type: CRS01
+      status: INPROG
+      eventId: 2500452250
+      requirementId: 2500223138
   staffs:
     withTeam:
       firstName: Rhiannon

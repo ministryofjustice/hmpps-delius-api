@@ -25,4 +25,8 @@ class RequirementTypeCategory(
     inverseJoinColumns = [JoinColumn(name = "NSI_TYPE_ID", nullable = false)]
   )
   var nsiTypes: List<NsiType>? = null
-)
+) {
+  companion object {
+    const val RAR_REQUIREMENT_TYPE_CATEGORY_CODE = "F"
+  }
+}

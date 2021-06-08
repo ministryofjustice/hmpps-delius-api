@@ -40,6 +40,8 @@ class ReplaceContactServiceTest : ContactServiceTestBase() {
     val capturedUpdateContact = entityCaptor.allValues[0]
     val capturedCreateContact = entityCaptor.allValues[1]
 
+    verify(contactRarService, times(2)).updateRarCounts(any())
+
     // And the values have been set correctly
     assertThat(capturedUpdateContact.outcome?.code)
       .describedAs("Outcome is updated on the existing contact")

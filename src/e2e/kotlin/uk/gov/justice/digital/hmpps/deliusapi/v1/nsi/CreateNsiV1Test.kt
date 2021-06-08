@@ -31,12 +31,12 @@ class CreateNsiV1Test : NsiEndToEndTest() {
   @Test
   fun `Creating terminated nsi`() {
     request = configuration.newNsi(NsiTestsConfiguration::terminated).copy(
-      expectedStartDate = LocalDate.of(2021, 1, 4),
-      expectedEndDate = LocalDate.of(2021, 2, 1),
-      referralDate = LocalDate.of(2021, 1, 4),
-      startDate = LocalDate.of(2021, 1, 4),
-      statusDate = LocalDateTime.of(2021, 1, 4, 12, 0, 0),
-      endDate = LocalDate.of(2021, 2, 1),
+      expectedStartDate = LocalDate.of(2021, 5, 4),
+      expectedEndDate = LocalDate.of(2021, 6, 1),
+      referralDate = LocalDate.of(2021, 5, 4),
+      startDate = LocalDate.of(2021, 5, 4),
+      statusDate = LocalDateTime.of(2021, 5, 4, 12, 0, 0),
+      endDate = LocalDate.of(2021, 6, 1),
     )
     whenCreatingNsi()
     shouldReturnExpectedNsi()

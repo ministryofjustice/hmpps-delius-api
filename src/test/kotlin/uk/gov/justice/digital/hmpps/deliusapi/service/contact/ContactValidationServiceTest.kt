@@ -11,6 +11,7 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Contact
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Enforcement
+import uk.gov.justice.digital.hmpps.deliusapi.entity.RequirementTypeCategory.Companion.RAR_REQUIREMENT_TYPE_CATEGORY_CODE
 import uk.gov.justice.digital.hmpps.deliusapi.entity.YesNoBoth
 import uk.gov.justice.digital.hmpps.deliusapi.exception.BadRequestException
 import uk.gov.justice.digital.hmpps.deliusapi.exception.ConflictException
@@ -465,7 +466,7 @@ class ContactValidationServiceTest {
     }
     val requirement = if (havingRarRequirement != null) Fake.requirement().apply {
       terminationDate = if (havingTerminatedRequirement) LocalDate.of(2021, 6, 2) else null
-      typeCategory?.code = if (havingRarRequirement) ContactValidationService.RAR_CODE else "not-a-rar-requirement"
+      typeCategory?.code = if (havingRarRequirement) RAR_REQUIREMENT_TYPE_CATEGORY_CODE else "not-a-rar-requirement"
     } else null
     val nsi = if (havingRequirementThroughNsi) Fake.nsi().apply { this.requirement = requirement } else null
 

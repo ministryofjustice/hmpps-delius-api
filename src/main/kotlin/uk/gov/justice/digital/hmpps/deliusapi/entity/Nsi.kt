@@ -97,6 +97,9 @@ class Nsi(
   @ManyToOne
   var intendedProvider: Provider? = null,
 
+  @Column(name = "RAR_COUNT")
+  var rarCount: Long? = null,
+
   @Column(name = "SOFT_DELETED", columnDefinition = "NUMBER", nullable = false)
   var softDeleted: Boolean = false,
 

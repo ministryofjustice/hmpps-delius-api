@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.deliusapi.entity.Nsi
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Offender
 import uk.gov.justice.digital.hmpps.deliusapi.entity.OfficeLocation
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Requirement
+import uk.gov.justice.digital.hmpps.deliusapi.entity.RequirementTypeCategory.Companion.RAR_REQUIREMENT_TYPE_CATEGORY_CODE
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Team
 import uk.gov.justice.digital.hmpps.deliusapi.entity.YesNoBoth
 import uk.gov.justice.digital.hmpps.deliusapi.exception.BadRequestException
@@ -240,7 +241,7 @@ class ContactValidationService(
    */
   fun validateRarRequirement(request: CreateOrUpdateContact, type: ContactType, requirement: Requirement?, nsi: Nsi?) {
     val linkedRequirement = requirement ?: nsi?.requirement
-    val rarRequired = linkedRequirement != null && linkedRequirement.typeCategory?.code == RAR_CODE && !linkedRequirement.isTerminated(request.date) &&
+    val rarRequired = linkedRequirement != null && linkedRequirement.typeCategory?.code == RAR_REQUIREMENT_TYPE_CATEGORY_CODE && !linkedRequirement.isTerminated(request.date) &&
       (type.rarActivityRecorded == true || nsi != null && type.attendanceContact)
 
     if (rarRequired) {
@@ -250,9 +251,5 @@ class ContactValidationService(
     } else if (request.rarActivity != null) {
       throw BadRequestException("RAR activity can not be recorded for type '${type.code}' & requirement '${linkedRequirement?.id ?: "none"}'")
     }
-  }
-
-  companion object {
-    val RAR_CODE = "F"
   }
 }
