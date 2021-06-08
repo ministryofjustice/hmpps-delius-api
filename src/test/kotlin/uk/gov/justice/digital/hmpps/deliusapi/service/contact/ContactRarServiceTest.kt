@@ -76,7 +76,7 @@ class ContactRarServiceTest {
   }
 
   @Test
-  fun `updateRarCounts saves new nsi RAR count when contact has NSI with RAR requirement`() {
+  fun `updateRarCounts saves new nsi RAR count and rqmnt count when contact has NSI with RAR requirement`() {
     val contact = Fake.contact().apply {
       nsi = Fake.nsi().apply {
         rarCount = 3
@@ -86,16 +86,19 @@ class ContactRarServiceTest {
     }
 
     whenever(contactRepository.countNsiRar(contact.nsi!!.id)).thenReturn(9)
+    whenever(contactRepository.countRequirementRar(contact.nsi!!.requirement!!.id)).thenReturn(5)
     whenever(nsiRepository.saveAndFlush(nsiEntityCaptor.capture())).thenReturn(contact.nsi)
+    whenever(requirementRepository.saveAndFlush(requirementEntityCaptor.capture())).thenReturn(contact.requirement)
 
     // when
     contactRarService.updateRarCounts(contact)
 
-    // saves new count
+    // saves new counts
     assertThat(nsiEntityCaptor.value.rarCount).isEqualTo(9)
+    assertThat(requirementEntityCaptor.value.rarCount).isEqualTo(5)
 
     verify(nsiRepository, times(1)).saveAndFlush(nsiEntityCaptor.value)
-    verifyZeroInteractions(requirementRepository)
+    verify(requirementRepository, times(1)).saveAndFlush(requirementEntityCaptor.value)
   }
 
   @Test
