@@ -75,19 +75,51 @@ class CreateContactTest : IntegrationTestBase() {
       eventTestCases.add(of(valid.copy(type = "RRIR", officeLocation = null, outcome = null, nsiId = 2500018597, eventId = 123456, requirementId = null), 2500295345L))
       // Offender level NSI, null event ID recorded
       eventTestCases.add(of(valid.copy(type = "RRIR", officeLocation = null, outcome = null, nsiId = 2500018599, eventId = null, requirementId = null), null))
-      // Clashing appointments in the future is not ok
+
+      val clashing = valid.copy(
+        type = "CCCS", // Counselling
+        outcome = null,
+        officeLocation = null,
+        date = LocalDate.of(2100, 1, 1),
+        startTime = LocalTime.NOON,
+        endTime = LocalTime.NOON.plusHours(1),
+      )
+
+      // Clashing appointments in the future is not ok, these clash tests are against contact with id 2502740192
       failureCases.add(
         of(
-          valid.copy(
-            type = "CCCS", // Counselling
-            outcome = null,
-            officeLocation = null,
-            date = LocalDate.of(2100, 1, 1),
-            startTime = LocalTime.NOON,
-            endTime = LocalTime.NOON.plusHours(1),
+          clashing,
+          "must not clash with any other attendance contacts",
+          HttpStatus.CONFLICT
+        )
+      )
+      // Even by one minute
+      failureCases.add(
+        of(
+          clashing.copy(
+            startTime = LocalTime.NOON.minusMinutes(1),
+            endTime = LocalTime.NOON.plusMinutes(1),
           ),
           "must not clash with any other attendance contacts",
           HttpStatus.CONFLICT
+        )
+      )
+      // But abutting appointments are ok from their end
+      successCases.add(
+        of(
+          clashing.copy(
+            startTime = LocalTime.NOON.minusHours(1),
+            endTime = LocalTime.NOON,
+          )
+        )
+      )
+      // And their start
+      successCases.add(
+        of(
+          clashing.copy(
+            startTime = LocalTime.NOON.plusHours(1),
+            endTime = LocalTime.NOON.plusHours(2),
+          )
         )
       )
       // Clashing appointment in the past is ok

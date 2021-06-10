@@ -16,7 +16,7 @@ interface ContactRepository : JpaRepository<Contact, Long> {
 
   @Query(
     "select c from Contact c where c.offender.id = :offenderId and c.type.attendanceContact = true " +
-      "and c.date = :date and c.startTime <= :endTime and c.endTime >= :startTime"
+      "and c.date = :date and c.startTime < :endTime and c.endTime > :startTime"
   )
   fun findClashingAttendanceContacts(
     @Param("offenderId") offenderId: Long,
