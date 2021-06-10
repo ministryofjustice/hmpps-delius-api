@@ -19,5 +19,5 @@ class ReferenceDataMaster(
 
   @JoinColumn(name = "REFERENCE_DATA_MASTER_ID")
   @OneToMany
-  var standardReferences: List<StandardReference>? = null,
+  var standardReferences: MutableList<StandardReference>? = null,
 )

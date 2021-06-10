@@ -21,7 +21,7 @@ class LocalDeliveryUnit(
 
   @OneToMany
   @JoinColumn(name = "DISTRICT_ID")
-  var teams: List<Team>,
+  var teams: MutableList<Team>,
 
   var code: String,
 

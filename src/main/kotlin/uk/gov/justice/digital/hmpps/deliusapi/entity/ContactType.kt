@@ -98,7 +98,7 @@ class ContactType(
     joinColumns = [JoinColumn(name = "CONTACT_TYPE_ID", nullable = false)],
     inverseJoinColumns = [JoinColumn(name = "CONTACT_OUTCOME_TYPE_ID", nullable = false)],
   )
-  var outcomeTypes: List<ContactOutcomeType>? = null,
+  var outcomeTypes: MutableList<ContactOutcomeType>? = null,
 
   @ManyToMany
   @JoinTable(
@@ -106,7 +106,7 @@ class ContactType(
     joinColumns = [JoinColumn(name = "CONTACT_TYPE_ID", nullable = false)],
     inverseJoinColumns = [JoinColumn(name = "RQMNT_TYPE_MAIN_CATEGORY_ID", nullable = false)]
   )
-  var requirementTypeCategories: List<RequirementTypeCategory>? = null,
+  var requirementTypeCategories: MutableList<RequirementTypeCategory>? = null,
 
   @ManyToMany
   @JoinTable(
@@ -114,5 +114,5 @@ class ContactType(
     joinColumns = [JoinColumn(name = "CONTACT_TYPE_ID", nullable = false)],
     inverseJoinColumns = [JoinColumn(name = "NSI_TYPE_ID", nullable = false)],
   )
-  var nsiTypes: List<NsiType>? = null,
+  var nsiTypes: MutableList<NsiType>? = null,
 )

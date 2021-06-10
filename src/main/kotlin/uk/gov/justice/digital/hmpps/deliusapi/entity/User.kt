@@ -30,5 +30,5 @@ class User(
   )
   @Where(clause = "SELECTABLE = 'Y'")
   @OneToMany
-  val providers: List<Provider> = mutableListOf(),
+  val providers: MutableList<Provider> = mutableListOf(),
 )
