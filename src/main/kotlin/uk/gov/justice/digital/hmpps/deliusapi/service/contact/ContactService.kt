@@ -204,7 +204,7 @@ class ContactService(
     contact.enforcementActionID = contact.enforcement?.action?.id
 
     contact.enforcementDiary = when {
-      contact.type.outcomeFlag == Y && contact.outcome != null -> true
+      contact.enforcement != null && contact.type.outcomeFlag == Y && contact.outcome != null -> true
       contact.enforcement?.action?.outstandingContactAction == true -> true
       else -> null
     }

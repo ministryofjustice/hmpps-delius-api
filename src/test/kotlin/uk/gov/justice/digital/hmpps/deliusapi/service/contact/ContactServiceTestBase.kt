@@ -62,6 +62,7 @@ abstract class ContactServiceTestBase {
     havingRequirement: Boolean = true,
     havingTeam: Boolean = true,
     havingStaff: Boolean = true,
+    havingEnforcement: Boolean = true
   ) {
     val offenderId = Fake.id()
 
@@ -78,7 +79,11 @@ abstract class ContactServiceTestBase {
     }
 
     outcome = Fake.contactOutcomeType()
-    enforcement = Fake.enforcement()
+
+    if (havingEnforcement) {
+      enforcement = Fake.enforcement()
+    }
+
     type = Fake.contactType()
 
     this.staff = Fake.staff()

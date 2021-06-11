@@ -214,7 +214,7 @@ object Fake {
     action = enforcementAction(),
   )
 
-  fun contact(): Contact {
+  fun contact(enforcement: Boolean = true): Contact {
     val contactOutcomeType = contactOutcomeType()
     val team = team()
     val provider = provider().apply { teams.add(team) }
@@ -223,7 +223,7 @@ object Fake {
       offender = offender(),
       type = contactType().apply { outcomeTypes = listOf(contactOutcomeType) },
       outcome = contactOutcomeType,
-      enforcements = mutableListOf(enforcement()),
+      enforcements = if (enforcement) mutableListOf(enforcement()) else mutableListOf(),
       provider = provider,
       team = team,
       staff = staff(),
@@ -251,9 +251,9 @@ object Fake {
     )
   }
 
-  fun contactDto(): ContactDto = contactMapper.toDto(contact())
+  fun contactDto(enforcement: Boolean = true): ContactDto = contactMapper.toDto(contact(enforcement))
 
-  fun newContact(): NewContact = contactMapper.toNew(contactDto())
+  fun newContact(enforcement: Boolean = true): NewContact = contactMapper.toNew(contactDto(enforcement))
 
   /**
    * A request to create a new contact that will succeed against the test data.
