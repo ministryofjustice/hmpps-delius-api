@@ -251,9 +251,11 @@ object Fake {
     )
   }
 
-  fun contactDto(enforcement: Boolean = true): ContactDto = contactMapper.toDto(contact(enforcement))
+  fun contactDto(enforcement: Boolean): ContactDto = contactMapper.toDto(contact(enforcement))
+  fun contactDto(): ContactDto = contactDto(true)
 
-  fun newContact(enforcement: Boolean = true): NewContact = contactMapper.toNew(contactDto(enforcement))
+  fun newContact(enforcement: Boolean): NewContact = contactMapper.toNew(contactDto(enforcement))
+  fun newContact(): NewContact = newContact(true)
 
   /**
    * A request to create a new contact that will succeed against the test data.
