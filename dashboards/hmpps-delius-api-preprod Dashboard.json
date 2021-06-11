@@ -1,0 +1,991 @@
+{
+  "properties": {
+    "lenses": {
+      "0": {
+        "order": 0,
+        "parts": {
+          "0": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "colSpan": 2,
+              "rowSpan": 1
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "id",
+                  "value": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod"
+                },
+                {
+                  "name": "Version",
+                  "value": "1.0"
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/AspNetOverviewPinnedPart",
+              "asset": {
+                "idInputName": "id",
+                "type": "ApplicationInsights"
+              },
+              "deepLink": "#@nomsdigitechoutlook.onmicrosoft.com/resource/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod/overview"
+            }
+          },
+          "1": {
+            "position": {
+              "x": 2,
+              "y": 0,
+              "colSpan": 1,
+              "rowSpan": 1
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ComponentId",
+                  "value": {
+                    "Name": "nomisapi-preprod",
+                    "SubscriptionId": "a5ddf257-3b21-4ba9-a28c-ab30f751b383",
+                    "ResourceGroup": "nomisapi-preprod-rg"
+                  }
+                },
+                {
+                  "name": "Version",
+                  "value": "1.0"
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/ProactiveDetectionAsyncPart",
+              "asset": {
+                "idInputName": "ComponentId",
+                "type": "ApplicationInsights"
+              },
+              "deepLink": "#@nomsdigitechoutlook.onmicrosoft.com/resource/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod/ProactiveDetection"
+            }
+          },
+          "2": {
+            "position": {
+              "x": 3,
+              "y": 0,
+              "colSpan": 1,
+              "rowSpan": 1
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ComponentId",
+                  "value": {
+                    "Name": "nomisapi-preprod",
+                    "SubscriptionId": "a5ddf257-3b21-4ba9-a28c-ab30f751b383",
+                    "ResourceGroup": "nomisapi-preprod-rg"
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "componentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "id",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeContext",
+                  "value": {
+                    "durationMs": 86400000,
+                    "createdTime": "2021-06-10T15:24:02.608Z",
+                    "isInitialTime": false,
+                    "grain": 1,
+                    "useDashboardTimeRange": false
+                  },
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/WebTestsPinnedPart",
+              "deepLink": "#@nomsdigitechoutlook.onmicrosoft.com/resource/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod/availability",
+              "savedContainerState": {
+                "partTitle": "nomisapi-preprod",
+                "assetName": "Availability"
+              }
+            }
+          },
+          "3": {
+            "position": {
+              "x": 4,
+              "y": 0,
+              "colSpan": 1,
+              "rowSpan": 1
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ComponentId",
+                  "value": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod"
+                },
+                {
+                  "name": "MainResourceId",
+                  "isOptional": true
+                },
+                {
+                  "name": "ResourceIds",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeContext",
+                  "value": {
+                    "durationMs": 3600000,
+                    "createdTime": "Thu Jun 10 2021 16:29:55 GMT+0100 (British Summer Time)",
+                    "isInitialTime": false,
+                    "grain": 1,
+                    "useDashboardTimeRange": false
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "ConfigurationId",
+                  "value": "0151f765-11fa-4d1b-aa2f-e997625304f6",
+                  "isOptional": true
+                },
+                {
+                  "name": "DataModel",
+                  "value": {
+                    "timeContext": {
+                      "durationMs": 3600000,
+                      "createdTime": "Thu Jun 10 2021 16:29:55 GMT+0100 (British Summer Time)",
+                      "isInitialTime": false,
+                      "grain": 1,
+                      "useDashboardTimeRange": false
+                    },
+                    "layoutOption": "Organic",
+                    "exclude4xxError": true
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "UseCallerTimeContext",
+                  "isOptional": true
+                },
+                {
+                  "name": "OverrideSettings",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/ApplicationMapPart",
+              "settings": {},
+              "asset": {
+                "idInputName": "ComponentId",
+                "type": "ApplicationInsights"
+              },
+              "deepLink": "#@nomsdigitechoutlook.onmicrosoft.com/resource/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod/applicationMap"
+            }
+          },
+          "4": {
+            "position": {
+              "x": 5,
+              "y": 0,
+              "colSpan": 1,
+              "rowSpan": 1
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ResourceId",
+                  "value": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod"
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/CuratedBladeFailuresPinnedPart",
+              "isAdapter": true,
+              "asset": {
+                "idInputName": "ResourceId",
+                "type": "ApplicationInsights"
+              },
+              "deepLink": "#@nomsdigitechoutlook.onmicrosoft.com/resource/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod/failures",
+              "savedContainerState": {
+                "partTitle": null,
+                "assetName": "nomisapi-preprod"
+              }
+            }
+          },
+          "5": {
+            "position": {
+              "x": 0,
+              "y": 1,
+              "colSpan": 6,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "sharedTimeRange",
+                  "isOptional": true
+                },
+                {
+                  "name": "options",
+                  "value": {
+                    "chart": {
+                      "metrics": [
+                        {
+                          "resourceMetadata": {
+                            "id": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod"
+                          },
+                          "name": "requests/failed",
+                          "aggregationType": 7,
+                          "namespace": "microsoft.insights/components",
+                          "metricVisualization": {
+                            "displayName": "Failed requests",
+                            "resourceDisplayName": "nomisapi-preprod",
+                            "color": "#EC008C"
+                          }
+                        }
+                      ],
+                      "title": "Failed requests",
+                      "titleKind": 2,
+                      "visualization": {
+                        "chartType": 3
+                      },
+                      "openBladeOnClick": {
+                        "openBlade": true,
+                        "destinationBlade": {
+                          "bladeName": "ResourceMenuBlade",
+                          "parameters": {
+                            "id": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod",
+                            "menuid": "failures"
+                          },
+                          "extensionName": "HubsExtension",
+                          "options": {
+                            "parameters": {
+                              "id": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod",
+                              "menuid": "failures"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+              "settings": {
+                "content": {
+                  "options": {
+                    "chart": {
+                      "metrics": [
+                        {
+                          "resourceMetadata": {
+                            "id": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod"
+                          },
+                          "name": "requests/failed",
+                          "aggregationType": 7,
+                          "namespace": "microsoft.insights/components",
+                          "metricVisualization": {
+                            "displayName": "Failed requests",
+                            "resourceDisplayName": "nomisapi-preprod",
+                            "color": "#EC008C"
+                          }
+                        }
+                      ],
+                      "title": "Failed requests",
+                      "titleKind": 2,
+                      "visualization": {
+                        "chartType": 3,
+                        "disablePinning": true
+                      },
+                      "openBladeOnClick": {
+                        "openBlade": true,
+                        "destinationBlade": {
+                          "bladeName": "ResourceMenuBlade",
+                          "parameters": {
+                            "id": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod",
+                            "menuid": "failures"
+                          },
+                          "extensionName": "HubsExtension",
+                          "options": {
+                            "parameters": {
+                              "id": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod",
+                              "menuid": "failures"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "filters": {
+                "MsPortalFx_TimeRange": {
+                  "model": {
+                    "format": "local",
+                    "granularity": "auto",
+                    "relative": "60m"
+                  }
+                }
+              }
+            }
+          },
+          "6": {
+            "position": {
+              "x": 6,
+              "y": 1,
+              "colSpan": 6,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "options",
+                  "value": {
+                    "chart": {
+                      "metrics": [
+                        {
+                          "resourceMetadata": {
+                            "id": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod"
+                          },
+                          "name": "exceptions/server",
+                          "aggregationType": 7,
+                          "namespace": "microsoft.insights/components",
+                          "metricVisualization": {
+                            "displayName": "Server exceptions",
+                            "color": "#47BDF5"
+                          }
+                        },
+                        {
+                          "resourceMetadata": {
+                            "id": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod"
+                          },
+                          "name": "dependencies/failed",
+                          "aggregationType": 7,
+                          "namespace": "microsoft.insights/components",
+                          "metricVisualization": {
+                            "displayName": "Dependency failures",
+                            "color": "#7E58FF"
+                          }
+                        }
+                      ],
+                      "title": "Server exceptions and Dependency failures",
+                      "visualization": {
+                        "chartType": 2,
+                        "legendVisualization": {
+                          "isVisible": true,
+                          "position": 2,
+                          "hideSubtitle": false
+                        },
+                        "axisVisualization": {
+                          "x": {
+                            "isVisible": true,
+                            "axisType": 2
+                          },
+                          "y": {
+                            "isVisible": true,
+                            "axisType": 1
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "name": "sharedTimeRange",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+              "settings": {
+                "content": {
+                  "options": {
+                    "chart": {
+                      "metrics": [
+                        {
+                          "resourceMetadata": {
+                            "id": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod"
+                          },
+                          "name": "exceptions/server",
+                          "aggregationType": 7,
+                          "namespace": "microsoft.insights/components",
+                          "metricVisualization": {
+                            "displayName": "Server exceptions",
+                            "color": "#47BDF5",
+                            "resourceDisplayName": "nomisapi-preprod"
+                          }
+                        },
+                        {
+                          "resourceMetadata": {
+                            "id": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod"
+                          },
+                          "name": "dependencies/failed",
+                          "aggregationType": 7,
+                          "namespace": "microsoft.insights/components",
+                          "metricVisualization": {
+                            "displayName": "Dependency call failures",
+                            "color": "#7E58FF",
+                            "resourceDisplayName": "nomisapi-preprod"
+                          }
+                        }
+                      ],
+                      "title": "Server exceptions and Dependency failures",
+                      "titleKind": 2,
+                      "visualization": {
+                        "chartType": 2,
+                        "legendVisualization": {
+                          "isVisible": true,
+                          "position": 2,
+                          "hideSubtitle": false
+                        },
+                        "axisVisualization": {
+                          "x": {
+                            "isVisible": true,
+                            "axisType": 2
+                          },
+                          "y": {
+                            "isVisible": true,
+                            "axisType": 1
+                          }
+                        },
+                        "disablePinning": true
+                      }
+                    }
+                  }
+                }
+              },
+              "filters": {
+                "cloud/roleName": {
+                  "model": {
+                    "operator": "equals",
+                    "values": [
+                      "hmpps-delius-api"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "7": {
+            "position": {
+              "x": 0,
+              "y": 5,
+              "colSpan": 6,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "options",
+                  "isOptional": true
+                },
+                {
+                  "name": "sharedTimeRange",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+              "settings": {
+                "content": {
+                  "options": {
+                    "chart": {
+                      "metrics": [
+                        {
+                          "resourceMetadata": {
+                            "id": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod"
+                          },
+                          "name": "requests/count",
+                          "aggregationType": 1,
+                          "namespace": "microsoft.insights/components/kusto",
+                          "metricVisualization": {
+                            "displayName": "Server requests"
+                          }
+                        }
+                      ],
+                      "title": "Requests by URI",
+                      "titleKind": 2,
+                      "visualization": {
+                        "chartType": 2,
+                        "legendVisualization": {
+                          "isVisible": true,
+                          "position": 2,
+                          "hideSubtitle": false
+                        },
+                        "axisVisualization": {
+                          "x": {
+                            "isVisible": true,
+                            "axisType": 2
+                          },
+                          "y": {
+                            "isVisible": true,
+                            "axisType": 1
+                          }
+                        },
+                        "disablePinning": true
+                      },
+                      "grouping": {
+                        "dimension": "operation/name",
+                        "sort": 1,
+                        "top": 10
+                      }
+                    }
+                  }
+                }
+              },
+              "filters": {
+                "cloud/roleName": {
+                  "model": {
+                    "operator": "equals",
+                    "values": [
+                      "hmpps-delius-api"
+                    ]
+                  }
+                },
+                "operation/name": {
+                  "model": {
+                    "operator": "notEquals",
+                    "values": [
+                      "/health"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "8": {
+            "position": {
+              "x": 6,
+              "y": 5,
+              "colSpan": 6,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "options",
+                  "isOptional": true
+                },
+                {
+                  "name": "sharedTimeRange",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+              "settings": {
+                "content": {
+                  "options": {
+                    "chart": {
+                      "metrics": [
+                        {
+                          "resourceMetadata": {
+                            "id": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod"
+                          },
+                          "name": "dependencies/duration",
+                          "aggregationType": 4,
+                          "namespace": "microsoft.insights/components/kusto",
+                          "metricVisualization": {
+                            "displayName": "Dependency duration",
+                            "resourceDisplayName": "nomisapi-preprod"
+                          }
+                        }
+                      ],
+                      "title": "Dependency duration",
+                      "titleKind": 2,
+                      "visualization": {
+                        "chartType": 2,
+                        "legendVisualization": {
+                          "isVisible": true,
+                          "position": 2,
+                          "hideSubtitle": false
+                        },
+                        "axisVisualization": {
+                          "x": {
+                            "isVisible": true,
+                            "axisType": 2
+                          },
+                          "y": {
+                            "isVisible": true,
+                            "axisType": 1
+                          }
+                        },
+                        "disablePinning": true
+                      },
+                      "grouping": {
+                        "dimension": "dependency/type",
+                        "sort": 2,
+                        "top": 10
+                      }
+                    }
+                  }
+                }
+              },
+              "filters": {
+                "cloud/roleName": {
+                  "model": {
+                    "operator": "equals",
+                    "values": [
+                      "hmpps-delius-api"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "9": {
+            "position": {
+              "x": 0,
+              "y": 9,
+              "colSpan": 6,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "options",
+                  "isOptional": true
+                },
+                {
+                  "name": "sharedTimeRange",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+              "settings": {
+                "content": {
+                  "options": {
+                    "chart": {
+                      "metrics": [
+                        {
+                          "resourceMetadata": {
+                            "id": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod"
+                          },
+                          "name": "customMetrics/jvm_memory_used",
+                          "aggregationType": 4,
+                          "namespace": "microsoft.insights/components/kusto",
+                          "metricVisualization": {
+                            "displayName": "jvm_memory_used",
+                            "resourceDisplayName": "nomisapi-preprod"
+                          }
+                        },
+                        {
+                          "resourceMetadata": {
+                            "id": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod"
+                          },
+                          "name": "customMetrics/jvm_memory_max",
+                          "aggregationType": 4,
+                          "namespace": "microsoft.insights/components/kusto",
+                          "metricVisualization": {
+                            "displayName": "jvm_memory_max",
+                            "resourceDisplayName": "nomisapi-preprod"
+                          }
+                        }
+                      ],
+                      "title": "JVM memory usage",
+                      "titleKind": 2,
+                      "visualization": {
+                        "chartType": 3,
+                        "legendVisualization": {
+                          "isVisible": true,
+                          "position": 2,
+                          "hideSubtitle": false
+                        },
+                        "axisVisualization": {
+                          "x": {
+                            "isVisible": true,
+                            "axisType": 2
+                          },
+                          "y": {
+                            "isVisible": true,
+                            "axisType": 1
+                          }
+                        },
+                        "disablePinning": true
+                      }
+                    }
+                  }
+                }
+              },
+              "filters": {
+                "cloud/roleName": {
+                  "model": {
+                    "operator": "equals",
+                    "values": [
+                      "hmpps-delius-api"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "10": {
+            "position": {
+              "x": 6,
+              "y": 9,
+              "colSpan": 6,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "sharedTimeRange",
+                  "isOptional": true
+                },
+                {
+                  "name": "options",
+                  "value": {
+                    "chart": {
+                      "metrics": [
+                        {
+                          "resourceMetadata": {
+                            "id": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod"
+                          },
+                          "name": "requests/duration",
+                          "aggregationType": 4,
+                          "namespace": "microsoft.insights/components",
+                          "metricVisualization": {
+                            "displayName": "Server response time",
+                            "resourceDisplayName": "nomisapi-preprod",
+                            "color": "#0078D4"
+                          }
+                        }
+                      ],
+                      "title": "Server response time",
+                      "titleKind": 2,
+                      "visualization": {
+                        "chartType": 2
+                      },
+                      "openBladeOnClick": {
+                        "openBlade": true,
+                        "destinationBlade": {
+                          "bladeName": "ResourceMenuBlade",
+                          "parameters": {
+                            "id": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod",
+                            "menuid": "performance"
+                          },
+                          "extensionName": "HubsExtension",
+                          "options": {
+                            "parameters": {
+                              "id": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod",
+                              "menuid": "performance"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+              "settings": {
+                "content": {
+                  "options": {
+                    "chart": {
+                      "metrics": [
+                        {
+                          "resourceMetadata": {
+                            "id": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod"
+                          },
+                          "name": "requests/duration",
+                          "aggregationType": 4,
+                          "namespace": "microsoft.insights/components",
+                          "metricVisualization": {
+                            "displayName": "Server response time",
+                            "resourceDisplayName": "nomisapi-preprod",
+                            "color": "#0078D4"
+                          }
+                        }
+                      ],
+                      "title": "Server response time",
+                      "titleKind": 2,
+                      "visualization": {
+                        "chartType": 2,
+                        "disablePinning": true
+                      },
+                      "openBladeOnClick": {
+                        "openBlade": true,
+                        "destinationBlade": {
+                          "bladeName": "ResourceMenuBlade",
+                          "parameters": {
+                            "id": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod",
+                            "menuid": "performance"
+                          },
+                          "extensionName": "HubsExtension",
+                          "options": {
+                            "parameters": {
+                              "id": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod",
+                              "menuid": "performance"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "filters": {
+                "MsPortalFx_TimeRange": {
+                  "model": {
+                    "format": "local",
+                    "granularity": "auto",
+                    "relative": "60m"
+                  }
+                }
+              }
+            }
+          },
+          "11": {
+            "position": {
+              "x": 0,
+              "y": 13,
+              "colSpan": 6,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "ResourceId",
+                  "value": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod"
+                },
+                {
+                  "name": "ComponentId",
+                  "value": {
+                    "SubscriptionId": "a5ddf257-3b21-4ba9-a28c-ab30f751b383",
+                    "ResourceGroup": "nomisapi-preprod-rg",
+                    "Name": "nomisapi-preprod",
+                    "LinkedApplicationType": 0,
+                    "ResourceId": "/subscriptions/a5ddf257-3b21-4ba9-a28c-ab30f751b383/resourceGroups/nomisapi-preprod-rg/providers/Microsoft.Insights/components/nomisapi-preprod",
+                    "ResourceType": "microsoft.insights/components",
+                    "IsAzureFirst": false
+                  }
+                },
+                {
+                  "name": "TargetBlade",
+                  "value": "Performance"
+                },
+                {
+                  "name": "DataModel",
+                  "value": {
+                    "version": "1.0.0",
+                    "experience": 1,
+                    "clientTypeMode": "Server",
+                    "timeContext": {
+                      "durationMs": 86400000,
+                      "createdTime": "2021-06-10T16:31:20.204Z",
+                      "isInitialTime": false,
+                      "grain": 1,
+                      "useDashboardTimeRange": false
+                    },
+                    "prefix": "let OperationIdsWithExceptionType = (excType: string) { exceptions | where timestamp > ago(1d) \n    | where tobool(iff(excType == \"null\", isempty(type), type == excType)) \n    | distinct operation_ParentId };\nlet OperationIdsWithFailedReqResponseCode = (respCode: string) { requests | where timestamp > ago(1d)\n    | where iff(respCode == \"null\", isempty(resultCode), resultCode == respCode) and success == false \n    | distinct id };\nlet OperationIdsWithFailedDependencyType = (depType: string) { dependencies | where timestamp > ago(1d)\n    | where iff(depType == \"null\", isempty(type), type == depType) and success == false \n    | distinct operation_ParentId };\nlet OperationIdsWithFailedDepResponseCode = (respCode: string) { dependencies | where timestamp > ago(1d)\n    | where iff(respCode == \"null\", isempty(resultCode), resultCode == respCode) and success == false \n    | distinct operation_ParentId };\nlet OperationIdsWithExceptionBrowser = (browser: string) { exceptions | where timestamp > ago(1d)\n    | where tobool(iff(browser == \"null\", isempty(client_Browser), client_Browser == browser)) \n    | distinct operation_ParentId };",
+                    "percentile": 1,
+                    "grain": "5m",
+                    "roleSelectors": [
+                      {
+                        "cloudRoleName": "hmpps-delius-api",
+                        "cloudRoleInstance": "ip-10-160-1-212.eu-west-2.compute.internal"
+                      },
+                      {
+                        "cloudRoleName": "hmpps-delius-api",
+                        "cloudRoleInstance": "ip-10-160-10-122.eu-west-2.compute.internal"
+                      },
+                      {
+                        "cloudRoleName": "hmpps-delius-api",
+                        "cloudRoleInstance": "ip-10-160-6-10.eu-west-2.compute.internal"
+                      },
+                      {
+                        "cloudRoleName": "hmpps-delius-api",
+                        "cloudRoleInstance": "ip-10-160-8-154.eu-west-2.compute.internal"
+                      },
+                      {
+                        "cloudRoleName": "hmpps-delius-api",
+                        "cloudRoleInstance": "ip-10-160-9-198.eu-west-2.compute.internal"
+                      }
+                    ],
+                    "selectedOperation": null,
+                    "selectedOperationName": null,
+                    "filters": []
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "1.0"
+                }
+              ],
+              "type": "Extension/AppInsightsExtension/PartType/PerformanceCuratedPinnedChartPart",
+              "asset": {
+                "idInputName": "ResourceId",
+                "type": "ApplicationInsights"
+              },
+              "savedContainerState": {
+                "partTitle": "Performance",
+                "assetName": "nomisapi-preprod - Operations - 24 hours - 1 role (5 instances)"
+              }
+            }
+          }
+        }
+      }
+    },
+    "metadata": {
+      "model": {
+        "timeRange": {
+          "value": {
+            "relative": {
+              "duration": 24,
+              "timeUnit": 1
+            }
+          },
+          "type": "MsPortalFx.Composition.Configuration.ValueTypes.TimeRange"
+        },
+        "filterLocale": {
+          "value": "en-us"
+        },
+        "filters": {
+          "value": {
+            "MsPortalFx_TimeRange": {
+              "model": {
+                "format": "utc",
+                "granularity": "auto",
+                "relative": "4h"
+              },
+              "displayCache": {
+                "name": "UTC Time",
+                "value": "Past 4 hours"
+              },
+              "filteredPartIds": [
+                "StartboardPart-ApplicationMapPart-acb48f2e-fc6c-4921-a4a4-9513cc187040",
+                "StartboardPart-MonitorChartPart-acb48f2e-fc6c-4921-a4a4-9513cc187042",
+                "StartboardPart-MonitorChartPart-acb48f2e-fc6c-4921-a4a4-9513cc187044",
+                "StartboardPart-MonitorChartPart-acb48f2e-fc6c-4921-a4a4-9513cc187046",
+                "StartboardPart-MonitorChartPart-acb48f2e-fc6c-4921-a4a4-9513cc187048",
+                "StartboardPart-MonitorChartPart-acb48f2e-fc6c-4921-a4a4-9513cc18704c",
+                "StartboardPart-MonitorChartPart-acb48f2e-fc6c-4921-a4a4-9513cc18704e"
+              ]
+            },
+            "cloud/roleName": {
+              "model": {
+                "operator": "equals",
+                "values": [
+                  "hmpps-delius-api"
+                ]
+              },
+              "displayCache": {
+                "name": "Cloud role name",
+                "value": "hmpps-delius-api"
+              },
+              "filteredPartIds": [
+                "StartboardPart-MonitorChartPart-19309231-e9e0-4e4c-8ebb-bb883f47e05a",
+                "StartboardPart-MonitorChartPart-66074395-757f-4097-8665-5886c2a691a0",
+                "StartboardPart-MonitorChartPart-66074395-757f-4097-8665-5886c2a691a2",
+                "StartboardPart-MonitorChartPart-66074395-757f-4097-8665-5886c2a691a4",
+                "StartboardPart-MonitorChartPart-66074395-757f-4097-8665-5886c2a691a6",
+                "StartboardPart-MonitorChartPart-19309231-e9e0-4e4c-8ebb-bb883f47e106"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "name": "hmpps-delius-api-preprod Dashboard",
+  "type": "Microsoft.Portal/dashboards",
+  "location": "INSERT LOCATION",
+  "tags": {
+    "hidden-title": "hmpps-delius-api-preprod Dashboard"
+  },
+  "apiVersion": "2015-08-01-preview"
+}
