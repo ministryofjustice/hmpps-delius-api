@@ -397,7 +397,7 @@ class CreateContactV1Test @Autowired constructor(
     created = repository.findByIdOrNull(response.id)
       ?: throw RuntimeException("Contact with id = '${response.id}' does not exist in the database")
 
-    // TODO: This feels odd performing the comparison on the request type - it means we
+    // TODO: Is there a better way than converting back to the request type? We can't check fields not present in the request
     val observed = NewContact(
       date = created.date,
       offenderCrn = created.offender.crn,
