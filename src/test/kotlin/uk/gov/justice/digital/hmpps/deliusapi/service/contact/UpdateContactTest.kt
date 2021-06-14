@@ -158,6 +158,68 @@ class UpdateContactTest : ContactServiceTestBase() {
       .hasProperty(Contact::sensitive, request.sensitive)
       .hasProperty(Contact::description, request.description)
       .hasProperty(Contact::notes, originalNotes + CONTACT_NOTES_SEPARATOR + request.notes)
+      .hasProperty(Contact::enforcementDiary, true)
+      .hasProperty(Contact::enforcementActionID, enforcement.action!!.id)
+
+    shouldSetAuditContext()
+
+    // should set outcome meta
+    verify(validationService, times(1)).setOutcomeMeta(entityCaptor.value)
+
+    // should create system enforcements
+    verify(systemContactService, times(1)).createSystemEnforcementActionContact(entityCaptor.value)
+
+    // should update breach
+    verify(contactBreachService, times(1)).updateBreachOnInsertContact(actionContact)
+    verify(contactBreachService, times(1)).updateBreachOnUpdateContact(entityCaptor.value)
+
+    // should update ftc
+    verify(contactEnforcementService, times(1)).updateFailureToComply(entityCaptor.value)
+
+    verify(contactRarService, times(1)).updateRarCounts(entityCaptor.value)
+
+    shouldAssertProviderAuthority(originalProviderCode)
+  }
+
+  @Test
+  fun `Updating contact with no enforcement`() {
+    val dto = Fake.contactDto(enforcement = false)
+
+    havingDependentEntities()
+    havingContact()
+    val originalProviderCode = contact.provider!!.code
+    havingProvider()
+    havingOutcomeType()
+    havingOfficeLocation()
+
+    whenever(contactRepository.saveAndFlush(entityCaptor.capture())).thenReturn(contact)
+    whenever(mapper.toDto(contact)).thenReturn(dto)
+
+    val actionContact = Fake.contact()
+    whenever(systemContactService.createSystemEnforcementActionContact(contact)).thenReturn(actionContact)
+
+    val originalNotes = contact.notes
+
+    val observed = whenUpdatingContact()
+
+    assertThat(observed).isSameAs(dto)
+    assertThat(entityCaptor.value)
+      .isSameAs(contact)
+      .hasProperty(Contact::outcome, outcome)
+      .hasProperty(Contact::enforcements, listOf())
+      .hasProperty(Contact::officeLocation, officeLocation)
+      .hasProperty(Contact::provider, provider)
+      .hasProperty(Contact::team, team)
+      .hasProperty(Contact::staff, staff)
+      .hasProperty(Contact::date, request.date)
+      .hasProperty(Contact::startTime, request.startTime)
+      .hasProperty(Contact::endTime, request.endTime)
+      .hasProperty(Contact::alert, request.alert)
+      .hasProperty(Contact::sensitive, request.sensitive)
+      .hasProperty(Contact::description, request.description)
+      .hasProperty(Contact::notes, originalNotes + CONTACT_NOTES_SEPARATOR + request.notes)
+      .hasProperty(Contact::enforcementDiary, null)
+      .hasProperty(Contact::enforcementActionID, null)
 
     shouldSetAuditContext()
 

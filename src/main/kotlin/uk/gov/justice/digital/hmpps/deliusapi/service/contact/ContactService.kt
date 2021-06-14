@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.deliusapi.entity.Contact
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Provider
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Staff
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Team
+import uk.gov.justice.digital.hmpps.deliusapi.entity.YesNoBoth.Y
 import uk.gov.justice.digital.hmpps.deliusapi.exception.BadRequestException
 import uk.gov.justice.digital.hmpps.deliusapi.mapper.ContactMapper
 import uk.gov.justice.digital.hmpps.deliusapi.repository.ContactRepository
@@ -94,6 +95,8 @@ class ContactService(
       entity.enforcement = validation.validateEnforcement(request, entity.outcome)
       true
     } else false
+
+    setEnforcementFields(entity)
 
     contactRepository.saveAndFlush(entity)
 
@@ -176,13 +179,10 @@ class ContactService(
     )
 
     contact.updateNotes(type.defaultHeadings, request.notes)
+    contact.enforcement = enforcement
+    setEnforcementFields(contact)
 
     validation.setOutcomeMeta(contact)
-
-    if (enforcement != null) {
-      enforcement.contact = contact
-      contact.enforcement = enforcement
-    }
 
     val entity = contactRepository.saveAndFlush(contact)
 
@@ -198,6 +198,16 @@ class ContactService(
     contactRarService.updateRarCounts(entity)
 
     return mapper.toDto(entity)
+  }
+
+  private fun setEnforcementFields(contact: Contact) {
+    contact.enforcementActionID = contact.enforcement?.action?.id
+
+    contact.enforcementDiary = when {
+      contact.enforcement != null && contact.type.outcomeFlag == Y && contact.outcome != null -> true
+      contact.enforcement?.action?.outstandingContactAction == true -> true
+      else -> null
+    }
   }
 
   @Transactional

@@ -118,6 +118,12 @@ class Contact(
   @OneToMany(cascade = [CascadeType.ALL], mappedBy = "contact", orphanRemoval = true)
   var enforcements: MutableList<Enforcement> = mutableListOf(),
 
+  @Column(name = "LATEST_ENFORCEMENT_ACTION_ID")
+  var enforcementActionID: Long? = null,
+
+  @Column(name = "ENFORCEMENT")
+  var enforcementDiary: Boolean? = null,
+
   @Column(name = "CREATED_BY_USER_ID", nullable = false)
   @CreatedBy
   var createdByUserId: Long = 0,

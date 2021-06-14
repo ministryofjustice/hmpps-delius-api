@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.repository.findByIdOrNull
 import uk.gov.justice.digital.hmpps.deliusapi.EndToEndTest
 import uk.gov.justice.digital.hmpps.deliusapi.client.ApiException
 import uk.gov.justice.digital.hmpps.deliusapi.client.model.ContactDto
@@ -68,6 +69,29 @@ class PatchContactV1Test @Autowired constructor(
       .hasProperty(ContactDto::outcome, newOutcome)
   }
 
+  @Test
+  fun `Patching contact enforcement`() {
+    ensureNoConflicts(ContactTestsConfiguration::updatable)
+
+    val configuredContact = configuration.newContact(ContactTestsConfiguration::enforcement)
+
+    val startOutcome = configuration.newContact(ContactTestsConfiguration::updatable).outcome
+
+    if (configuredContact.enforcement == null || configuredContact.outcome == null) {
+      throw RuntimeException("Bad test data, the enforcement contact should have an outcome and enforcement")
+    }
+
+    contact = havingExistingContact(ContactTestsConfiguration::enforcement) {
+      it.copy(outcome = startOutcome, enforcement = null) // create a contact with updatable outcome, that doesn't need an enforcement
+    }
+    // patch in the enforcement
+    whenPatchingContact(Operation("replace", "/outcome", configuredContact.outcome), Operation("replace", "/enforcement", configuredContact.enforcement))
+
+    assertThat(contact)
+      .hasProperty(ContactDto::enforcement, null)
+    shouldRecordEnforcementFlags(enforcementExpected = true)
+  }
+
   private fun whenPatchingContact(vararg operations: Operation) {
     response = contactV1.safely { it.patchContact(contact.id, operations) }
   }
@@ -76,6 +100,32 @@ class PatchContactV1Test @Autowired constructor(
     val newContact = configuration.newContact(config)
     withDatabase {
       repository.deleteAllByOffenderCrnAndDateAndStartTimeAndEndTime(newContact.offenderCrn, newContact.date, LocalTime.parse(newContact.startTime), LocalTime.parse(newContact.endTime))
+    }
+  }
+
+  private fun shouldRecordEnforcementFlags(enforcementExpected: Boolean = true) = withDatabase {
+    withDatabase {
+      val updated = repository.findByIdOrNull(response.id)
+        ?: throw RuntimeException("Contact with id = '${response.id}' does not exist in the database")
+
+      val expectedEnforcementActionId = when (enforcementExpected) {
+        true -> updated.enforcement?.action?.id
+        else -> null
+      }
+
+      val expectedEnforcementDiary = when (enforcementExpected) {
+        true -> true
+        else -> null
+      }
+
+      assertThat(updated.enforcementDiary).isEqualTo(expectedEnforcementDiary)
+      assertThat(updated.enforcementActionID).isEqualTo(expectedEnforcementActionId)
+
+      if (enforcementExpected) {
+        assertThat(updated.enforcement).isNotNull
+      } else {
+        assertThat(updated.enforcement).isNull()
+      }
     }
   }
 }

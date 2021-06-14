@@ -48,11 +48,11 @@ class CreateContactTest : ContactServiceTestBase() {
 
   @Test
   fun `Successfully creating contact without enforcement`() {
-    havingDependentEntities()
+    havingDependentEntities(havingEnforcement = false)
     havingRepositories()
     havingValidation(havingValidEnforcement = null)
 
-    whenSuccessfullyCreatingContact()
+    whenSuccessfullyCreatingContact(havingEnforcement = false)
 
     shouldSaveContact()
     shouldNotSaveEnforcement()
@@ -220,8 +220,9 @@ class CreateContactTest : ContactServiceTestBase() {
     havingType: Boolean = true,
     havingProvider: Boolean = true,
     havingNsi: Boolean? = null,
+    havingEnforcement: Boolean = false
   ) {
-    request = Fake.newContact().copy(
+    request = Fake.newContact(havingEnforcement).copy(
       offenderCrn = offender.crn,
       nsiId = if (havingNsi == null) null else nsi.id,
       type = type.code,
@@ -301,8 +302,8 @@ class CreateContactTest : ContactServiceTestBase() {
       .thenReturn(enforcementContact)
   }
 
-  private fun whenSuccessfullyCreatingContact() {
-    val expectedResult = Fake.contactDto()
+  private fun whenSuccessfullyCreatingContact(havingEnforcement: Boolean = false) {
+    val expectedResult = Fake.contactDto(havingEnforcement)
 
     whenever(contactRepository.saveAndFlush(entityCaptor.capture()))
       .thenReturn(savedContact)
@@ -362,6 +363,10 @@ class CreateContactTest : ContactServiceTestBase() {
       .hasProperty(Contact::enforcements, listOf(enforcement))
     assertThat(enforcement)
       .hasProperty(Enforcement::contact, entityCaptor.value)
+    assertThat(entityCaptor.value)
+      .hasProperty(Contact::enforcementActionID, enforcement.action!!.id)
+    assertThat(entityCaptor.value)
+      .hasProperty(Contact::enforcementDiary, true)
     verify(systemContactService, times(1))
       .createSystemEnforcementActionContact(savedContact)
     verify(contactBreachService, times(1)).updateBreachOnInsertContact(enforcementContact)
@@ -371,6 +376,10 @@ class CreateContactTest : ContactServiceTestBase() {
   private fun shouldNotSaveEnforcement() {
     assertThat(entityCaptor.value)
       .hasProperty(Contact::enforcements, emptyList())
+    assertThat(entityCaptor.value)
+      .hasProperty(Contact::enforcementActionID, null)
+    assertThat(entityCaptor.value)
+      .hasProperty(Contact::enforcementDiary, null)
     verify(systemContactService, never())
       .createSystemEnforcementActionContact(any())
   }

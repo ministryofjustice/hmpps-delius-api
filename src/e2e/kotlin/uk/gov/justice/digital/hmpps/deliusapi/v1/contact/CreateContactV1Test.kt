@@ -278,7 +278,7 @@ class CreateContactV1Test @Autowired constructor(
     )
     ensureNoConflicts()
     whenCreatingContact()
-    shouldCreateContact()
+    shouldCreateContact(enforcementExpected = true)
   }
 
   @Test
@@ -342,7 +342,7 @@ class CreateContactV1Test @Autowired constructor(
     for (i in 1 until limit) {
       logger.info("creating pre ftc limit contact no. $i")
       whenCreatingContact()
-      shouldCreateContact()
+      shouldCreateContact(enforcementExpected = true)
 
       shouldUpdateEvent {
         assertThat(it)
@@ -356,7 +356,7 @@ class CreateContactV1Test @Autowired constructor(
 
     logger.info("creating ftc limit breach contact")
     whenCreatingContact()
-    shouldCreateContact()
+    shouldCreateContact(enforcementExpected = true)
 
     shouldUpdateEvent {
       assertThat(it)
@@ -393,10 +393,11 @@ class CreateContactV1Test @Autowired constructor(
     response = contactV1.safely { it.createContact(request) }
   }
 
-  private fun shouldCreateContact() = withDatabase {
+  private fun shouldCreateContact(enforcementExpected: Boolean = false) = withDatabase {
     created = repository.findByIdOrNull(response.id)
       ?: throw RuntimeException("Contact with id = '${response.id}' does not exist in the database")
 
+    // TODO: Is there a better way than converting back to the request type? We can't check fields not present in the request
     val observed = NewContact(
       date = created.date,
       offenderCrn = created.offender.crn,
@@ -425,6 +426,8 @@ class CreateContactV1Test @Autowired constructor(
       .ignoringCollectionOrder()
       .ignoringFields("alert", "eventId") // TODO determine why this field is always null on insert into test... triggers?
       .isEqualTo(request)
+
+    shouldRecordEnforcementFlags(enforcementExpected)
   }
 
   private fun gettingNsiRarCount() = withDatabase {
@@ -447,6 +450,30 @@ class CreateContactV1Test @Autowired constructor(
     val actualRarCount = requirementRepository.getOne(requirementId).rarCount ?: 0
     val expectedRarCount = requirementRarCount + increment
     assertThat(actualRarCount).isEqualTo(expectedRarCount)
+  }
+
+  private fun shouldRecordEnforcementFlags(enforcementExpected: Boolean) = withDatabase {
+    created = repository.findByIdOrNull(response.id)
+      ?: throw RuntimeException("Contact with id = '${response.id}' does not exist in the database")
+
+    val expectedEnforcementActionId = when (enforcementExpected) {
+      true -> created.enforcement?.action?.id
+      else -> null
+    }
+
+    val expectedEnforcementDiary = when (enforcementExpected) {
+      true -> true
+      else -> null
+    }
+
+    assertThat(created.enforcementDiary).isEqualTo(expectedEnforcementDiary)
+    assertThat(created.enforcementActionID).isEqualTo(expectedEnforcementActionId)
+
+    if (enforcementExpected) {
+      assertThat(created.enforcement).isNotNull
+    } else {
+      assertThat(created.enforcement).isNull()
+    }
   }
 
   private fun ensureNoConflicts(contact: NewContact = request) {
