@@ -69,6 +69,7 @@ management:
 
 logging:
   level:
+    org.hibernate: DEBUG
     org.springframework: INFO
     org.springframework.security: INFO
     uk.gov.justice.digital.hmpps: DEBUG

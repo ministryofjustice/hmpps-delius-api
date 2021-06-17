@@ -133,3 +133,9 @@ dependencies {
 
   "generateApiSpecImplementation"("org.springframework:spring-test")
 }
+
+allOpen {
+  annotation("javax.persistence.Entity")
+  annotation("javax.persistence.MappedSuperclass")
+  annotation("javax.persistence.Embeddable")
+}

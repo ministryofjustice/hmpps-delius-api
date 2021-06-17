@@ -34,11 +34,11 @@ class Event(
 
   @JoinColumn(name = "EVENT_ID")
   @OneToMany
-  var disposals: List<Disposal>? = null,
+  var disposals: MutableList<Disposal>? = null,
 ) {
   var disposal: Disposal?
     get() = disposals?.getOrNull(0)
     set(value) {
-      disposals = if (value == null) emptyList() else listOf(value)
+      disposals = if (value == null) mutableListOf() else mutableListOf(value)
     }
 }

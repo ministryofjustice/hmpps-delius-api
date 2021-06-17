@@ -49,7 +49,7 @@ class NsiType(
     joinColumns = [JoinColumn(name = "NSI_TYPE_ID")],
     inverseJoinColumns = [JoinColumn(name = "NSI_SUB_TYPE_ID")],
   )
-  var subTypes: List<StandardReference>? = null,
+  var subTypes: MutableList<StandardReference>? = null,
 
   @ManyToMany
   @JoinTable(
@@ -57,7 +57,7 @@ class NsiType(
     joinColumns = [JoinColumn(name = "NSI_TYPE_ID")],
     inverseJoinColumns = [JoinColumn(name = "NSI_STATUS_ID")],
   )
-  var statuses: List<NsiStatus>? = null,
+  var statuses: MutableList<NsiStatus>? = null,
 
   @ManyToMany
   @JoinTable(
@@ -65,7 +65,7 @@ class NsiType(
     joinColumns = [JoinColumn(name = "NSI_TYPE_ID")],
     inverseJoinColumns = [JoinColumn(name = "NSI_OUTCOME_ID")],
   )
-  var outcomes: List<StandardReference>? = null,
+  var outcomes: MutableList<StandardReference>? = null,
 
   @ManyToMany
   @JoinTable(
@@ -74,5 +74,5 @@ class NsiType(
     inverseJoinColumns = [JoinColumn(name = "PROBATION_AREA_ID")],
   )
   @Where(clause = "SELECTABLE = 'Y'")
-  var providers: List<Provider>? = null,
+  var providers: MutableList<Provider>? = null,
 )

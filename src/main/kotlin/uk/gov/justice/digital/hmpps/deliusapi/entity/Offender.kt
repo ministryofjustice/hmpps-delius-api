@@ -24,5 +24,5 @@ class Offender(
 
   @OneToMany
   @JoinColumn(name = "OFFENDER_ID")
-  var events: List<Event>? = null,
+  var events: MutableList<Event>? = null,
 )

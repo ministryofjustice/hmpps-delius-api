@@ -18,7 +18,7 @@ class Disposal(
 
   @JoinColumn(name = "DISPOSAL_ID")
   @OneToMany
-  var requirements: List<Requirement>? = null,
+  var requirements: MutableList<Requirement>? = null,
 
   @JoinColumn(name = "DISPOSAL_TYPE_ID")
   @ManyToOne
