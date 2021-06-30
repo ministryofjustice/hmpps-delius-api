@@ -15,7 +15,9 @@ interface ContactRepository : JpaRepository<Contact, Long> {
   fun findAllByNsiId(nsiId: Long): List<Contact>
 
   @Query(
-    "select c from Contact c where c.offender.id = :offenderId and c.type.attendanceContact = true and c.outcome is null " +
+    "select c from Contact c left join c.outcome o " +
+      "where c.offender.id = :offenderId and c.type.attendanceContact = true " +
+      "and (o is null or o.code not in :ignoreOutcomes) " +
       "and c.date = :date and c.startTime < :endTime and c.endTime > :startTime"
   )
   fun findClashingAttendanceContacts(
@@ -23,6 +25,7 @@ interface ContactRepository : JpaRepository<Contact, Long> {
     @Param("date") date: LocalDate,
     @Param("startTime") startTime: LocalTime,
     @Param("endTime") endTime: LocalTime,
+    @Param("ignoreOutcomes") ignoreOutcomes: List<String> = emptyList(),
   ): List<Contact>
 
   fun findAllByTypeId(typeId: Long): List<Contact>

@@ -80,3 +80,6 @@ contacts:
 features:
   token-verification: true
   nsi-status-history: true
+
+wellKnown:
+  rescheduledAppointmentOutcomes: RSSR,RSOF
