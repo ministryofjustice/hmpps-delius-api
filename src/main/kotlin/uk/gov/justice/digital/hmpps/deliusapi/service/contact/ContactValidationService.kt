@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.deliusapi.service.contact
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.deliusapi.config.WellKnownConfiguration
 import uk.gov.justice.digital.hmpps.deliusapi.dto.v1.contact.CreateOrUpdateContact
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Contact
 import uk.gov.justice.digital.hmpps.deliusapi.entity.ContactOutcomeType
@@ -30,7 +31,8 @@ import java.time.LocalTime
 @Service
 class ContactValidationService(
   private val contactRepository: ContactRepository,
-  private val enforcementActionRepository: EnforcementActionRepository
+  private val enforcementActionRepository: EnforcementActionRepository,
+  private val wellKnownConfiguration: WellKnownConfiguration,
 ) {
   fun validateContactType(request: CreateOrUpdateContact, type: ContactType) {
     if (request.alert && !type.alertFlag) {
@@ -148,6 +150,7 @@ class ContactValidationService(
       request.date,
       request.startTime,
       request.endTime as LocalTime,
+      wellKnownConfiguration.rescheduledAppointmentOutcomes,
     ).filter { it.id != existingId }
 
     if (clashes.isNotEmpty()) {

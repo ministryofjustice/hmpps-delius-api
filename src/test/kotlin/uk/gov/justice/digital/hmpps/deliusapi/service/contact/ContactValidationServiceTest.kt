@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import uk.gov.justice.digital.hmpps.deliusapi.config.WellKnownConfiguration
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Contact
 import uk.gov.justice.digital.hmpps.deliusapi.entity.Enforcement
 import uk.gov.justice.digital.hmpps.deliusapi.entity.RequirementTypeCategory.Companion.RAR_REQUIREMENT_TYPE_CATEGORY_CODE
@@ -27,6 +28,7 @@ import java.time.LocalTime
 class ContactValidationServiceTest {
   @Mock private lateinit var contactRepository: ContactRepository
   @Mock private lateinit var enforcementActionRepository: EnforcementActionRepository
+  @Mock private lateinit var wellKnownConfiguration: WellKnownConfiguration
   @InjectMocks private lateinit var subject: ContactValidationService
 
   @Test
@@ -588,6 +590,7 @@ class ContactValidationServiceTest {
           request.date,
           request.startTime,
           request.endTime as LocalTime,
+          wellKnownConfiguration.rescheduledAppointmentOutcomes,
         )
       ).thenReturn(if (havingClashes) listOf(existing, Fake.contact()) else listOf(existing))
     }

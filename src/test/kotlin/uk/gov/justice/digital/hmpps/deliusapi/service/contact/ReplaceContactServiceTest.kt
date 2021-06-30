@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.deliusapi.service.contact
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
@@ -41,6 +42,10 @@ class ReplaceContactServiceTest : ContactServiceTestBase() {
     val capturedCreateContact = entityCaptor.allValues[1]
 
     verify(contactRarService, times(2)).updateRarCounts(any())
+
+    // should validate appointment clashes using existing contact id
+    verify(validationService, times(1))
+      .validateFutureAppointmentClashes(any(), eq(type), eq(offender), eq(existingContact.id))
 
     // And the values have been set correctly
     assertThat(capturedUpdateContact.outcome?.code)

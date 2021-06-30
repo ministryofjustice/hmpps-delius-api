@@ -117,7 +117,7 @@ class ContactService(
   @Transactional
   @ProviderRequestAuthority
   @Auditable(AuditableInteraction.ADD_CONTACT)
-  fun createContact(request: NewContact): ContactDto {
+  fun createContact(request: NewContact, existingId: Long? = null): ContactDto {
     val offender = offenderRepository.findByCrnOrBadRequest(request.offenderCrn)
 
     val audit = AuditContext.get(AuditableInteraction.ADD_CONTACT)
@@ -135,7 +135,7 @@ class ContactService(
     val officeLocation = validation.validateOfficeLocation(request, type, team)
 
     // If contact is an attendance contact & has a start & end time then check for appointment clashes
-    validation.validateFutureAppointmentClashes(request, type, offender)
+    validation.validateFutureAppointmentClashes(request, type, offender, existingId)
 
     val nsi = if (request.nsiId == null) null
     else nsiRepository.findByIdOrNull(request.nsiId)
@@ -287,7 +287,7 @@ class ContactService(
       outcome = null
     ).copy(outcome = null)
 
-    return createContact(newContact)
+    return createContact(newContact, existingId = contact.id)
   }
 
   companion object {
