@@ -15,7 +15,7 @@ interface ContactRepository : JpaRepository<Contact, Long> {
   fun findAllByNsiId(nsiId: Long): List<Contact>
 
   @Query(
-    "select c from Contact c where c.offender.id = :offenderId and c.type.attendanceContact = true and c.outcome is null " +
+    "select c from Contact c where c.offender.id = :offenderId and c.type.attendanceContact = true " +
       "and c.date = :date and c.startTime < :endTime and c.endTime > :startTime"
   )
   fun findClashingAttendanceContacts(
