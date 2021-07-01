@@ -77,8 +77,7 @@ class ContactValidationService(
     // If offender has complied and attended (outcome is acceptable) then set any hours credited
     if (contact.type.recordedHoursCredited && contact.attended == true && contact.complied == true) {
       contact.hoursCredited = BigDecimal.valueOf(contact.getDuration().toMinutes())
-        .divide(BigDecimal(60))
-        .setScale(2, RoundingMode.HALF_UP)
+        .divide(BigDecimal(60), 2, RoundingMode.HALF_UP)
         .toDouble()
     } else {
       contact.hoursCredited = null
