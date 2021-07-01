@@ -135,11 +135,6 @@ class CreateContactTest : IntegrationTestBase() {
           )
         )
       )
-
-      // Clashing appointment with outcome is ok, see contact with ID 2502740196
-      successCases.add(
-        of(clashing.copy(date = LocalDate.of(2100, 2, 1)))
-      )
     }
     @JvmStatic
     fun successCases(): Stream<Arguments> = successCases.stream()
