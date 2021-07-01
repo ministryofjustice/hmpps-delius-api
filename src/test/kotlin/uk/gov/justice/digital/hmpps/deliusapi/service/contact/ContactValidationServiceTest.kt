@@ -264,7 +264,7 @@ class ContactValidationServiceTest {
   fun `Updating outcome meta with recorded hours outcome`() {
     val contact = Fake.contact().apply {
       startTime = LocalTime.of(12, 30)
-      endTime = LocalTime.of(14, 0)
+      endTime = LocalTime.of(14, 50)
       type = Fake.contactType().apply {
         recordedHoursCredited = true
       }
@@ -279,7 +279,7 @@ class ContactValidationServiceTest {
     assertThat(contact)
       .hasProperty(Contact::attended, true)
       .hasProperty(Contact::complied, true)
-      .hasProperty(Contact::hoursCredited, 1.5)
+      .hasProperty(Contact::hoursCredited, 2.33)
   }
 
   @Test
