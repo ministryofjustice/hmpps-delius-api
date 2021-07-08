@@ -273,7 +273,7 @@ class UpdateContactTest : ContactServiceTestBase() {
   }
 
   private fun havingOfficeLocation(having: Boolean = true) {
-    val mock = whenever(validationService.validateOfficeLocation(request, contact.type, team))
+    val mock = whenever(validationService.validateOfficeLocation(request.officeLocation, contact.type, team))
     if (having) {
       mock.thenReturn(officeLocation)
     } else {

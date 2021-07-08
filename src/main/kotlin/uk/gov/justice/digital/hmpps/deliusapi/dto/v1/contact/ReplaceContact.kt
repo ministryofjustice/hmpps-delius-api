@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.deliusapi.validation.FieldGroup
 import uk.gov.justice.digital.hmpps.deliusapi.validation.FieldGroupType
 import uk.gov.justice.digital.hmpps.deliusapi.validation.FieldGroups
 import uk.gov.justice.digital.hmpps.deliusapi.validation.NotBlankWhenProvided
+import uk.gov.justice.digital.hmpps.deliusapi.validation.OfficeLocationCode
 import uk.gov.justice.digital.hmpps.deliusapi.validation.StartTime
 import uk.gov.justice.digital.hmpps.deliusapi.validation.TimeRanges
 import java.time.LocalDate
@@ -22,6 +23,13 @@ data class ReplaceContact(
   @NotBlankWhenProvided
   @field:Size(max = 10)
   val outcome: String,
+
+  /**
+   * The office location code.
+   * If not provided then the office location will not be updated i.e. it is not possible to remove an existing office location.
+   */
+  @OfficeLocationCode
+  val officeLocation: String?,
 
   val date: LocalDate,
 

@@ -477,6 +477,7 @@ object Fake {
     endTime = localTimeBetween(12, 23),
     requirementId = id(),
     eventId = id(),
-    offenderCrn = crn()
+    offenderCrn = crn(),
+    officeLocation = officeLocation().code,
   )
 }

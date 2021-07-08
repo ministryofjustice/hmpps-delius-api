@@ -274,7 +274,7 @@ class CreateContactTest : ContactServiceTestBase() {
       false -> enforcementMock.thenThrow(BadRequestException("bad enforcement"))
     }
 
-    val officeLocationMock = whenever(validationService.validateOfficeLocation(request, type, team))
+    val officeLocationMock = whenever(validationService.validateOfficeLocation(request.officeLocation, type, team))
     when (havingValidOfficeLocation) {
       null -> officeLocationMock.thenReturn(null)
       true -> officeLocationMock.thenReturn(officeLocation)

@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.deliusapi.integration.v1.contact
 
+import org.assertj.core.api.Assertions.assertThat
+import org.hamcrest.Matchers
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
@@ -24,7 +26,8 @@ class ReplaceContactTest : IntegrationTestBase() {
     val existingContact = havingExistingContact(
       Fake.validNewContact().copy(
         outcome = null,
-        type = "TST06"
+        type = "TST06",
+        officeLocation = "C00OFFB"
       )
     )
     val request = havingValidRequest(existingContact)
@@ -33,13 +36,20 @@ class ReplaceContactTest : IntegrationTestBase() {
       .expectStatus().isCreated
       .expectBody()
       .jsonPath("$.outcome").doesNotExist()
+      .jsonPath("$.officeLocation").value(Matchers.equalTo("C00OFFB"))
+      .shouldCreateEntityById(contactRepository) {
+        assertThat(it.officeLocation?.code).isEqualTo("C00OFFB")
+      }
   }
 
   private fun havingValidRequest(existingContact: ContactDto): ReplaceContact {
     return Fake.replaceContact().copy(
       outcome = Fake.validNewContact().outcome!!,
-      offenderCrn = existingContact.offenderCrn, nsiId = existingContact.nsiId,
-      requirementId = existingContact.requirementId, eventId = existingContact.eventId
+      offenderCrn = existingContact.offenderCrn,
+      nsiId = existingContact.nsiId,
+      requirementId = existingContact.requirementId,
+      eventId = existingContact.eventId,
+      officeLocation = null,
     )
   }
 

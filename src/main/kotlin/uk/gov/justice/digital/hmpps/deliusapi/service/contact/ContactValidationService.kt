@@ -115,24 +115,24 @@ class ContactValidationService(
     return enforcement
   }
 
-  fun validateOfficeLocation(request: CreateOrUpdateContact, type: ContactType, team: Team): OfficeLocation? {
-    fun get() = team.officeLocations?.find { it.code == request.officeLocation }
-      ?: throw BadRequestException("Team with code '${request.team}' does not exist at office location '${request.officeLocation}'")
+  fun validateOfficeLocation(officeLocation: String?, type: ContactType, team: Team): OfficeLocation? {
+    fun get() = team.officeLocations?.find { it.code == officeLocation }
+      ?: throw BadRequestException("Team with code '${team.code}' does not exist at office location '$officeLocation'")
 
     return when (type.locationFlag) {
       YesNoBoth.Y -> {
-        if (request.officeLocation == null) {
+        if (officeLocation == null) {
           throw BadRequestException("Location is required for contact type '${type.code}'")
         }
         get()
       }
       YesNoBoth.N -> {
-        if (request.officeLocation != null) {
+        if (officeLocation != null) {
           throw BadRequestException("Contact type '${type.code}' does not support a location")
         }
         null
       }
-      YesNoBoth.B -> if (request.officeLocation == null) null else get()
+      YesNoBoth.B -> if (officeLocation == null) null else get()
     }
   }
 

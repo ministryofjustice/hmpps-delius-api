@@ -47,6 +47,10 @@ class ReplaceContactServiceTest : ContactServiceTestBase() {
     verify(validationService, times(1))
       .validateFutureAppointmentClashes(any(), eq(type), eq(offender), eq(existingContact.id))
 
+    // should validate office location
+    verify(validationService, times(1))
+      .validateOfficeLocation(request.officeLocation, type, team)
+
     // And the values have been set correctly
     assertThat(capturedUpdateContact.outcome?.code)
       .describedAs("Outcome is updated on the existing contact")
