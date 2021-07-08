@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConstructorBinding
 
 @ConstructorBinding
 @ConfigurationProperties(prefix = "features")
-open class FeatureFlags(
-  open val tokenVerification: Boolean = false,
-  open val nsiStatusHistory: Boolean = false,
+class FeatureFlags(
+  val tokenVerification: Boolean = false,
+  val nsiStatusHistory: Boolean = false,
 )

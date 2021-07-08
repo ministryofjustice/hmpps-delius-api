@@ -1,3 +1,4 @@
+
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.2.0"
   kotlin("plugin.spring") version "1.4.32"
@@ -7,10 +8,16 @@ plugins {
   id("org.unbroken-dome.test-sets") version "3.0.1"
   id("org.openapi.generator") version "5.1.0"
   idea
+
+  id("org.jetbrains.kotlin.plugin.allopen") version "1.5.20"
 }
 
 val deliusApiSpec = "$buildDir/generated/delius-api.spec.json"
 val generatedSrc = "src/generated/kotlin"
+
+allOpen {
+  annotation("org.springframework.boot.context.properties.ConfigurationProperties")
+}
 
 testSets {
   create("e2e")

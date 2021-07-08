@@ -77,7 +77,7 @@ class ContactService(
     entity.outcome = validation.validateOutcomeType(request, entity.type)
     validation.setOutcomeMeta(entity)
 
-    entity.officeLocation = validation.validateOfficeLocation(request, entity.type, team)
+    entity.officeLocation = validation.validateOfficeLocation(request.officeLocation, entity.type, team)
 
     entity.provider = provider
     entity.team = team
@@ -117,7 +117,7 @@ class ContactService(
   @Transactional
   @ProviderRequestAuthority
   @Auditable(AuditableInteraction.ADD_CONTACT)
-  fun createContact(request: NewContact): ContactDto {
+  fun createContact(request: NewContact, existingId: Long? = null): ContactDto {
     val offender = offenderRepository.findByCrnOrBadRequest(request.offenderCrn)
 
     val audit = AuditContext.get(AuditableInteraction.ADD_CONTACT)
@@ -132,10 +132,10 @@ class ContactService(
     val enforcement = validation.validateEnforcement(request, outcome)
 
     val (provider, team, staff) = getProviderTeamStaff(request)
-    val officeLocation = validation.validateOfficeLocation(request, type, team)
+    val officeLocation = validation.validateOfficeLocation(request.officeLocation, type, team)
 
     // If contact is an attendance contact & has a start & end time then check for appointment clashes
-    validation.validateFutureAppointmentClashes(request, type, offender)
+    validation.validateFutureAppointmentClashes(request, type, offender, existingId)
 
     val nsi = if (request.nsiId == null) null
     else nsiRepository.findByIdOrNull(request.nsiId)
@@ -272,9 +272,13 @@ class ContactService(
       validation.validateReplaceContactNsiId(replaceContact.nsiId, contact)
     }
 
+    // we only support updating office location, not removing it
+    val officeLocation = replaceContact.officeLocation ?: contact.officeLocation?.code
+    validation.validateOfficeLocation(officeLocation, contact.type, contact.team!!)
+
     // 1) Get the original contact and add outcome
     val updatedContact = mapper.toUpdate(contact).copy(
-      outcome = replaceContact.outcome
+      outcome = replaceContact.outcome,
     )
 
     updateContact(contactId, updatedContact)
@@ -284,10 +288,11 @@ class ContactService(
       date = replaceContact.date,
       startTime = replaceContact.startTime,
       endTime = replaceContact.endTime,
-      outcome = null
+      outcome = null,
+      officeLocation = officeLocation
     ).copy(outcome = null)
 
-    return createContact(newContact)
+    return createContact(newContact, existingId = contact.id)
   }
 
   companion object {

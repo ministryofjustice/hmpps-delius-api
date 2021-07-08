@@ -549,9 +549,9 @@ class ContactValidationServiceTest {
     }
 
     if (success == false) {
-      assertThrows<BadRequestException> { subject.validateOfficeLocation(request, type, team) }
+      assertThrows<BadRequestException> { subject.validateOfficeLocation(request.officeLocation, type, team) }
     } else {
-      val observed = subject.validateOfficeLocation(request, type, team)
+      val observed = subject.validateOfficeLocation(request.officeLocation, type, team)
       if (success == null) {
         assertThat(observed).isEqualTo(null)
       } else {
