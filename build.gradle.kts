@@ -92,11 +92,8 @@ openApiGenerate {
 }
 
 dependencyCheck {
-  skipConfigurations.addAll(
-    listOf(
-      "_classStructurekaptTestKotlin",
-      "_classStructurekaptE2eKotlin"
-    )
+  scanConfigurations.addAll(
+    listOf("productionRuntimeClasspath")
   )
 }
 
