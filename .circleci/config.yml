@@ -1,13 +1,11 @@
 version: 2.1
 
 orbs:
-  owasp: entur/owasp@0.0.10
-  hmpps: ministryofjustice/hmpps@3.1
+  hmpps: ministryofjustice/hmpps@3.9.1
   mem: circleci/rememborb@0.0.1
   aws-ecs: circleci/aws-ecs@2.2.0
   aws-cli: circleci/aws-cli@2.0.0
   queue: eddiewebb/queue@1.5.0
-  sast-orb: orb-01scan/sast-orb@0.0.8
   slack: circleci/slack@4.1.3
 
 commands:
@@ -88,17 +86,6 @@ jobs:
                 command: |
                   docker tag "public.ecr.aws/hmpps/delius-api:$APP_VERSION" "public.ecr.aws/hmpps/delius-api:latest"
                   docker push public.ecr.aws/hmpps/delius-api:latest
-  sast-scan:
-    executor: sast-orb/default
-    steps:
-      - attach_workspace:
-          at: /tmp
-      - run:
-          name: Rename artifact
-          command: mv /tmp/hmpps-delius-api-*.jar /tmp/hmpps-delius-api.jar
-      - sast-orb/policy-scan:
-          filepath: /tmp/hmpps-delius-api.jar
-          teams: delius-api
   deploy:
     docker:
       - image: circleci/python
@@ -160,10 +147,6 @@ workflows:
           filters:
             tags:
               ignore: /.*/
-      - sast-scan:
-          context: hmpps-common-vars
-          requires:
-            - build-gradle
       - deploy:
           name: deploy-to-dev
           context:
@@ -231,5 +214,18 @@ workflows:
               only:
                 - main
     jobs:
-      - owasp/gradle_owasp_dependency_check:
-          executor: hmpps/java
+      - hmpps/gradle_owasp_dependency_check:
+          slack_channel: delius-api-notifications
+          context:
+            - hmpps-common-vars
+      - hmpps/trivy_latest_scan:
+          image_name: public.ecr.aws/hmpps/delius-api
+          slack_channel: delius-api-notifications
+          context:
+            - hmpps-common-vars
+      - hmpps/veracode_policy_scan:
+          teams: delius-api
+          slack_channel: delius-api-notifications
+          context:
+            - hmpps-common-vars
+            - veracode-credentials
